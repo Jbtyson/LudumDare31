@@ -23,6 +23,8 @@ namespace PuissANT
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.ScreenSize.X;
+            graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.ScreenSize.Y;
             Content.RootDirectory = "Content";
         }
 
@@ -34,8 +36,6 @@ namespace PuissANT
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -47,8 +47,9 @@ namespace PuissANT
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            ScreenManager.Instance.GraphicsDevice = GraphicsDevice;
+            ScreenManager.Instance.SpriteBatch = spriteBatch;
+            ScreenManager.Instance.LoadContent(Content);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace PuissANT
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            ScreenManager.Instance.UnloadContent();
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace PuissANT
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            ScreenManager.Instance.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -81,9 +82,11 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.SaddleBrown);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            ScreenManager.Instance.Draw(spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
