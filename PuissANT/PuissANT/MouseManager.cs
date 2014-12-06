@@ -126,7 +126,7 @@ namespace PuissANT
             _lastMouseState = newMouseState;
         }
 
-        public bool IsClicked(Keys key)
+        public bool IsClicked()
         {
             return _lastMouseState.LeftButton == ButtonState.Pressed;
         }
@@ -134,6 +134,14 @@ namespace PuissANT
         public bool IsReleased()
         {
             return _lastMouseState.LeftButton == ButtonState.Released;
+        }
+
+        public Point MousePosition
+        {
+            get
+            {
+                return _lastMouseState.Position;
+            }
         }
 
         public int MouseX
