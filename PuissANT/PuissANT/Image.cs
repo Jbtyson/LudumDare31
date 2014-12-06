@@ -46,7 +46,7 @@ namespace PuissANT
             Text = text;
 
             // Get the content
-            _content = new ContentManager(ScreenManager.Instance.Content.ServiceProvider, "Content");
+            _content = ScreenManager.Instance.Content;
 
             // Load the texture
             if (Path != string.Empty)

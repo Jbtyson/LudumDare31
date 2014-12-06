@@ -37,7 +37,7 @@ namespace PuissANT
 
         public void LoadContent(ContentManager Content)
         {
-            this.Content = new ContentManager(Content.ServiceProvider, "Content");
+            this.Content = Content;
             UiManager.LoadContent();
         }
 
