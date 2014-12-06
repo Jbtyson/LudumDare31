@@ -9,25 +9,25 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PuissANT
 {
-    public class StatsPanel : IPanel
+    public class CommandPanel : IPanel
     {
         Vector2 Dimensions;
         Image Image;
 
         string imgPath, text;
 
-        public StatsPanel()
+        public CommandPanel()
         {
             Dimensions = Vector2.Zero;
             Image = new Image();
-            imgPath = "ui/statsBar";
-            text = "this is the stats bar";
+            imgPath = "ui/commandBar";
+            text = "this is the command bar";
         }
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(1040, 120);
-            Image.Position = new Vector2(0, 0);
+            Dimensions = new Vector2(240, 720);
+            Image.Position = new Vector2(ScreenManager.Instance.ScreenSize.X - Dimensions.X, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
             Image.LoadContent(imgPath, text);
         }
 
