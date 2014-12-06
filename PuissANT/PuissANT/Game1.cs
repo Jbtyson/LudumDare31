@@ -1,12 +1,16 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
+using PuissANT.Actors;
+using PuissANT.Actors.Ants;
+
 #endregion
 
 namespace PuissANT
@@ -67,10 +71,11 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            foreach (Actor a in ActorManager.Instance.GetAllActors())
+                a.Update(gameTime);
 
-            // TODO: Add your update logic here
+            if(isGameOver())
+                //handleGameOver
 
             base.Update(gameTime);
         }
@@ -84,8 +89,15 @@ namespace PuissANT
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            foreach(Actor a in ActorManager.Instance.GetAllActors())
+                a.Render(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        private bool isGameOver()
+        {
+            return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
         }
     }
 }
