@@ -33,15 +33,18 @@ namespace PuissANT
         public Image()
         {
             Path = Text = Effects = string.Empty;
-            FontName = "Fonts/Font";
+            FontName = "fonts/font";
             Position = Vector2.Zero;
             Scale = Vector2.One;
             Alpha = 1.0f;
             SourceRect = Rectangle.Empty;
         }
 
-        public void LoadContent()
+        public void LoadContent(string path, string text)
         {
+            Path = path;
+            Text = text;
+
             // Get the content
             _content = new ContentManager(ScreenManager.Instance.Content.ServiceProvider, "Content");
 
@@ -55,7 +58,10 @@ namespace PuissANT
             // Get the dimensions
             Vector2 dimensions = Vector2.Zero;
             if (Texture != null)
+            {
                 dimensions.X += Texture.Width;
+                dimensions.Y += Texture.Height;
+            }
             dimensions.X += _font.MeasureString(Text).X;
             if (Texture != null)
                 dimensions.Y = Math.Max(Texture.Height, _font.MeasureString(Text).Y);

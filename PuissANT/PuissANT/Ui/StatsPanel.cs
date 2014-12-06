@@ -12,37 +12,39 @@ namespace PuissANT
     public class StatsPanel : IPanel
     {
         Vector2 Dimensions, Position;
+        Image Image;
+
+        string imgPath, text;
 
         public StatsPanel()
         {
             Dimensions = Vector2.Zero;
             Position = Vector2.Zero;
+            Image = new Image();
+            imgPath = "ui/statsBar";
+            text = "this is a bar";
         }
 
         public void LoadContent()
         {
             Dimensions = new Vector2(800, 120);
             Position = new Vector2(0, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
+            Image.LoadContent(imgPath, text);
         }
 
         public void UnloadContent()
         {
-
+            Image.UnloadContent();
         }
 
         public void Update(GameTime gameTime)
         {
-
+            Image.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = new Texture2D(ScreenManager.Instance.GraphicsDevice, (int)Dimensions.X, (int)Dimensions.Y);
-            Color[] data = new Color[(int)Dimensions.X*(int)Dimensions.Y];
-            for(int i = 0; i < data.Length; i++)
-                data[i] = Color.White;
-            texture.SetData<Color>(data);
-            spriteBatch.Draw(texture, Position, Color.White);
+            Image.Draw(spriteBatch);
         }
     }
 }
