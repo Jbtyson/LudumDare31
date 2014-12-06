@@ -38,6 +38,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="Ui\IPanel.cs" />
+    <Compile Include="MouseManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenManager.cs" />
