@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Ui;
 #endregion
 
 namespace PuissANT
@@ -47,7 +48,7 @@ namespace PuissANT
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            
+            IsMouseVisible = false;
             
 
             base.Initialize();
@@ -68,6 +69,10 @@ namespace PuissANT
             ScreenManager.Instance.SpriteBatch = spriteBatch;
             ScreenManager.Instance.LoadContent(Content);
             ResourceManager.Instance.LoadContent();
+            PhermoneCursor.Instance.LoadContent(Content);
+
+            // Load Cursor Icons
+            Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
             
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
             int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
@@ -87,7 +92,7 @@ namespace PuissANT
                 }
             }
 
-            antTexture = new Texture2D(GraphicsDevice, 6, 9);
+            antTexture = new Texture2D(GraphicsDevice, 1, 1);
             Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
             for (int i = 0; i < colorBuf.Length; i++)
             {
@@ -104,7 +109,7 @@ namespace PuissANT
             for (int i = 0; i < 20; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Vector2(r.Next(0, GameWindow.Width), (GameWindow.Height/5)),
+                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)),
                     antTexture);
                 ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)));
                 ActorManager.Instance.Add(ant);
@@ -133,6 +138,7 @@ namespace PuissANT
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            PhermoneCursor.Instance.Update(gameTime);
             Point mouse = Mouse.GetState().Position;
             Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
 
@@ -159,12 +165,13 @@ namespace PuissANT
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            TerrainManager.DrawTerrain(spriteBatch);
+            
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
-            ScreenManager.Instance.Draw(spriteBatch);
 
-            //TerrainManager.DrawTerrain(spriteBatch);
+            TerrainManager.DrawTerrain(spriteBatch);
+            ScreenManager.Instance.Draw(spriteBatch);
+            PhermoneCursor.Instance.Draw(spriteBatch);
 
             spriteBatch.End();
 

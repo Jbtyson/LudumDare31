@@ -9,6 +9,14 @@ namespace PuissANT
     {
         private readonly LinkedList<Tuple<int, T>> _queue;
 
+        public int Count
+        {
+            get
+            {
+                return _queue.Count;
+            }
+        }
+
         public PriorityQueue()
         {
             _queue = new LinkedList<Tuple<int, T>>();
@@ -35,6 +43,13 @@ namespace PuissANT
         {
             LinkedListNode<Tuple<int, T>> node = _queue.First;
             _queue.RemoveFirst();
+            return node.Value.Item2;
+        }
+
+        public T DequeueLast()
+        {
+            LinkedListNode<Tuple<int, T>> node = _queue.Last;
+            _queue.RemoveLast();
             return node.Value.Item2;
         }
 

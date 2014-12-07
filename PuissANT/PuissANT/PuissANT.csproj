@@ -58,6 +58,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenManager.cs" />
+    <Compile Include="Ui\PhermoneCursor.cs" />
     <Compile Include="Ui\ResourceDisplay.cs" />
     <Compile Include="Ui\StatsPanel.cs" />
     <Compile Include="Ui\CommandPanel.cs" />
@@ -72,6 +73,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\phermones\SoldierPhermone.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\sprites\hierophANT.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

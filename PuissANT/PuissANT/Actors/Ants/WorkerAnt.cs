@@ -10,7 +10,8 @@ namespace PuissANT.Actors.Ants
     {
         private static readonly Random RAND = new Random();
         private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
-        private const long UPDATE_TIME = 10000;
+        private const long UPDATE_TIME = 100000;
+        private const short MEMORY = 500;
 
         private long _updateTimer;
         private readonly PriorityQueue<Vector2> _openQueue;
@@ -33,8 +34,15 @@ namespace PuissANT.Actors.Ants
                 {
                     //Build tunnel
                     Position = getNextPosition();
-                    World.Instance[Position] |= (short)TileInfo.GroundDug;
-                    World.Instance[Position] &= ~((short)TileInfo.GroundUndug);
+                    for (int x = 0; x < this.Texture.Width && Position.X + x < GameWindow.Width; x++)
+                    {
+                        for (int y = 0; y < Texture.Height && Position.Y + y < GameWindow.Height; y++)
+                        {
+                            World.Instance[(int)Position.X + x, (int)Position.Y + y] |= (short)TileInfo.GroundDug;
+                            World.Instance[(int)Position.X + x, (int)Position.Y + y] &= ~((short)TileInfo.GroundUndug);
+                        }
+                    }
+                    
                     if (Position == Target)
                     {
                         _openQueue.Clear();
@@ -70,17 +78,24 @@ namespace PuissANT.Actors.Ants
 
                     if ((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
                         continue;
-
                     
-                    if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
+                    //if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
+                    if(_closedList.All(t => t != tempPosition))
                     {
                         int value = (int)(Vector2.DistanceSquared(tempPosition, Target) * 100);
+                        value *= RAND.Next(1, 3);
+                        if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
+                            value *= RAND.Next(1, 3);
+                        if (_openQueue.Count == MEMORY)
+                            _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition);
                     }
                 }
             }
 
             Vector2 v = _openQueue.Dequeue();
+            if(_closedList.Count == MEMORY)
+                _closedList.RemoveAt(0);
             _closedList.Add(v);
             return v;
         }
