@@ -1,16 +1,12 @@
 ﻿#region Using Statements
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
 using PuissANT.Pheromones;
+using PuissANT.ui;
 using PuissANT.Util;
 
 #endregion
@@ -52,7 +48,7 @@ namespace PuissANT
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            
+            IsMouseVisible = false;
             
 
             base.Initialize();
@@ -73,6 +69,10 @@ namespace PuissANT
             ScreenManager.Instance.SpriteBatch = spriteBatch;
             ScreenManager.Instance.LoadContent();
             ResourceManager.Instance.LoadContent();
+            PhermoneCursor.Instance.LoadContent(Content);
+
+            // Load Cursor Icons
+            Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
             
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
             int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
@@ -100,6 +100,9 @@ namespace PuissANT
                 colorBuf[i] = Color.Blue;
             }
             antTexture.SetData<Color>(colorBuf);*/
+
+            QueenAnt queen = new QueenAnt(new Vector2(50, 100).ToPoint(), 4, 4); 
+            ActorManager.Instance.Add(queen);
 
             Random r = new Random();
             for (int i = 0; i < 5; i++)
@@ -139,6 +142,9 @@ namespace PuissANT
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                 _start = true;
+            PhermoneCursor.Instance.Update(gameTime);
+            Point mouse = Mouse.GetState().Position;
+            Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
 
             if (!_start)
                 return;
@@ -179,8 +185,10 @@ namespace PuissANT
             
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
+
             TerrainManager.DrawTerrain(spriteBatch);
             ScreenManager.Instance.Draw(spriteBatch);
+            PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 
             spriteBatch.End();
 

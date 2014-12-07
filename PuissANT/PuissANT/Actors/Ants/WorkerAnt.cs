@@ -21,7 +21,7 @@ namespace PuissANT.Actors.Ants
         private readonly List<Point> _closedList;
 
         public WorkerAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("ants/fireant.png"))
+            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
