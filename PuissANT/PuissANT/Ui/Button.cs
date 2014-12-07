@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace PuissANT.Buttons
+namespace PuissANT.Ui
 {
     public class Button
     {
@@ -35,7 +35,7 @@ namespace PuissANT.Buttons
         /// A Click event. When the button is clicked (called on release),
         ///  it calls this event.
         /// </summary>
-        public delegate void ButtonEvent();
+        public delegate void ButtonEvent(string text);
 
         public ButtonEvent ButtonClicked;
 
@@ -68,6 +68,13 @@ namespace PuissANT.Buttons
         {
             get { return _buttonTextColor; }
             set { _buttonTextColor = value; }
+        }
+
+        // James added this
+        public SpriteFont Font
+        {
+            get { return _spriteFont; }
+            set { _spriteFont = value; }
         }
 
         public void SetTexture(Texture2D texture, ButtonState buttonState = ButtonState.Neutral)
@@ -143,7 +150,7 @@ namespace PuissANT.Buttons
                             _buttonState = ButtonState.Over;
                         else
                             _buttonState = ButtonState.Neutral;
-                        ButtonClicked();
+                        ButtonClicked(_buttonText);
                     }
                     else if (!isMouseOver)
                     {
@@ -154,7 +161,7 @@ namespace PuissANT.Buttons
             }
         }
 
-        public void Render(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             Texture2D buttonTexture = GetStateTexture();
             if(buttonTexture != null)
@@ -199,6 +206,5 @@ namespace PuissANT.Buttons
 
             return texture;
         }
-
     }
 }

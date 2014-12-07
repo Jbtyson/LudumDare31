@@ -18,12 +18,12 @@ namespace PuissANT
         private Vector2 _origin;
         private ContentManager _content;
         private RenderTarget2D _renderTarget;
-        private SpriteFont _font;
 
         public Texture2D Texture;
         public float Alpha;
         public bool IsActive;
         public string Text, FontName, Path, Effects;
+        public SpriteFont Font;
         public Vector2 Position, Scale;
         public Rectangle SourceRect;
 
@@ -53,7 +53,7 @@ namespace PuissANT
                 Texture = _content.Load<Texture2D>(Path);
 
             // Load the font
-            _font = _content.Load<SpriteFont>(FontName);
+            Font = _content.Load<SpriteFont>(FontName);
 
             // Get the dimensions
             Vector2 dimensions = Vector2.Zero;
@@ -62,11 +62,11 @@ namespace PuissANT
                 dimensions.X += Texture.Width;
                 dimensions.Y += Texture.Height;
             }
-            dimensions.X += _font.MeasureString(Text).X;
+            dimensions.X += Font.MeasureString(Text).X;
             if (Texture != null)
-                dimensions.Y = Math.Max(Texture.Height, _font.MeasureString(Text).Y);
+                dimensions.Y = Math.Max(Texture.Height, Font.MeasureString(Text).Y);
             else
-                dimensions.Y = _font.MeasureString(Text).Y;
+                dimensions.Y = Font.MeasureString(Text).Y;
 
             // Get the source rect of the image
             if (SourceRect == Rectangle.Empty)
@@ -79,7 +79,7 @@ namespace PuissANT
             ScreenManager.Instance.SpriteBatch.Begin();
             if (Texture != null)
                 ScreenManager.Instance.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
-            ScreenManager.Instance.SpriteBatch.DrawString(_font, Text, Vector2.Zero, Color.White);
+            ScreenManager.Instance.SpriteBatch.DrawString(Font, Text, Vector2.Zero, Color.White);
             ScreenManager.Instance.SpriteBatch.End();
 
             // Store the render target and then reset it

@@ -35,9 +35,20 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Button.cs" />
+    <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\ActorManager.cs" />
+    <Compile Include="Actors\Ants\Ant.cs" />
+    <Compile Include="Actors\Ants\QueenAnt.cs" />
+    <Compile Include="Actors\Ants\SoldierAnt.cs" />
+    <Compile Include="Actors\Ants\WorkerAnt.cs" />
+    <Compile Include="Actors\Enemies\Beatle.cs" />
+    <Compile Include="Actors\Enemies\Enemy.cs" />
+    <Compile Include="Ui\Button.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="Pheromones\Pheromone.cs" />
+    <Compile Include="Pheromones\PheromoneManger.cs" />
+    <Compile Include="Pheromones\PheromoneType.cs" />
     <Compile Include="Ui\IPanel.cs" />
     <Compile Include="MouseManager.cs" />
     <Compile Include="Program.cs" />
@@ -55,6 +66,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\ui\commandBar.png" />
+    <Content Include="Content\ui\pherButtonActive.png" />
+    <Content Include="Content\ui\pherButtonInactive.png" />
+    <Content Include="Content\ui\pherButtonPressed.png" />
     <Content Include="Content\ui\statsBar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

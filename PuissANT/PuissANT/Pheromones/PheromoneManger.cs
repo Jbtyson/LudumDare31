@@ -13,7 +13,7 @@ namespace PuissANT.Pheromones
     {
         public static PheromoneManger Instance = new PheromoneManger();
 
-        private List<Pheromone> _activePheromones;
+        public List<Pheromone> _activePheromones;
 
         private PheromoneManger()
         {
