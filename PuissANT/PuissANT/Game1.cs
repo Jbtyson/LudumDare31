@@ -99,7 +99,7 @@ namespace PuissANT
             for (int i = 0; i < 20; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Vector2(r.Next(0, GameWindow.Width), (GameWindow.Height/5)),
+                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)),
                     antTexture);
                 ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)));
                 ActorManager.Instance.Add(ant);

@@ -83,9 +83,9 @@ namespace PuissANT.Actors.Ants
                     if(_closedList.All(t => t != tempPosition))
                     {
                         int value = (int)(Vector2.DistanceSquared(tempPosition, Target) * 100);
-                        value *= RAND.Next(1, 5);
+                        value *= RAND.Next(1, 3);
                         if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
-                            value *= 2;
+                            value *= RAND.Next(1, 3);
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition);
