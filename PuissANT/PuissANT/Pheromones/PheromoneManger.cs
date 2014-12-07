@@ -38,5 +38,9 @@ namespace PuissANT.Pheromones
         {
             return _activePheromones.Where(p => p.Type == type);
         }
+
+        public void HandlePheremoneButtonClick(PheromoneType type) {
+            Console.WriteLine(type.ToString() + " was clicked.");
+        }
     }
 }

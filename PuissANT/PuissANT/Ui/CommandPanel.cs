@@ -35,8 +35,8 @@ namespace PuissANT.Ui
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(240, 720);
-            ButtonDimensions = new Vector2(120, 30);
+            Dimensions = new Vector2(200, 720);
+            ButtonDimensions = new Vector2(160, 30);
             Image.Position = new Vector2(ScreenManager.Instance.ScreenSize.X - Dimensions.X, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
             PheremoneStartPosition = new Vector2(Image.Position.X + (Dimensions.X / 2) - (ButtonDimensions.X / 2), Image.Position.Y + 100);
             Image.LoadContent(_imagePath, _text);
