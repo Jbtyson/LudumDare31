@@ -12,11 +12,12 @@ namespace PuissANT.Actors.Ants
         private const long UPDATE_TIME = 10000;
 
         private long _updateTimer;
+        private PriorityQueue<Vector2> _openQueue; 
 
         public WorkerAnt(Vector2 position, Texture2D tex)
             : base(position, tex)
         {
-            
+            _openQueue = new PriorityQueue<Vector2>();
         }
 
         public override void Update(GameTime time)
@@ -43,8 +44,6 @@ namespace PuissANT.Actors.Ants
 
         private Vector2 getNextPosition()
         {
-            double bestValue = 0;
-            Vector2 bestPosition = Position;
             for (int i = -1; i < 2; i++)
             {
                 for (int j = -1; j < 2; j++)
@@ -61,16 +60,14 @@ namespace PuissANT.Actors.Ants
                     }
 
                     double value = Vector2.DistanceSquared(tempPosition, Target);
-                    if (value < bestValue)
-                    //if(value < bestValue || rand.Next() == 1)
+                    if (!_openQueue.ContainsValue(tempPosition))
                     {
-                        bestValue = value;
-                        bestPosition = tempPosition;
+                        _openQueue.Enqueue((int)value * 100, tempPosition);
                     }
                 }
             }
 
-            return bestPosition;
+            return _openQueue.Dequeue();
         }
     }
 }
