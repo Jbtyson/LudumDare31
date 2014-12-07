@@ -11,7 +11,7 @@ namespace PuissANT.Actors.Ants
     public class WorkerAnt : Ant
     {
         private static readonly Random RAND = new Random();
-        private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
+        private const short PASSIBLE_TERRIAN = 0x1;
         private const long UPDATE_TIME = 100000;
         private const short MEMORY = 500;
 
@@ -40,8 +40,10 @@ namespace PuissANT.Actors.Ants
                     {
                         for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < GameWindow.Height; y++)
                         {
-                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
-                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
+                            TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
+                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] = (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                            //World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
+                            //World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
                         }
                     }
                     
@@ -78,7 +80,7 @@ namespace PuissANT.Actors.Ants
                     if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if ((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable()) //Cannot go through this terrian anyway
                         continue;
                     
                     //if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
@@ -86,8 +88,12 @@ namespace PuissANT.Actors.Ants
                     {
                         int value = (int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100);
                         value *= RAND.Next(1, 3);
-                        if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
+                        if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
                             value *= RAND.Next(1, 3);
+                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                            value *= RAND.Next(1, 2);
+                        //else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                            //value *= RAND.Next(1, 1);
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition.ToPoint());

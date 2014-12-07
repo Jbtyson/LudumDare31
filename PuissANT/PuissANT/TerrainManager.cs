@@ -11,6 +11,9 @@ namespace PuissANT
     {
         private static readonly Color DEFAULT_COLOR = Color.Transparent;
         private static readonly Color DIRT_COLOR = Color.Black;
+        private static readonly Color HARD_DIRT_COLOR = Color.DarkSlateGray;
+        private static readonly Color CLAY_COLOR = Color.Gray;
+        private static readonly Color ROCK_COLOR = Color.LightGray;
 
         private static Rectangle _screenSize;
         private static Texture2D _texture;
@@ -57,9 +60,22 @@ namespace PuissANT
         public static void UpdatePixel(int x, int y, short info)
         {
             Color c = DEFAULT_COLOR;
-            if ((info & (short)TileInfo.GroundUndug) != 0)
+            TileInfo tile = (TileInfo)info;
+            if (tile.IsTileType(TileInfo.GroundSoft))
             {
                 c = DIRT_COLOR;
+            }
+            else if (tile.IsTileType(TileInfo.GroundMed))
+            {
+                c = HARD_DIRT_COLOR;
+            }
+            else if (tile.IsTileType(TileInfo.GroundHard))
+            {
+                c = CLAY_COLOR;
+            }
+            if (tile.IsTileType(TileInfo.GroundImp))
+            {
+                c = ROCK_COLOR;
             }
 
             UpdatePixel(x, y, c);
