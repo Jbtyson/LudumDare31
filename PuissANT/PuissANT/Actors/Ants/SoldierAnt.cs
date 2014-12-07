@@ -8,7 +8,7 @@ namespace PuissANT.Actors.Ants
 {
     public class SoldierAnt : Ant
     {
-        public SoldierAnt(Vector2 position, Texture2D tex)
+        public SoldierAnt(Point position, Texture2D tex)
             : base(position, tex)
         {
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Util;
 
 namespace PuissANT.Actors.Ants
 {
@@ -14,14 +15,14 @@ namespace PuissANT.Actors.Ants
         private const short MEMORY = 500;
 
         private long _updateTimer;
-        private readonly PriorityQueue<Vector2> _openQueue;
-        private readonly List<Vector2> _closedList; 
+        private readonly PriorityQueue<Point> _openQueue;
+        private readonly List<Point> _closedList; 
 
-        public WorkerAnt(Vector2 position, Texture2D tex)
+        public WorkerAnt(Point position, Texture2D tex)
             : base(position, tex)
         {
-            _openQueue = new PriorityQueue<Vector2>();
-            _closedList = new List<Vector2>();
+            _openQueue = new PriorityQueue<Point>();
+            _closedList = new List<Point>();
         }
 
         public override void Update(GameTime time)
@@ -58,7 +59,7 @@ namespace PuissANT.Actors.Ants
             
         }
 
-        private Vector2 getNextPosition()
+        private Point getNextPosition()
         {
             for (int i = -1; i < 2; i++)
             {
@@ -67,7 +68,7 @@ namespace PuissANT.Actors.Ants
                     if (i == 0 && j == 0) //This is our current position.
                         continue;
 
-                    Vector2 tempPosition = Position;
+                    Vector2 tempPosition = Position.ToVector2();
                     tempPosition.X += i;
                     tempPosition.Y += j;
                     if (tempPosition.X < 0 || tempPosition.X >= World.Instance.Width)
@@ -80,20 +81,20 @@ namespace PuissANT.Actors.Ants
                         continue;
                     
                     //if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
-                    if(_closedList.All(t => t != tempPosition))
+                    if(_closedList.All(t => t != tempPosition.ToPoint()))
                     {
-                        int value = (int)(Vector2.DistanceSquared(tempPosition, Target) * 100);
+                        int value = (int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100);
                         value *= RAND.Next(1, 3);
                         if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
                             value *= RAND.Next(1, 3);
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
-                        _openQueue.Enqueue(value, tempPosition);
+                        _openQueue.Enqueue(value, tempPosition.ToPoint());
                     }
                 }
             }
 
-            Vector2 v = _openQueue.Dequeue();
+            Point v = _openQueue.Dequeue();
             if(_closedList.Count == MEMORY)
                 _closedList.RemoveAt(0);
             _closedList.Add(v);

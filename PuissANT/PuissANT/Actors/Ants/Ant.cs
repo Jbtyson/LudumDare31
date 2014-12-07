@@ -7,14 +7,14 @@ namespace PuissANT.Actors.Ants
     {
         public double Health;
 
-        protected Vector2 Target;
+        protected Point Target;
 
-        protected Ant(Vector2 position, Texture2D tex)
+        protected Ant(Point position, Texture2D tex)
             : base(position, tex)
         {
         }
 
-        public void SetTarget(Vector2 t)
+        public void SetTarget(Point t)
         {
             Target = t;
         }

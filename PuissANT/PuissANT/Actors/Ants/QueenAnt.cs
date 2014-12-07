@@ -10,7 +10,7 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : Ant
     {
-        public QueenAnt(Vector2 position, Texture2D tex)
+        public QueenAnt(Point position, Texture2D tex)
             : base(position, tex)
         {
             
