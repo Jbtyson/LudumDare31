@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Pheromones;
 using PuissANT.Util;
 
 namespace PuissANT.Actors.Ants
@@ -31,7 +32,7 @@ namespace PuissANT.Actors.Ants
             if (_updateTimer >= UPDATE_TIME)
             {
                 _updateTimer = 0;
-                if (Position != Target)
+                if (Target != INVALID_POINT)
                 {
                     //Build tunnel
                     Position = getNextPosition();
@@ -43,17 +44,34 @@ namespace PuissANT.Actors.Ants
                             World.Instance[(int)Position.X + x, (int)Position.Y + y] &= ~((short)TileInfo.GroundUndug);
                         }
                     }
-                    
+
                     if (Position == Target)
                     {
                         _openQueue.Clear();
                         _closedList.Clear();
+                        Target = INVALID_POINT;
                     }
                 }
                 else
                 {
                     //Find new target
-
+                    IEnumerable<Point> points = World.Instance.GetPointsFor(TileInfo.Nest);
+                    double minDistance;
+                    if (points.Any())
+                    {
+                        Point bestPoint = points.First();
+                        minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.ToVector2());
+                        foreach (Point p in points)
+                        {
+                            double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.ToVector2());
+                            if (d2 < minDistance)
+                            {
+                                bestPoint = p;
+                                minDistance = d2;
+                            }
+                        }
+                        Target = bestPoint;
+                    }
                 }
             }
             

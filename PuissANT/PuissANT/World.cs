@@ -73,5 +73,26 @@ namespace PuissANT
         {
             this[x, y] &= (short)~((int)tile);
         }
+
+        public IEnumerable<Point> GetPointsFor(TileInfo info)
+        {
+            return GetPointsFor((short) info);
+        }
+
+        public IEnumerable<Point> GetPointsFor(short info)
+        {
+            List<Point> points = new List<Point>();
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    if ((this[x, y] & info) != 0)
+                    {
+                        points.Add(new Point(x, y));
+                    }
+                }
+            }
+            return points;
+        }
     }
 }
