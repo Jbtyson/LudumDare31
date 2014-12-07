@@ -13,6 +13,11 @@ namespace PuissANT.Ui
     {
         private List<IPanel> _panels;
 
+        public List<IPanel> PanelList
+        {
+            get { return _panels; }
+        }
+
         public UiManager()
         {
             _panels = new List<IPanel>();

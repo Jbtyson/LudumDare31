@@ -1,0 +1,7 @@
+﻿total game time
+total number of ants
+total number of each type of ant - later
+queens health
+food rate
+food remaining
+ant birthrate

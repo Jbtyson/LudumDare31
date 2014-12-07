@@ -20,7 +20,6 @@ namespace PuissANT.Actors.Ants
             IEnumerable<Pheromone> p = PheromoneManger.Instance.GetPheromoneOfType(PheromoneType.Attack);
             throw new System.NotImplementedException();
         }
-
         public override void Render(GameTime time, SpriteBatch batch)
         {
             throw new System.NotImplementedException();

@@ -11,6 +11,8 @@ namespace PuissANT.Ui
 {
     public interface IPanel
     {
+        Vector2 Dimensions { get; }
+
         void LoadContent();
         void UnloadContent();
         void Update(GameTime gameTime);

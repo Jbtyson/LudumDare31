@@ -11,24 +11,47 @@ namespace PuissANT.Ui
 {
     public class StatsPanel : IPanel
     {
-        Vector2 Dimensions;
-        Image Image;
+        public Vector2 Dimensions, ResourceDisplayStartPosition, ResourceDisplayOffset;
+        public Image Image;
+        public List<ResourceDisplay> Resources;
 
-        string imgPath, text;
+        private string _imagePath, _text;
 
         public StatsPanel()
         {
             Dimensions = Vector2.Zero;
+            ResourceDisplayStartPosition = Vector2.Zero;
+            ResourceDisplayOffset = Vector2.Zero;
             Image = new Image();
-            imgPath = "ui/statsBar";
-            text = "this is the stats bar";
+            Resources = new List<ResourceDisplay>();
+            _imagePath = "ui/statsBar";
+            _text = "this is the stats bar";
         }
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(1040, 120);
+            Dimensions = new Vector2(1080, 80);
+            ResourceDisplayStartPosition = new Vector2(22, 22);
+            ResourceDisplayOffset = new Vector2(192, 0);
             Image.Position = new Vector2(0, 0);
-            Image.LoadContent(imgPath, text);
+            Image.LoadContent(_imagePath, _text);
+
+            int numResources = 0;
+            Resources.Add(new ResourceDisplay("dirt"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));
+            Resources.Add(new ResourceDisplay("food"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));
+            Resources.Add(new ResourceDisplay("ants"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));
+            Resources.Add(new ResourceDisplay("birthsPerSec"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));
+            Resources.Add(new ResourceDisplay("queenHealth"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));
         }
 
         public void UnloadContent()
@@ -39,11 +62,20 @@ namespace PuissANT.Ui
         public void Update(GameTime gameTime)
         {
             Image.Update(gameTime);
+            foreach (ResourceDisplay r in Resources)
+                r.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             Image.Draw(spriteBatch);
+            foreach (ResourceDisplay r in Resources)
+                r.Draw(spriteBatch);
+        }
+
+        Vector2 IPanel.Dimensions
+        {
+            get { return Dimensions; }
         }
     }
 }

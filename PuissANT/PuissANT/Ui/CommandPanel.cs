@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +17,7 @@ namespace PuissANT.Ui
         public Image Image;
         public List<Button> Buttons;
 
-        private string imgPath, text;
+        private string _imagePath, _text;
         private int _buttonOffset = 20;
 
 
@@ -29,17 +29,17 @@ namespace PuissANT.Ui
             Image = new Image();
             Buttons = new List<Button>();
 
-            imgPath = "ui/commandBar";
-            text = "this is the command bar";
+            _imagePath = "ui/commandBar";
+            _text = "this is the command bar";
         }
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(240, 720);
-            ButtonDimensions = new Vector2(120, 30);
+            Dimensions = new Vector2(200, 720);
+            ButtonDimensions = new Vector2(160, 30);
             Image.Position = new Vector2(ScreenManager.Instance.ScreenSize.X - Dimensions.X, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
             PheremoneStartPosition = new Vector2(Image.Position.X + (Dimensions.X / 2) - (ButtonDimensions.X / 2), Image.Position.Y + 100);
-            Image.LoadContent(imgPath, text);
+            Image.LoadContent(_imagePath, _text);
 
             // Create Pheremone buttons
             Array array = Enum.GetValues(typeof(PheromoneType));
@@ -68,12 +68,13 @@ namespace PuissANT.Ui
             temp.LoadContent("ui/pherButtonInactive", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Pressed);
             b.ButtonClicked = HandleButtonClick;
+
             return b;
         }
 
         public void HandleButtonClick(string text)
         {
-            Console.WriteLine(text + " was clicked");
+            PheromoneManger.Instance.HandlePheremoneButtonClick(text);
         }
 
         public void UnloadContent()
@@ -93,6 +94,11 @@ namespace PuissANT.Ui
             Image.Draw(spriteBatch);
             foreach (Button b in Buttons)
                 b.Draw(spriteBatch);
+        }
+
+        Vector2 IPanel.Dimensions
+        {
+            get { return Dimensions; }
         }
     }
 }

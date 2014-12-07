@@ -6,6 +6,8 @@ namespace PuissANT.Actors
 {
     public abstract class Actor
     {
+        public static Rectangle GameWindow;
+
         public Vector2 Position { get; protected set; }
         public Texture2D Texure { get; protected set; }
 
@@ -24,7 +26,8 @@ namespace PuissANT.Actors
 
         public virtual void Render(GameTime time, SpriteBatch batch)
         {
-            batch.Draw(Texure, Position, Color.White);
+            Vector2 pos = new Vector2(GameWindow.X + Position.X, GameWindow.Y + Position.Y);
+            batch.Draw(Texure, pos, Color.White);
         }
     }
 }

@@ -33,8 +33,8 @@ namespace PuissANT.Actors.Ants
                 {
                     //Build tunnel
                     Position = getNextPosition();
-                    World.Instance[Position] |= (short)TileInfo.GroundUndug;
-                    World.Instance[Position] &= ~((short)TileInfo.GroundDug);
+                    World.Instance[Position] |= (short)TileInfo.GroundDug;
+                    World.Instance[Position] &= ~((short)TileInfo.GroundUndug);
                     if (Position == Target)
                     {
                         _openQueue.Clear();
@@ -59,12 +59,19 @@ namespace PuissANT.Actors.Ants
                     if (i == 0 && j == 0) //This is our current position.
                         continue;
 
-                    if ((World.Instance[(int)Position.X + i, (int)Position.Y + j] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
-                        continue;
-
                     Vector2 tempPosition = Position;
                     tempPosition.X += i;
                     tempPosition.Y += j;
+                    if (tempPosition.X < 0 || tempPosition.X >= World.Instance.Width)
+                        continue;
+
+                    if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
+                        continue;
+
+                    if ((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
+                        continue;
+
+                    
                     if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
                     {
                         int value = (int)(Vector2.DistanceSquared(tempPosition, Target) * 100);
