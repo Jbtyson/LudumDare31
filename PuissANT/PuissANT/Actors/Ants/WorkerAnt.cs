@@ -9,32 +9,41 @@ namespace PuissANT.Actors.Ants
     {
         private static readonly Random RAND = new Random();
         private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
+        private const long UPDATE_TIME = 10000;
+
+        private long _updateTimer;
+        private PriorityQueue<Vector2> _openQueue; 
 
         public WorkerAnt(Vector2 position, Texture2D tex)
             : base(position, tex)
         {
-            
+            _openQueue = new PriorityQueue<Vector2>();
         }
 
         public override void Update(GameTime time)
         {
-            //Build tunnel
-            if (Position != Target)
+            _updateTimer += time.ElapsedGameTime.Ticks;
+            if (_updateTimer >= UPDATE_TIME)
             {
-                Position = getNextPosition();
-                World.Instance[Position] |= (short)TileInfo.GroundUndug;
-                World.Instance[Position] &= ~((short) TileInfo.GroundDug);
+                _updateTimer = 0;
+                if (Position != Target)
+                {
+                    //Build tunnel
+                    Position = getNextPosition();
+                    World.Instance[Position] |= (short)TileInfo.GroundUndug;
+                    World.Instance[Position] &= ~((short)TileInfo.GroundDug);
+                }
+                else
+                {
+                    //Find new target
+
+                }
             }
-            else
-            {
-                //Find new target
-            }
+            
         }
 
         private Vector2 getNextPosition()
         {
-            double bestValue = 0;
-            Vector2 bestPosition = Position;
             for (int i = -1; i < 2; i++)
             {
                 for (int j = -1; j < 2; j++)
@@ -51,16 +60,14 @@ namespace PuissANT.Actors.Ants
                     }
 
                     double value = Vector2.DistanceSquared(tempPosition, Target);
-                    if (value < bestValue)
-                    //if(value < bestValue || rand.Next() == 1)
+                    if (!_openQueue.ContainsValue(tempPosition))
                     {
-                        bestValue = value;
-                        bestPosition = tempPosition;
+                        _openQueue.Enqueue((int)value * 100, tempPosition);
                     }
                 }
             }
 
-            return bestPosition;
+            return _openQueue.Dequeue();
         }
     }
 }

@@ -11,8 +11,8 @@ namespace PuissANT.Ui
 {
     public class StatsPanel : IPanel
     {
-        Vector2 Dimensions;
-        Image Image;
+        public Vector2 Dimensions;
+        public Image Image;
 
         string imgPath, text;
 
@@ -44,6 +44,11 @@ namespace PuissANT.Ui
         public void Draw(SpriteBatch spriteBatch)
         {
             Image.Draw(spriteBatch);
+        }
+
+        Vector2 IPanel.Dimensions
+        {
+            get { return Dimensions; }
         }
     }
 }

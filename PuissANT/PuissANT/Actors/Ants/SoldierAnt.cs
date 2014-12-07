@@ -8,7 +8,8 @@ namespace PuissANT.Actors.Ants
 {
     public class SoldierAnt : Ant
     {
-        public SoldierAnt()
+        public SoldierAnt(Vector2 position, Texture2D tex)
+            : base(position, tex)
         {
 
         }
@@ -19,8 +20,7 @@ namespace PuissANT.Actors.Ants
             IEnumerable<Pheromone> p = PheromoneManger.Instance.GetPheromoneOfType(PheromoneType.Attack);
             throw new System.NotImplementedException();
         }
-
-        public override void Render(GameTime time, SpriteBatch sp)
+        public override void Render(GameTime time, SpriteBatch batch)
         {
             throw new System.NotImplementedException();
         }

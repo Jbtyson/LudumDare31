@@ -18,11 +18,11 @@ namespace PuissANT
             _initialized = false;
         }
 
-        public static void Initialize(GraphicsDevice graphicsDevice, Rectangle screenSize)
+        public static void Initialize(GraphicsDevice graphicsDevice, Rectangle windowsize)
         {
-            _screenSize = screenSize;
-            _texture = new Texture2D(graphicsDevice, screenSize.Width, screenSize.Height);
-            _colorBuffer = new Color[screenSize.Width * screenSize.Height];
+            _screenSize = windowsize;// new Rectangle(0, 0, (int)ScreenManager.Instance.ScreenSize.X, (int)ScreenManager.Instance.ScreenSize.Y);
+            _texture = new Texture2D(graphicsDevice, _screenSize.Width, _screenSize.Height);
+            _colorBuffer = new Color[_texture.Width * _texture.Height];
             for (int i = 0; i < _colorBuffer.Length; i++)
                 _colorBuffer[i] = Color.SandyBrown;
             _initialized = true;
@@ -110,7 +110,7 @@ namespace PuissANT
         public static void DrawTerrain(SpriteBatch spriteBatch)
         {
             CheckIfInitialized();
-            spriteBatch.Draw(_texture, Vector2.Zero, Color.White);
+            spriteBatch.Draw(_texture, _screenSize, Color.White);
         }
     }
 }

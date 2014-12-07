@@ -94,5 +94,10 @@ namespace PuissANT.Ui
             foreach (Button b in Buttons)
                 b.Draw(spriteBatch);
         }
+
+        Vector2 IPanel.Dimensions
+        {
+            get { return Dimensions; }
+        }
     }
 }

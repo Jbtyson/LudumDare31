@@ -21,10 +21,10 @@ namespace PuissANT
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        public static Rectangle ScreenSize;
+
+        Rectangle GameWindow;
 
         Texture2D antTexture;
-        Rectangle antPosition;
 
         struct ant
         {
@@ -33,7 +33,7 @@ namespace PuissANT
             public Vector2 dest;
         }
 
-        ant[] ants = new ant[50];
+        ant[] ants = new ant[20];
 
         public Game1()
             : base()
@@ -56,28 +56,10 @@ namespace PuissANT
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            TerrainManager.Initialize(GraphicsDevice, ScreenSize);
-
-            antTexture = new Texture2D(GraphicsDevice, 2, 2);
-            Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
-            for (int i = 0; i < colorBuf.Length; i++)
-            {
-                colorBuf[i] = Color.Black;
-            }
-            antTexture.SetData<Color>(colorBuf);
-            antPosition = new Rectangle(ScreenSize.Width / 2, 120, antTexture.Width, antTexture.Height);
-
-            Random r = new Random();
-            for(int i = 0; i < ants.Length; i++)
-            {
-                ants[i].tex = antTexture;
-                ants[i].pos = new Vector2(r.Next(0, ScreenSize.Width), 120);
-                ants[i].dest = ants[i].pos; 
-            }
-
-            TerrainManager.ClearRectangle(new Rectangle(0, 0, ScreenSize.Width, 120));
-
+            
             World.Init(1280, 720);
+
+            base.Initialize();
         }
 
         /// <summary>
@@ -94,6 +76,32 @@ namespace PuissANT
             ScreenManager.Instance.GraphicsDevice = GraphicsDevice;
             ScreenManager.Instance.SpriteBatch = spriteBatch;
             ScreenManager.Instance.LoadContent(Content);
+            
+            int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
+            int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
+
+            GameWindow = new Rectangle(0, gameWindowVerticalOffset,
+                (int)ScreenManager.Instance.ScreenSize.X - gameWindowHorizontalOffset,
+                (int)ScreenManager.Instance.ScreenSize.Y - gameWindowVerticalOffset);
+
+            TerrainManager.Initialize(GraphicsDevice, GameWindow);
+            TerrainManager.ClearRectangle(new Rectangle(0, 0, GameWindow.Width, GameWindow.Height/5));
+
+            antTexture = new Texture2D(GraphicsDevice, 2, 2);
+            Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
+            for (int i = 0; i < colorBuf.Length; i++)
+            {
+                colorBuf[i] = Color.Black;
+            }
+            antTexture.SetData<Color>(colorBuf);
+
+            Random r = new Random();
+            for (int i = 0; i < ants.Length; i++)
+            {
+                ants[i].tex = antTexture;
+                ants[i].pos = new Vector2(r.Next(0, GameWindow.Width), GameWindow.Height/5);
+                ants[i].dest = ants[i].pos;
+            }
         }
 
         /// <summary>
@@ -122,8 +130,7 @@ namespace PuissANT
             for (int i = 0; i < ants.Length; i++)
             {
                 if(Vector2.DistanceSquared(ants[i].pos, ants[i].dest) < 20)
-                //if (ants[i].pos.X == ants[i].dest.X && ants[i].pos.Y == ants[i].dest.Y)
-                    ants[i].dest = new Vector2(r.Next(0, ScreenSize.Width-5), r.Next(120, ScreenSize.Height-5));
+                    ants[i].dest = new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1));
 
                 TerrainManager.ClearRectangle(ants[i].pos, ants[i].tex.Width, ants[i].tex.Height);
 
@@ -134,18 +141,6 @@ namespace PuissANT
                 slope.Normalize();
 
                 ants[i].pos += slope;
-                /*
-                if (Math.Abs(slopeX) > Math.Abs(slopeY))
-                    if (slopeX > 0)
-                        ants[i].pos += new Vector2(1, 0);
-                    else
-                        ants[i].pos += new Vector2(-1, 0);
-                else
-                    if (slopeY > 0)
-                        ants[i].pos += new Vector2(0, 1);
-                    else
-                        ants[i].pos += new Vector2(0, -1);
-                 * */
             }
 
             Point mouse = Mouse.GetState().Position;
@@ -173,15 +168,19 @@ namespace PuissANT
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            TerrainManager.DrawTerrain(spriteBatch);
-            for (int i = 0; i < ants.Length; i++)
-            {
-                spriteBatch.Draw(ants[i].tex, ants[i].pos, Color.White);
-            }
-
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
             ScreenManager.Instance.Draw(spriteBatch);
+
+            TerrainManager.DrawTerrain(spriteBatch);
+
+            Vector2 antDrawVector;
+            for (int i = 0; i < ants.Length; i++)
+            {
+                antDrawVector = new Vector2(ants[i].pos.X + GameWindow.Location.X,
+                    ants[i].pos.Y + GameWindow.Location.Y);
+                spriteBatch.Draw(ants[i].tex, antDrawVector, Color.White);
+            }
 
             spriteBatch.End();
 

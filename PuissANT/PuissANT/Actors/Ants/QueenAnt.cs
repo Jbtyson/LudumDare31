@@ -10,6 +10,12 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : Ant
     {
+        public QueenAnt(Vector2 position, Texture2D tex)
+            : base(position, tex)
+        {
+            
+        }
+
         public override void Update(GameTime time)
         {
             //Move towards nest pheromone.
@@ -18,7 +24,7 @@ namespace PuissANT.Actors.Ants
             throw new NotImplementedException();
         }
 
-        public override void Render(GameTime time, SpriteBatch sp)
+        public override void Render(GameTime time, SpriteBatch batch)
         {
             throw new NotImplementedException();
         }
