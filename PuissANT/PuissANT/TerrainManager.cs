@@ -24,7 +24,7 @@ namespace PuissANT
             _texture = new Texture2D(graphicsDevice, _screenSize.Width, _screenSize.Height);
             _colorBuffer = new Color[_texture.Width * _texture.Height];
             for (int i = 0; i < _colorBuffer.Length; i++)
-                _colorBuffer[i] = Color.SandyBrown;
+                _colorBuffer[i] = Color.Black;
             _initialized = true;
             SetTexture();
         }
@@ -58,33 +58,38 @@ namespace PuissANT
             UpdatePixel(x, y, color);
         }
 
-        public static void ClearRectangle(Rectangle bounds)
+        public static void ClearRectangle(Rectangle bounds, float percentTrim = 0.0f)
         {
             CheckIfInitialized();
-            UpdateRectangle(bounds, new Color[bounds.Width * bounds.Height]);
+            UpdateRectangle(bounds, new Color[bounds.Width * bounds.Height], percentTrim);
         }
 
-        public static void ClearRectangle(Vector2 position, int width, int height)
+        public static void ClearRectangle(Vector2 position, int width, int height, float percentTrim = 0.0f)
         {
-            ClearRectangle(new Rectangle((int)position.X, (int)position.Y, width, height));
+            ClearRectangle(new Rectangle((int)position.X, (int)position.Y, width, height), percentTrim);
         }
 
-        public static void UpdateRectangle(Rectangle bounds, Color[] pixelElements)
+
+        public static void UpdateRectangle(Rectangle bounds, Color[] pixelElements, float percentTrim = 0.0f)
         {
             CheckIfInitialized();
             Point startPosition = bounds.Location;
-            int rectWidth = bounds.Width;
-            int rectHeight = bounds.Height;
+            float widthTrim = bounds.Width * percentTrim;
+            float heightTrim = bounds.Height * percentTrim;
+            float rectWidth = bounds.Width;
+            float rectHeight = bounds.Height;
+
+
 
             int startIndex = (startPosition.Y * _screenSize.Width) + startPosition.X;
             int currentIndex = startIndex;
 
-            for(int y = 0; y < rectHeight; y++)
+            for(int y = (int)heightTrim; y < (int)(rectHeight - heightTrim); y++)
             {
                 currentIndex = startIndex + (y * _screenSize.Width);
-                for(int x = 0; x < rectWidth; x++)
+                for(int x = (int)widthTrim; x < (int)(rectWidth - widthTrim); x++)
                 {
-                    _colorBuffer[currentIndex + x] = pixelElements[(y * rectWidth) + x];
+                    _colorBuffer[currentIndex + x] = pixelElements[(y * (int)rectWidth) + x];
                 }
             }
         }
