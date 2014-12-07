@@ -49,6 +49,8 @@
     <Compile Include="Pheromones\PheromoneManger.cs" />
     <Compile Include="Pheromones\PheromoneType.cs" />
     <Compile Include="TileInfo.cs" />
+    <Compile Include="Ui\Button.cs" />
+    <Compile Include="Ui\CommandPanel.cs" />
     <Compile Include="Ui\IPanel.cs" />
     <Compile Include="MouseManager.cs" />
     <Compile Include="Program.cs" />

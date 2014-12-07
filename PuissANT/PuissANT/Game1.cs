@@ -30,6 +30,7 @@ namespace PuissANT
             graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.ScreenSize.X;
             graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.ScreenSize.Y;
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -76,6 +77,7 @@ namespace PuissANT
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
 
+            MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
             if(isGameOver())
                 //handleGameOver
@@ -102,7 +104,8 @@ namespace PuissANT
 
         private bool isGameOver()
         {
-            return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
+            //return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
+            return false;
         }
     }
 }

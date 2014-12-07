@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace PuissANT
+namespace PuissANT.Ui
 {
     public class UiManager
     {
@@ -17,6 +17,7 @@ namespace PuissANT
         {
             _panels = new List<IPanel>();
             _panels.Add(new StatsPanel());
+            _panels.Add(new CommandPanel());
         }
 
         public void LoadContent()

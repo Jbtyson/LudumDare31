@@ -7,11 +7,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace PuissANT
+namespace PuissANT.Ui
 {
     public class StatsPanel : IPanel
     {
-        Vector2 Dimensions, Position;
+        Vector2 Dimensions;
         Image Image;
 
         string imgPath, text;
@@ -19,16 +19,15 @@ namespace PuissANT
         public StatsPanel()
         {
             Dimensions = Vector2.Zero;
-            Position = Vector2.Zero;
             Image = new Image();
             imgPath = "ui/statsBar";
-            text = "this is a bar";
+            text = "this is the stats bar";
         }
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(800, 120);
-            Position = new Vector2(0, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
+            Dimensions = new Vector2(1040, 120);
+            Image.Position = new Vector2(0, 0);
             Image.LoadContent(imgPath, text);
         }
 
