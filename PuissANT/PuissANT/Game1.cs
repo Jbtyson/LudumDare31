@@ -21,6 +21,8 @@ namespace PuissANT
     /// </summary>
     public class Game1 : Game
     {
+        public static Game1 Instance;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -89,7 +91,7 @@ namespace PuissANT
                 }
             }
 
-            antTexture = Content.Load<Texture2D>("ants/fireant.png");
+            //antTexture = Content.Load<Texture2D>("ants/fireant.png");
             /*antTexture = new Texture2D(graphics.GraphicsDevice, 2, 2);
             Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
             for (int i = 0; i < colorBuf.Length; i++)
@@ -102,8 +104,7 @@ namespace PuissANT
             for (int i = 0; i < 20; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)).ToPoint(),
-                    antTexture);
+                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)).ToPoint());
                 ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
             }

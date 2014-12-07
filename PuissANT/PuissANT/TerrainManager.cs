@@ -97,7 +97,6 @@ namespace PuissANT
 
             int startIndex = (startPosition.Y * _screenSize.Width) + startPosition.X;
             int currentIndex = startIndex;
-
             for(int y = (int)heightTrim; y < (int)(rectHeight - heightTrim); y++)
             {
                 currentIndex = startIndex + (y * _screenSize.Width);
