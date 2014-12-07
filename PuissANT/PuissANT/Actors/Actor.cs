@@ -9,7 +9,7 @@ namespace PuissANT.Actors
         public static Rectangle GameWindow;
 
         public Vector2 Position { get; protected set; }
-        public Texture2D Texure { get; protected set; }
+        public Texture2D Texture { get; protected set; }
 
         public Actor(Vector2 position)
         {
@@ -19,7 +19,7 @@ namespace PuissANT.Actors
         public Actor(Vector2 position, Texture2D tex)
         {
             Position = position;
-            Texure = tex;
+            Texture = tex;
         }
 
         public abstract void Update(GameTime time);
@@ -27,7 +27,7 @@ namespace PuissANT.Actors
         public virtual void Render(GameTime time, SpriteBatch batch)
         {
             Vector2 pos = new Vector2(GameWindow.X + Position.X, GameWindow.Y + Position.Y);
-            batch.Draw(Texure, pos, Color.White);
+            batch.Draw(Texture, pos, Color.White);
         }
     }
 }

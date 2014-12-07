@@ -95,6 +95,11 @@ namespace PuissANT
             }
             antTexture.SetData<Color>(colorBuf);
 
+            Image temp = new Image();
+            temp.LoadContent("sprites/hierophANT", String.Empty);
+            QueenAnt queen = new QueenAnt(new Vector2(50, 100), temp.Texture); 
+            ActorManager.Instance.Add(queen);
+
             Random r = new Random();
             for (int i = 0; i < 20; i++)
             {
@@ -159,7 +164,7 @@ namespace PuissANT
                 a.Render(gameTime, spriteBatch);
             ScreenManager.Instance.Draw(spriteBatch);
 
-            TerrainManager.DrawTerrain(spriteBatch);
+            //TerrainManager.DrawTerrain(spriteBatch);
 
             spriteBatch.End();
 
