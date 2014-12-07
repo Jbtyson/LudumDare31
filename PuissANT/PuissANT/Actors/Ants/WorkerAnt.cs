@@ -9,6 +9,9 @@ namespace PuissANT.Actors.Ants
     {
         private static readonly Random RAND = new Random();
         private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
+        private const long UPDATE_TIME = 10000;
+
+        private long _updateTimer;
 
         public WorkerAnt(Vector2 position, Texture2D tex)
             : base(position, tex)
@@ -18,17 +21,24 @@ namespace PuissANT.Actors.Ants
 
         public override void Update(GameTime time)
         {
-            //Build tunnel
-            if (Position != Target)
+            _updateTimer += time.ElapsedGameTime.Ticks;
+            if (_updateTimer >= UPDATE_TIME)
             {
-                Position = getNextPosition();
-                World.Instance[Position] |= (short)TileInfo.GroundUndug;
-                World.Instance[Position] &= ~((short) TileInfo.GroundDug);
+                _updateTimer = 0;
+                if (Position != Target)
+                {
+                    //Build tunnel
+                    Position = getNextPosition();
+                    World.Instance[Position] |= (short)TileInfo.GroundUndug;
+                    World.Instance[Position] &= ~((short)TileInfo.GroundDug);
+                }
+                else
+                {
+                    //Find new target
+
+                }
             }
-            else
-            {
-                //Find new target
-            }
+            
         }
 
         private Vector2 getNextPosition()
