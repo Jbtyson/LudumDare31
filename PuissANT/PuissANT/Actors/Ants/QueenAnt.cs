@@ -10,8 +10,8 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : Ant
     {
-        public QueenAnt(Point position, Texture2D tex)
-            : base(position, tex)
+        public QueenAnt(Point position, int width, int height, Texture2D tex)
+            : base(position, width, height, tex)
         {
             
         }

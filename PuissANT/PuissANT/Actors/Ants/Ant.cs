@@ -9,8 +9,8 @@ namespace PuissANT.Actors.Ants
 
         protected Point Target;
 
-        protected Ant(Point position, Texture2D tex)
-            : base(position, tex)
+        protected Ant(Point position,int width, int heigth, Texture2D tex)
+            : base(position, width, heigth, tex)
         {
         }
 

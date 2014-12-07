@@ -9,8 +9,8 @@ namespace PuissANT.Actors.Enemies
 {
     public abstract class Enemy : Actor
     {
-        protected Enemy(Vector2 position, Texture2D tex)
-            : base(position, tex)
+        protected Enemy(Vector2 position, int width, int heigth, Texture2D tex)
+            : base(position, width, heigth, tex)
         {
             
         }

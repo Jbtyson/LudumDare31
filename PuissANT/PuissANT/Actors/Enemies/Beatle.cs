@@ -10,8 +10,8 @@ namespace PuissANT.Actors.Enemies
 {
     public class Beatle : Enemy
     {
-        public Beatle(Vector2 position, Texture2D tex)
-            : base(position, tex)
+        public Beatle(Vector2 position, int width, int height, Texture2D tex)
+            : base(position, width, height, tex)
         {
             
         }
