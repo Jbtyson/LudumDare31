@@ -11,8 +11,8 @@ namespace PuissANT
         //Type 0x1 - 0x8
         Sky = 0x1,
         Surface = 0x2,
-        Ground_Undug = 0x4,
-        Ground_Dug = 0x8,
+        GroundUndug = 0x4,
+        GroundDug = 0x8,
 
         //Objects 0x10 - 0x18
 

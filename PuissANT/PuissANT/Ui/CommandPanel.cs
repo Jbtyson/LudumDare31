@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -94,6 +94,11 @@ namespace PuissANT.Ui
             Image.Draw(spriteBatch);
             foreach (Button b in Buttons)
                 b.Draw(spriteBatch);
+        }
+
+        Vector2 IPanel.Dimensions
+        {
+            get { return Dimensions; }
         }
     }
 }

@@ -35,6 +35,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PriorityQueue.cs" />
+    <Compile Include="TerrainManager.cs" />
     <Compile Include="Actors\Actor.cs" />
     <Compile Include="Actors\ActorManager.cs" />
     <Compile Include="Actors\Ants\Ant.cs" />
