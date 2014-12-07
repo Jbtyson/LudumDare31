@@ -6,21 +6,25 @@ namespace PuissANT.Actors
 {
     public abstract class Actor
     {
-        public Point Position { get; private set; }
+        public Vector2 Position { get; protected set; }
+        public Texture2D Texure { get; protected set; }
 
-        public Actor()
-        {
-            Position = new Point();
-            ActorManager.Instance.Add(this);
-        }
-
-        public Actor(Point position)
+        public Actor(Vector2 position)
         {
             Position = position;
         }
 
+        public Actor(Vector2 position, Texture2D tex)
+        {
+            Position = position;
+            Texure = tex;
+        }
+
         public abstract void Update(GameTime time);
 
-        public abstract void Render(GameTime time);
+        public virtual void Render(GameTime time, SpriteBatch batch)
+        {
+            batch.Draw(Texure, Position, Color.White);
+        }
     }
 }

@@ -94,10 +94,12 @@ namespace PuissANT
             GraphicsDevice.Clear(Color.SaddleBrown);
 
             spriteBatch.Begin();
+
+            foreach (Actor a in ActorManager.Instance.GetAllActors())
+                a.Render(gameTime, spriteBatch);
             ScreenManager.Instance.Draw(spriteBatch);
+
             spriteBatch.End();
-            foreach(Actor a in ActorManager.Instance.GetAllActors())
-                a.Render(gameTime);
 
             base.Draw(gameTime);
         }
