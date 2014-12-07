@@ -12,7 +12,6 @@ namespace PuissANT.Actors.Ants
         protected Ant(Vector2 position, Texture2D tex)
             : base(position, tex)
         {
-            
         }
 
         public void SetTarget(Vector2 t)

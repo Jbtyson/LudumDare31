@@ -87,7 +87,7 @@ namespace PuissANT
                 }
             }
 
-            antTexture = new Texture2D(GraphicsDevice, 6, 9);
+            antTexture = new Texture2D(GraphicsDevice, 1, 1);
             Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
             for (int i = 0; i < colorBuf.Length; i++)
             {
@@ -154,12 +154,11 @@ namespace PuissANT
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            TerrainManager.DrawTerrain(spriteBatch);
+            
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
-            ScreenManager.Instance.Draw(spriteBatch);
-
             TerrainManager.DrawTerrain(spriteBatch);
+            ScreenManager.Instance.Draw(spriteBatch);
 
             spriteBatch.End();
 

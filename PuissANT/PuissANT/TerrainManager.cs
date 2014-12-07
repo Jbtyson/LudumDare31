@@ -9,7 +9,7 @@ namespace PuissANT
 {
     static class TerrainManager
     {
-        private static readonly Color DEFAULT_COLOR = Color.White;
+        private static readonly Color DEFAULT_COLOR = Color.Transparent;
         private static readonly Color DIRT_COLOR = Color.Black;
 
         private static Rectangle _screenSize;
