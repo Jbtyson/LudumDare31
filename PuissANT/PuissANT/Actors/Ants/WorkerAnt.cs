@@ -20,8 +20,8 @@ namespace PuissANT.Actors.Ants
         private readonly PriorityQueue<Point> _openQueue;
         private readonly List<Point> _closedList; 
 
-        public WorkerAnt(Point position)
-            : base(position, Game1.Instance.Content.Load<Texture2D>("ants/fireant.png"))
+        public WorkerAnt(Point position, int width, int height)
+            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
@@ -37,12 +37,12 @@ namespace PuissANT.Actors.Ants
                 {
                     //Build tunnel
                     Position = getNextPosition();
-                    for (int x = 0; x < this.Texture.Width && Position.X + x < GameWindow.Width; x++)
+                    for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < GameWindow.Width; x++)
                     {
-                        for (int y = 0; y < Texture.Height && Position.Y + y < GameWindow.Height; y++)
+                        for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < GameWindow.Height; y++)
                         {
-                            World.Instance[(int)Position.X + x, (int)Position.Y + y] |= (short)TileInfo.GroundDug;
-                            World.Instance[(int)Position.X + x, (int)Position.Y + y] &= ~((short)TileInfo.GroundUndug);
+                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
+                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
                         }
                     }
 
