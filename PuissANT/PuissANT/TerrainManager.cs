@@ -9,6 +9,9 @@ namespace PuissANT
 {
     static class TerrainManager
     {
+        private static readonly Color DEFAULT_COLOR = Color.Transparent;
+        private static readonly Color DIRT_COLOR = Color.Black;
+
         private static Rectangle _screenSize;
         private static Texture2D _texture;
         private static Color[] _colorBuffer;
@@ -51,6 +54,17 @@ namespace PuissANT
             _colorBuffer[index] = color;
         }
 
+        public static void UpdatePixel(int x, int y, short info)
+        {
+            Color c = DEFAULT_COLOR;
+            if ((info & (short)TileInfo.GroundUndug) != 0)
+            {
+                c = DIRT_COLOR;
+            }
+
+            UpdatePixel(x, y, c);
+        }
+
         public static void UpdatePixel(int x, int y, float r, float g, float b, float a)
         {
             CheckIfInitialized();
@@ -83,7 +97,6 @@ namespace PuissANT
 
             int startIndex = (startPosition.Y * _screenSize.Width) + startPosition.X;
             int currentIndex = startIndex;
-
             for(int y = (int)heightTrim; y < (int)(rectHeight - heightTrim); y++)
             {
                 currentIndex = startIndex + (y * _screenSize.Width);

@@ -9,6 +9,14 @@ namespace PuissANT
     {
         private readonly LinkedList<Tuple<int, T>> _queue;
 
+        public int Count
+        {
+            get
+            {
+                return _queue.Count;
+            }
+        }
+
         public PriorityQueue()
         {
             _queue = new LinkedList<Tuple<int, T>>();
@@ -16,18 +24,32 @@ namespace PuissANT
         
         public void Enqueue(int priorty, T value)
         {
-            LinkedListNode<Tuple<int, T>> node = _queue.First; 
-            while (node.Next != null || priorty >= node.Value.Item1)
+            if (IsEmpty())
             {
-                node = node.Next;
+                _queue.AddFirst(new Tuple<int, T>(priorty, value));
             }
-            _queue.AddAfter(node, new Tuple<int, T>(priorty, value));
+            else
+            {
+                LinkedListNode<Tuple<int, T>> node = _queue.First;
+                while (node.Next != null && priorty >= node.Value.Item1)
+                {
+                    node = node.Next;
+                }
+                _queue.AddAfter(node, new Tuple<int, T>(priorty, value));
+            }
         }
 
         public T Dequeue()
         {
             LinkedListNode<Tuple<int, T>> node = _queue.First;
             _queue.RemoveFirst();
+            return node.Value.Item2;
+        }
+
+        public T DequeueLast()
+        {
+            LinkedListNode<Tuple<int, T>> node = _queue.Last;
+            _queue.RemoveLast();
             return node.Value.Item2;
         }
 
@@ -44,6 +66,11 @@ namespace PuissANT
         public bool ContainsValue(T value)
         {
             return _queue.Any(n => n.Item2.Equals(value));
+        }
+
+        public bool IsEmpty()
+        {
+            return _queue.First == null;
         }
     }
 }
