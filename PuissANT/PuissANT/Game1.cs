@@ -94,7 +94,7 @@ namespace PuissANT
             Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
             for (int i = 0; i < colorBuf.Length; i++)
             {
-                colorBuf[i] = Color.Blue;
+                colorBuf[i] = Color.Yellow;
             }
             antTexture.SetData<Color>(colorBuf);
 
@@ -172,7 +172,7 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Brown);
             TerrainManager.SetTexture();
 
             // TODO: Add your drawing code here
