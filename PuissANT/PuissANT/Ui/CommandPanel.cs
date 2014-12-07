@@ -74,7 +74,7 @@ namespace PuissANT.Ui
 
         public void HandleButtonClick(string text)
         {
-            Console.WriteLine(text + " was clicked");
+            PheromoneManger.Instance.HandlePheremoneButtonClick(text);
         }
 
         public void UnloadContent()

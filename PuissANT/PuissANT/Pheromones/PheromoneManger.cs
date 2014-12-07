@@ -39,7 +39,17 @@ namespace PuissANT.Pheromones
             return _activePheromones.Where(p => p.Type == type);
         }
 
-        public void HandlePheremoneButtonClick(PheromoneType type) {
+        public void HandlePheremoneButtonClick(string text) {
+            PheromoneType type = PheromoneType.Attack;
+            PheromoneType[] array = (PheromoneType[])Enum.GetValues(typeof(PheromoneType));
+            foreach (PheromoneType t in array)
+            {
+                if (text == t.ToString())
+                {
+                    type = t;
+                    break;
+                }
+            }
             Console.WriteLine(type.ToString() + " was clicked.");
         }
     }
