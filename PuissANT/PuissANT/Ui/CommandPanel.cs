@@ -36,7 +36,7 @@ namespace PuissANT.Ui
         public void LoadContent()
         {
             Dimensions = new Vector2(200, 720);
-            ButtonDimensions = new Vector2(160, 30);
+            ButtonDimensions = new Vector2(150, 54);
             Image.Position = new Vector2(ScreenManager.Instance.ScreenSize.X - Dimensions.X, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
             PheremoneStartPosition = new Vector2(Image.Position.X + (Dimensions.X / 2) - (ButtonDimensions.X / 2), Image.Position.Y + 100);
             Image.LoadContent(_imagePath, _text);
@@ -49,6 +49,7 @@ namespace PuissANT.Ui
             }
         }
 
+
         public Button CreateButton(string text)
         {
             Button b = new Button();
@@ -56,16 +57,16 @@ namespace PuissANT.Ui
                 (int)ButtonDimensions.X, (int)ButtonDimensions.Y);
             // Create the text
             b.Font = Image.Font;
-            b.ButtonText = text;
+            b.ButtonText = String.Empty;
             // Set the image textures...this is retarded, fix later
             Image temp = new Image();
-            temp.LoadContent("ui/pherButtonActive", String.Empty);
+            temp.LoadContent("ui/" + text + "PherActive", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Neutral);
             temp = new Image();
-            temp.LoadContent("ui/pherButtonPressed", String.Empty);
+            temp.LoadContent("ui/" + text + "PherPressed", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Over);
             temp = new Image();
-            temp.LoadContent("ui/pherButtonInactive", String.Empty);
+            temp.LoadContent("ui/" + text + "PherInactive", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Pressed);
             b.ButtonClicked = HandleButtonClick;
 
