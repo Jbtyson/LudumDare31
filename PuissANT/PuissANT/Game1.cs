@@ -172,7 +172,7 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Brown);
+            GraphicsDevice.Clear(new Color(70,70,70,255));
             TerrainManager.SetTexture();
 
             // TODO: Add your drawing code here
