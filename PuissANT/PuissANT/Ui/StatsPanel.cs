@@ -30,8 +30,8 @@ namespace PuissANT.Ui
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(1040, 120);
-            ResourceDisplayStartPosition = new Vector2(64, 44);
+            Dimensions = new Vector2(1040, 80);
+            ResourceDisplayStartPosition = new Vector2(22, 22);
             ResourceDisplayOffset = new Vector2(192, 0);
             Image.Position = new Vector2(0, 0);
             Image.LoadContent(_imagePath, _text);
