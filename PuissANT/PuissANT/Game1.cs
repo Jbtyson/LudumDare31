@@ -1,12 +1,15 @@
 ﻿#region Using Statements
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.GamerServices;
+using PuissANT.Actors;
+using PuissANT.Actors.Ants;
 #endregion
 
 namespace PuissANT
@@ -32,21 +35,16 @@ namespace PuissANT
 
         ant[] ants = new ant[50];
 
-
         public Game1()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.IsFullScreen = false;
-
-            ScreenSize = new Rectangle(0, 0, 1280, 720);
-
-            graphics.PreferredBackBufferWidth = ScreenSize.Width;
-            graphics.PreferredBackBufferHeight = ScreenSize.Height;
-
-            IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.ScreenSize.X;
+            graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.ScreenSize.Y;
 
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace PuissANT
 
             TerrainManager.ClearRectangle(new Rectangle(0, 0, ScreenSize.Width, 120));
 
-            base.Initialize();
+            World.Init(1280, 720);
         }
 
         /// <summary>
@@ -92,6 +90,10 @@ namespace PuissANT
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
+            ScreenManager.Instance.GraphicsDevice = GraphicsDevice;
+            ScreenManager.Instance.SpriteBatch = spriteBatch;
+            ScreenManager.Instance.LoadContent(Content);
         }
 
         /// <summary>
@@ -101,6 +103,8 @@ namespace PuissANT
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+
+            ScreenManager.Instance.UnloadContent();
         }
 
         /// <summary>
@@ -112,7 +116,9 @@ namespace PuissANT
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
             Random r = new Random();
+
             for (int i = 0; i < ants.Length; i++)
             {
                 if(Vector2.DistanceSquared(ants[i].pos, ants[i].dest) < 20)
@@ -145,6 +151,14 @@ namespace PuissANT
             Point mouse = Mouse.GetState().Position;
             Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
 
+            foreach (Actor a in ActorManager.Instance.GetAllActors())
+                a.Update(gameTime);
+
+            MouseManager.Instance.Update(gameTime);
+            ScreenManager.Instance.Update(gameTime);
+            if(isGameOver())
+                //handleGameOver
+
             base.Update(gameTime);
         }
 
@@ -164,8 +178,20 @@ namespace PuissANT
             {
                 spriteBatch.Draw(ants[i].tex, ants[i].pos, Color.White);
             }
+
+            foreach (Actor a in ActorManager.Instance.GetAllActors())
+                a.Render(gameTime, spriteBatch);
+            ScreenManager.Instance.Draw(spriteBatch);
+
             spriteBatch.End();
+
             base.Draw(gameTime);
+        }
+
+        private bool isGameOver()
+        {
+            //return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
+            return false;
         }
     }
 }
