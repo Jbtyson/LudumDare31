@@ -13,6 +13,14 @@ namespace PuissANT.Pheromones
     {
         public static PheromoneManger Instance = new PheromoneManger();
 
+        /// <summary>
+        /// The pheromone type selected by the mouse.
+        /// </summary>
+        public TileInfo MousePheromoneType;
+
+        /// <summary>
+        /// Pheromones active on the map.
+        /// </summary>
         public List<Pheromone> _activePheromones;
 
         private PheromoneManger()
@@ -20,13 +28,14 @@ namespace PuissANT.Pheromones
             _activePheromones = new List<Pheromone>();
         }
 
-        public void Add(PheromoneType type, Point poistion)
+        public void Add(TileInfo type, Point poistion)
         {
             _activePheromones.Add(new Pheromone()
             {
                 Type = type,
                 Position = poistion
             });
+            World.Instance.Set(poistion.X, poistion.Y, type);
         }
 
         public void Remove(Pheromone p)
@@ -34,15 +43,26 @@ namespace PuissANT.Pheromones
             _activePheromones.Remove(p);
         }
 
-        public IEnumerable<Pheromone> GetPheromoneOfType(PheromoneType type)
+        public IEnumerable<Pheromone> GetPheromoneOfType(TileInfo type)
         {
             return _activePheromones.Where(p => p.Type == type);
         }
 
+        public Pheromone GetPheromoneAt(Point p)
+        {
+            return _activePheromones.FirstOrDefault(pheromone => pheromone.Position == p);
+        }
+
+        public bool CanSetPheromone(TileInfo type)
+        {
+            //Evalute if ther are enough resources to set the given type.
+            return true;
+        }
+
         public void HandlePheremoneButtonClick(string text) {
-            PheromoneType type = PheromoneType.Attack;
-            PheromoneType[] array = (PheromoneType[])Enum.GetValues(typeof(PheromoneType));
-            foreach (PheromoneType t in array)
+            TileInfo type = TileInfo.Attack;
+            TileInfo[] array = TileInfoSets.PheromoneTypes;
+            foreach (TileInfo t in array)
             {
                 if (text == t.ToString())
                 {
@@ -50,7 +70,8 @@ namespace PuissANT.Pheromones
                     break;
                 }
             }
-            Console.WriteLine(type.ToString() + " was clicked.");
+
+            MousePheromoneType = type;
         }
     }
 }

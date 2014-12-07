@@ -8,25 +8,12 @@ using PuissANT.Pheromones;
 
 namespace PuissANT.Actors.Ants
 {
-    public class QueenAnt : Ant
+    public class QueenAnt : WorkerAnt
     {
-        public QueenAnt(Point position, int width, int height, Texture2D tex)
-            : base(position, width, height, tex)
+        public QueenAnt(Point position, int width, int height)
+            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("ants/fireant.png"))
         {
             
-        }
-
-        public override void Update(GameTime time)
-        {
-            //Move towards nest pheromone.
-            Pheromone p = PheromoneManger.Instance.GetPheromoneOfType(PheromoneType.Nest).FirstOrDefault();
-            //After that do nothing.
-            throw new NotImplementedException();
-        }
-
-        public override void Render(GameTime time, SpriteBatch batch)
-        {
-            throw new NotImplementedException();
         }
     }
 }

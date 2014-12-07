@@ -8,7 +8,7 @@ namespace PuissANT.Pheromones
 {
     public struct Pheromone
     {
-        public PheromoneType Type;
+        public TileInfo Type;
         public Point Position;
         public double Intensity;
     }

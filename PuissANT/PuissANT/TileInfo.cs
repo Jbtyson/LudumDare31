@@ -22,8 +22,12 @@ namespace PuissANT
         Attack = 0x21,
     }
 
-    public static class TileInfoExtentions
+    public static class TileInfoSets
     {
-        
+        public static TileInfo[] PheromoneTypes = new TileInfo[]
+        {
+            TileInfo.Nest, 
+            TileInfo.Attack
+        };
     }
 }

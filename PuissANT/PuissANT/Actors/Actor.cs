@@ -7,8 +7,6 @@ namespace PuissANT.Actors
 {
     public abstract class Actor
     {
-        public static Rectangle GameWindow;
-
         protected Point _position;
         protected Rectangle _hitbox;
         protected Texture2D _texture;
@@ -38,7 +36,7 @@ namespace PuissANT.Actors
 
         public virtual void Render(GameTime time, SpriteBatch batch)
         {
-            Vector2 pos = new Vector2(GameWindow.X + Position.X, GameWindow.Y + Position.Y);
+            Vector2 pos = new Vector2(ScreenManager.Instance.GameWindow.X + Position.X, ScreenManager.Instance.GameWindow.Y + Position.Y);
             batch.Draw(_texture, pos, Color.White);
         }
 

@@ -46,7 +46,7 @@ namespace PuissANT
             Text = text;
 
             // Get the content
-            _content = ScreenManager.Instance.Content;
+            _content = Game1.Instance.Content;
 
             // Load the texture
             if (Path != string.Empty)

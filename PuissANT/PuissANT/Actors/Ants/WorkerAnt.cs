@@ -18,10 +18,18 @@ namespace PuissANT.Actors.Ants
 
         private long _updateTimer;
         private readonly PriorityQueue<Point> _openQueue;
-        private readonly List<Point> _closedList; 
+        private readonly List<Point> _closedList;
 
         public WorkerAnt(Point position, int width, int height)
             : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("ants/fireant.png"))
+        {
+            _openQueue = new PriorityQueue<Point>();
+            _closedList = new List<Point>();
+            Target = INVALID_POINT;
+        }
+
+        protected WorkerAnt(Point position, int width, int height, Texture2D tex)
+            : base(position, width, height, tex)
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
@@ -37,9 +45,9 @@ namespace PuissANT.Actors.Ants
                 {
                     //Build tunnel
                     Position = getNextPosition();
-                    for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < GameWindow.Width; x++)
+                    for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
                     {
-                        for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < GameWindow.Height; y++)
+                        for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
                         {
                             World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
                             World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
@@ -50,28 +58,30 @@ namespace PuissANT.Actors.Ants
                     {
                         _openQueue.Clear();
                         _closedList.Clear();
+                        ;
+                        PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
                         Target = INVALID_POINT;
                     }
                 }
                 else
                 {
                     //Find new target
-                    IEnumerable<Point> points = World.Instance.GetPointsFor(TileInfo.Nest);
+                    IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType(TileInfo.Nest);
                     double minDistance;
                     if (points.Any())
                     {
-                        Point bestPoint = points.First();
-                        minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.ToVector2());
-                        foreach (Point p in points)
+                        Pheromone bestPoint = points.First();
+                        minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
+                        foreach (Pheromone p in points)
                         {
-                            double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.ToVector2());
+                            double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
                             if (d2 < minDistance)
                             {
                                 bestPoint = p;
                                 minDistance = d2;
                             }
                         }
-                        Target = bestPoint;
+                        Target = bestPoint.Position;
                     }
                 }
             }

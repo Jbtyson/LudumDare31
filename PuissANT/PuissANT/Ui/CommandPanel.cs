@@ -42,7 +42,7 @@ namespace PuissANT.Ui
             Image.LoadContent(_imagePath, _text);
 
             // Create Pheremone buttons
-            Array array = Enum.GetValues(typeof(PheromoneType));
+            TileInfo[] array = TileInfoSets.PheromoneTypes;
             foreach (var v in array)
             {
                 Buttons.Add(CreateButton(v.ToString()));

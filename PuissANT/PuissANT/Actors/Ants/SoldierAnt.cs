@@ -17,7 +17,7 @@ namespace PuissANT.Actors.Ants
         public override void Update(GameTime time)
         {
             //Move towards attack pheremone
-            IEnumerable<Pheromone> p = PheromoneManger.Instance.GetPheromoneOfType(PheromoneType.Attack);
+            IEnumerable<Pheromone> p = PheromoneManger.Instance.GetPheromoneOfType(TileInfo.Attack);
             throw new System.NotImplementedException();
         }
         public override void Render(GameTime time, SpriteBatch batch)
