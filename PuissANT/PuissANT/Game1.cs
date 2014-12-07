@@ -41,6 +41,7 @@ namespace PuissANT
         protected override void Initialize()
         {
             base.Initialize();
+            World.Init(1280, 720);
         }
 
         /// <summary>
