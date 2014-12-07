@@ -14,5 +14,10 @@ namespace PuissANT.Actors.Ants
         {
             
         }
+
+        public void SetTarget(Vector2 t)
+        {
+            Target = t;
+        }
     }
 }
