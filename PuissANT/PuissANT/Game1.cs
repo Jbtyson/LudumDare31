@@ -56,6 +56,7 @@ namespace PuissANT
             ScreenManager.Instance.GraphicsDevice = GraphicsDevice;
             ScreenManager.Instance.SpriteBatch = spriteBatch;
             ScreenManager.Instance.LoadContent(Content);
+            ResourceManager.Instance.LoadContent();
         }
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace PuissANT
         protected override void UnloadContent()
         {
             ScreenManager.Instance.UnloadContent();
+            ResourceManager.Instance.UnloadContent();
         }
 
         /// <summary>
@@ -79,6 +81,7 @@ namespace PuissANT
 
             MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
+            ResourceManager.Instance.Update(gameTime);
             if(isGameOver())
                 //handleGameOver
 

@@ -11,6 +11,8 @@ namespace PuissANT
     {
         public static World Instance;
 
+        public ResourceManager Resources;
+
         public static void Init(short height, short width)
         {
             Instance = new World(height, width);

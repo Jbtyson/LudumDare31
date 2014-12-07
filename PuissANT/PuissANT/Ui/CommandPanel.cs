@@ -17,7 +17,7 @@ namespace PuissANT.Ui
         public Image Image;
         public List<Button> Buttons;
 
-        private string imgPath, text;
+        private string _imagePath, _text;
         private int _buttonOffset = 20;
 
 
@@ -29,8 +29,8 @@ namespace PuissANT.Ui
             Image = new Image();
             Buttons = new List<Button>();
 
-            imgPath = "ui/commandBar";
-            text = "this is the command bar";
+            _imagePath = "ui/commandBar";
+            _text = "this is the command bar";
         }
 
         public void LoadContent()
@@ -39,7 +39,7 @@ namespace PuissANT.Ui
             ButtonDimensions = new Vector2(120, 30);
             Image.Position = new Vector2(ScreenManager.Instance.ScreenSize.X - Dimensions.X, ScreenManager.Instance.ScreenSize.Y - Dimensions.Y);
             PheremoneStartPosition = new Vector2(Image.Position.X + (Dimensions.X / 2) - (ButtonDimensions.X / 2), Image.Position.Y + 100);
-            Image.LoadContent(imgPath, text);
+            Image.LoadContent(_imagePath, _text);
 
             // Create Pheremone buttons
             Array array = Enum.GetValues(typeof(PheromoneType));
@@ -68,6 +68,7 @@ namespace PuissANT.Ui
             temp.LoadContent("ui/pherButtonInactive", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Pressed);
             b.ButtonClicked = HandleButtonClick;
+
             return b;
         }
 

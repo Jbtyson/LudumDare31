@@ -43,22 +43,23 @@
     <Compile Include="Actors\Ants\WorkerAnt.cs" />
     <Compile Include="Actors\Enemies\Beatle.cs" />
     <Compile Include="Actors\Enemies\Enemy.cs" />
+    <Compile Include="Ui\Button.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="World.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="Pheromones\Pheromone.cs" />
     <Compile Include="Pheromones\PheromoneManger.cs" />
     <Compile Include="Pheromones\PheromoneType.cs" />
-    <Compile Include="TileInfo.cs" />
-    <Compile Include="Ui\Button.cs" />
-    <Compile Include="Ui\CommandPanel.cs" />
     <Compile Include="Ui\IPanel.cs" />
     <Compile Include="MouseManager.cs" />
+    <Compile Include="ResourceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenManager.cs" />
     <Compile Include="Ui\StatsPanel.cs" />
+    <Compile Include="Ui\CommandPanel.cs" />
     <Compile Include="Ui\UiManager.cs" />
-    <Compile Include="World.cs" />
+    <Compile Include="Ui\ResourceDisplay.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -68,11 +69,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\ui\commandBar.png" />
+    <Content Include="Content\ui\pherButtonActive.png" />
+    <Content Include="Content\ui\pherButtonInactive.png" />
+    <Content Include="Content\ui\pherButtonPressed.png" />
     <Content Include="Content\ui\statsBar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="functions.txt" />
     <Content Include="Icon.ico" />
+    <Content Include="stats.txt" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
