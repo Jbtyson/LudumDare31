@@ -18,7 +18,7 @@ namespace PuissANT.Actors.Ants
 
         private long _updateTimer;
         private readonly PriorityQueue<Point> _openQueue;
-        private readonly List<Point> _closedList;
+        private readonly List<Point> _closedList; 
 
         public WorkerAnt(Point position, int width, int height)
             : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
@@ -135,6 +135,8 @@ namespace PuissANT.Actors.Ants
                         value *= RAND.Next(1, 3);
                         if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
                             value *= RAND.Next(1, 3);
+                        if (tempPosition.ToPoint() == Target)
+                            value = 0;
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition.ToPoint());
