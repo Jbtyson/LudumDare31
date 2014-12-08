@@ -1,8 +1,11 @@
 ﻿#region Using Statements
 using System;
+using System.IO;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
 using PuissANT.Pheromones;
@@ -26,7 +29,7 @@ namespace PuissANT
         Rectangle GameWindow;
 
         Texture2D antTexture;
-
+        
         bool queenPlaced = false;
         int titleOffsetX;
         int titleOffsetY;
@@ -79,6 +82,15 @@ namespace PuissANT
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
             
+            // Load And Play Music.
+            try
+            {
+                SongCollection playlist = new SongCollection();
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - BC"));
+                MediaPlayer.Play(playlist);
+            }
+            catch (Exception e) { }
+
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
             //int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
