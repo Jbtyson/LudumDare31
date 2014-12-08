@@ -11,8 +11,10 @@ namespace PuissANT.Actors.Ants
 {
     public class WorkerAnt : Ant
     {
+        private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
+
         private static readonly Random RAND = new Random();
-        private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
+        private const short PASSIBLE_TERRIAN = 0x1;
         private const long UPDATE_TIME = 100000;
         private const short MEMORY = 500;
 
@@ -20,8 +22,8 @@ namespace PuissANT.Actors.Ants
         private readonly PriorityQueue<Point> _openQueue;
         private readonly List<Point> _closedList; 
 
-        public WorkerAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
+        public WorkerAnt(Point position)
+            : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
@@ -65,12 +67,13 @@ namespace PuissANT.Actors.Ants
         protected bool MoveTowardsTarget()
         {
             Position = getNextPosition();
-            for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
+            for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
             {
                 for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
                 {
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
+                    TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
+                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
+                        (short)tile.OverwriteTileValue(TileInfo.GroundDug);
                 }
             }
 
@@ -79,12 +82,13 @@ namespace PuissANT.Actors.Ants
 
         private Point GetNewTarget()
         {
-            return GetNewTarget(TileInfo.Nest);
+            return GetNewTarget<NestPheromone>();
         }
 
-        protected Point GetNewTarget(TileInfo type)
+        protected Point GetNewTarget<T>()
+            where T : Pheromone
         {
-            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType(type);
+            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType<T>();
             double minDistance;
             if (points.Any())
             {
@@ -125,16 +129,19 @@ namespace PuissANT.Actors.Ants
                     if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if ((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable(PASSABLE_TILES)) //Cannot go through this terrian anyway
                         continue;
                     
-                    //if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
                     if(_closedList.All(t => t != tempPosition.ToPoint()))
                     {
-                        int value = (int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100);
+                        int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100))/100;
                         value *= RAND.Next(1, 3);
-                        if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
+                        if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
                             value *= RAND.Next(1, 3);
+                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                            value *= RAND.Next(1, 2);
+                        //else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                            //value *= RAND.Next(1, 1);
                         if (tempPosition.ToPoint() == Target)
                             value = 0;
                         if (_openQueue.Count == MEMORY)

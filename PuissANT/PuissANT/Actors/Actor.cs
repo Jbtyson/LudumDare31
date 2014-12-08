@@ -7,6 +7,8 @@ namespace PuissANT.Actors
 {
     public abstract class Actor
     {
+        protected static TileInfo[] PASSABLE_TILES;
+
         protected Point _position;
         protected Rectangle _hitbox;
         protected Texture2D _texture;

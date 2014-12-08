@@ -18,10 +18,11 @@ namespace PuissANT.Actors.Ants
         private float aniTimer;
         private int frame;
 
+        private float _angle;
         private bool _nestFound;
 
-        public QueenAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
+        public QueenAnt(Point position)
+            : base(position, 6, 6, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
         {
             aniTimer = 0;
             pathTimer = 0;
@@ -30,6 +31,7 @@ namespace PuissANT.Actors.Ants
 
         public override void Update(GameTime time)
         {
+            Point oldPosition = _position;
             
             aniTimer += time.ElapsedGameTime.Milliseconds;
             if (aniTimer > ANI_UPDATE_TIME)
@@ -37,6 +39,9 @@ namespace PuissANT.Actors.Ants
                 frame = ++frame % 3;
                 _drawingWindow = new Rectangle(0, frame*20, 30, 20);
                 aniTimer = 0;
+            // calculate angle ant is facing
+            Vector2 facing = new Vector2(_position.X - oldPosition.X, _position.Y - oldPosition.Y);
+            if (facing != Vector2.Zero) _angle = MathHelper.PiOver2 + (float)Math.Atan2(facing.Y, facing.X);
             }
 
             if (_nestFound) return;
@@ -49,12 +54,20 @@ namespace PuissANT.Actors.Ants
                 if (MoveTowardsTarget())
                 {
                     _nestFound = true;
+                    NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
+                    p.Reached();
                 }
             }
             else
             {
-                Target = GetNewTarget(TileInfo.Nest);
+                Target = GetNewTarget<NestPheromone>();
             }
+
+        }
+
+        public override void Render(GameTime time, SpriteBatch batch)
+        {
+            batch.Draw(_texture, _texturePoint, _drawingWindow, Color.White, _angle, new Vector2(15,10), 1, SpriteEffects.None, 0);
         }
     }
 }
