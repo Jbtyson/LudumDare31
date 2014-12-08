@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Actors;
+using PuissANT.Actors.Ants;
 
 namespace PuissANT.Pheromones
 {
@@ -11,6 +14,9 @@ namespace PuissANT.Pheromones
     /// </summary>
     public class PheromoneManger
     {
+        private static Color SOILDER_HIGHLIGHT = new Color(255f, 1f, 0f, 0.1f);
+        private static Color WORKER_HIGHLIGHT = new Color(255f, 0f, 0f, 0.1f);
+
         public static PheromoneManger Instance = new PheromoneManger();
 
         /// <summary>
@@ -25,35 +31,106 @@ namespace PuissANT.Pheromones
         public List<Pheromone> _tempRemove;  
         public List<Pheromone> _activePheromones;
 
+        private Queue<TileInfo> _infoStack; 
+
         private PheromoneManger()
         {
             _tempAdd = new List<Pheromone>();
             _tempRemove = new List<Pheromone>();
             _activePheromones = new List<Pheromone>();
+
+            _infoStack = new Queue<TileInfo>();
+            foreach(TileInfo i in TileInfoSets.PheromoneTypes.Except(new TileInfo[]{TileInfo.Nest}))
+                _infoStack.Enqueue(i);
         }
 
-        public void Add(TileInfo type, Point poistion)
+        public void Add(TileInfo type, Point position)
         {
-            if ((type & TileInfo.Nest) != 0)
+            Pheromone p = null;
+            switch (type.ClearTileInfo())
             {
-                _tempAdd.Add(new NestPheromone()
-                {
-                    Intensity = 0.0,
-                    Position = poistion
-                });
+                case TileInfo.Nest:
+                    p = new NestPheromone()
+                    {
+                        Position = position,
+                        Intensity = 100f,
+                        Actor = new PheromoneActor(position,
+                            100.0f,
+                            SOILDER_HIGHLIGHT,
+                            Game1.Instance.Content.Load<Texture2D>("ui/AntCursor"))
+                    };
+                    break;
+                case TileInfo.WorkerSpawn:
+                    p = new WorkerSpawnPheromone()
+                    {
+                        Position = position,
+                        Intensity = 100f,
+                        Actor = new PheromoneActor(position,
+                            100.0f,
+                            SOILDER_HIGHLIGHT,
+                            Game1.Instance.Content.Load<Texture2D>("phermones/WorkerPhermone.png"))
+                    };
+                    break;
+                case TileInfo.SoilderSpawn:
+                    p = new SoilderSpawnPheromone()
+                    {
+                        Position = position,
+                        Intensity = 100f,
+                        Actor = new PheromoneActor(position,
+                            100.0f,
+                            SOILDER_HIGHLIGHT,
+                            Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"))
+                    };
+                    break;
+                case TileInfo.Attack:
+                    p = new AttackPheromone(position, 100)
+                    {
+                        Actor = new PheromoneActor(position,
+                            100.0f,
+                            SOILDER_HIGHLIGHT,
+                            Game1.Instance.Content.Load<Texture2D>("phermones/AttackPheromone.png"))
+                    };
+                    break;
+                case TileInfo.Gather:
+                   p = new GatherPheromone(position, 100)
+                    {
+                        Actor = new PheromoneActor(position,
+                            100.0f,
+                            SOILDER_HIGHLIGHT,
+                            Game1.Instance.Content.Load<Texture2D>("phermones/GatherPheromone.png"))
+                    };
+                    break;
+                default:
+                    throw new Exception();
             }
 
-            World.Instance.Set(poistion.X, poistion.Y, type);
+            _tempAdd.Add(p);
+            ActorManager.Instance.Add(p.Actor);
+            World.Instance.Set(position.X, position.Y, type);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public void Remove(Pheromone p)
         {
             _tempRemove.Add(p);
+            ActorManager.Instance.Remove(p.Actor);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public IEnumerable<T> GetPheromoneOfType<T>()
         {
             return _activePheromones.OfType<T>();
+        }
+
+        public IEnumerable<Pheromone> GetPheromoneOfTypes(params Type[] types)
+        {
+            return _activePheromones.Where(p => types.Any(t => t == p.GetType()));
         }
 
         public Pheromone GetPheromoneAt(Point p)
@@ -67,18 +144,8 @@ namespace PuissANT.Pheromones
             return true;
         }
 
-        public void HandlePheremoneButtonClick(string text) {
-            TileInfo type = TileInfo.Attack;
-            TileInfo[] array = TileInfoSets.PheromoneTypes;
-            foreach (TileInfo t in array)
-            {
-                if (text == t.ToString())
-                {
-                    type = t;
-                    break;
-                }
-            }
-
+        public void HandlePheremoneButtonClick(TileInfo type) 
+        { 
             MousePheromoneType = type;
         }
 
@@ -89,6 +156,16 @@ namespace PuissANT.Pheromones
             foreach (Pheromone p in _tempRemove)
                 _activePheromones.Remove(p);
             _tempRemove.Clear();
+
+            foreach(Pheromone p in _activePheromones)
+                p.Update(time);
+        }
+
+        public TileInfo GetNextTileInfo()
+        {
+            TileInfo i = _infoStack.Dequeue();
+            _infoStack.Enqueue(i);
+            return i;
         }
     }
 }

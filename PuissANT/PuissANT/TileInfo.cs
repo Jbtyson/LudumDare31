@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PuissANT
 {
-    [Flags]
+    //[Flags]
     public enum TileInfo
     {
         //TileInfo is split like this:
@@ -26,6 +26,8 @@ namespace PuissANT
         Nest = 0x2 << 8,
         Attack = 0x3 << 8,
         Gather = 0x4 << 8,
+        WorkerSpawn = 0x5 << 8,
+        SoilderSpawn = 0x6 << 8,
 
         //Clearing types
         CLEAR_TILE = 0xFF << 8,
@@ -39,7 +41,9 @@ namespace PuissANT
         {
             TileInfo.Nest, 
             TileInfo.Attack, 
-            //TileInfo.Gather
+            TileInfo.Gather,
+            TileInfo.WorkerSpawn,
+            TileInfo.SoilderSpawn
         };
     }
 
@@ -117,7 +121,7 @@ namespace PuissANT
 
         public static bool IsPassable(this TileInfo tile, TileInfo[] passableTiles)
         {
-            return passableTiles.Contains<TileInfo>(tile); 
+            return passableTiles.Any(t => t == tile.ClearTileObject());
         }
     }
 }

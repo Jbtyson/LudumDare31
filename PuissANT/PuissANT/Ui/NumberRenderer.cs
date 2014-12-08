@@ -28,9 +28,9 @@ namespace PuissANT.ui
         {
             _texture = content.Load<Texture2D>("ui/numbers");
             _characterMap = new Dictionary<int, Rectangle>(10);
-            _characterMap['0'] = new Rectangle(1, 1, 10, 16);
-            _characterMap['1'] = new Rectangle(15, 1, 6, 16);
-            _characterMap['2'] = new Rectangle(21, 1, 9, 16);
+            _characterMap['0'] = new Rectangle(1, 1, 12, 18);
+            _characterMap['1'] = new Rectangle(16, 1, 8, 18);
+            _characterMap['2'] = new Rectangle(24, 1, 9, 16);
             _characterMap['3'] = new Rectangle(29, 1, 9, 16);
             _characterMap['4'] = new Rectangle(42, 1, 9, 16);
             _characterMap['5'] = new Rectangle(55, 1, 6, 16);

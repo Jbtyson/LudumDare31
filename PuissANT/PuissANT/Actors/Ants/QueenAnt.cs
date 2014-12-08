@@ -11,7 +11,7 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : WorkerAnt
     {
-        private const float PATH_UPDATE_TIME = 1000;
+        private const float PATH_UPDATE_TIME = 1;
         private const float ANI_UPDATE_TIME = 500;
 
         private float pathTimer;
@@ -47,9 +47,10 @@ namespace PuissANT.Actors.Ants
             pathTimer += time.ElapsedGameTime.Milliseconds;
             if (!(pathTimer > PATH_UPDATE_TIME)) return;
 
+            pathTimer = 0;
             if (Target != INVALID_POINT)
             {
-                if (MoveTowardsTarget())
+                if(MoveTowardsTarget())
                 {
                     _nestFound = true;
                     NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
@@ -58,7 +59,7 @@ namespace PuissANT.Actors.Ants
             }
             else
             {
-                Target = GetNewTarget<NestPheromone>();
+                Target = GetNewTarget(typeof(NestPheromone));
             }
 
             // calculate angle ant is facing as an average of the prior 

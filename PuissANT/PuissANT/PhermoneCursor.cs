@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Pheromones;
 using PuissANT.Util;
 
 namespace PuissANT.ui
@@ -14,8 +16,7 @@ namespace PuissANT.ui
         public Vector2 Position;
         private Vector2 Center = new Vector2(12, 12);
 
-        private Texture2D[] cursors = new Texture2D[1];
-        private bool _drawCursor;
+        private Dictionary<TileInfo, Texture2D> cursors = new Dictionary<TileInfo,Texture2D>(1);
 
         public static PhermoneCursor Instance
         {
@@ -30,7 +31,11 @@ namespace PuissANT.ui
         public void LoadContent(ContentManager Content)
         {
             // Load Cursor Icons
-            cursors[0] = Content.Load<Texture2D>("phermones/SoldierPhermone");
+            cursors[TileInfo.Nest] = Content.Load<Texture2D>("ui/antCursor");
+            cursors[TileInfo.Attack] = Content.Load<Texture2D>("phermones/AttackPheromone");
+            cursors[TileInfo.Gather] = Content.Load<Texture2D>("phermones/GatherPheromone");
+            cursors[TileInfo.WorkerSpawn] = Content.Load<Texture2D>("phermones/WorkerPhermone");
+            cursors[TileInfo.SoilderSpawn] = Content.Load<Texture2D>("phermones/SoldierPhermone");
         }
 
         public void Update(GameTime gameTime)
@@ -41,7 +46,7 @@ namespace PuissANT.ui
 
         public void Render(GameTime gameTime, SpriteBatch spriteBatch) 
         {
-            spriteBatch.Draw(cursors[0], MouseManager.Instance.MousePosition.ToVector2() - Center, Color.White);
+            spriteBatch.Draw(cursors[PheromoneManger.Instance.MousePheromoneType], MouseManager.Instance.MousePosition.ToVector2() - Center, Color.White);
         }
 
 
