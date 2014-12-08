@@ -27,6 +27,10 @@ namespace PuissANT
 
         Texture2D antTexture;
 
+        bool queenPlaced = false;
+        int titleOffsetX;
+        int titleOffsetY;
+
         public Game1()
             : base()
         {
@@ -70,6 +74,7 @@ namespace PuissANT
             ScreenManager.Instance.LoadContent();
             ResourceManager.Instance.LoadContent();
             PhermoneCursor.Instance.LoadContent(Content);
+            NumberRenderer.Instance.LoadContent(Content);
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
@@ -84,12 +89,34 @@ namespace PuissANT
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
             World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundSoft);
-            for (int x = 0; x < GameWindow.Width; x++)
+            
+            // Load the title into the world
+            Int32[] buffer = new Int32[28160];
+            Image img = new Image();
+            img.LoadContent("title/Title_0", String.Empty);
+            img.Texture.GetData<Int32>(buffer, 0, 28160);
+            titleOffsetX = GameWindow.Width / 2 - 200;
+            titleOffsetY = GameWindow.Height / 5;
+            for (int y = 0; y < 80; y++)
             {
-                for (int y = 0; y < GameWindow.Height / 5; y++)
+                for (int x = 0; x < 352; x++)
                 {
-                    World.Instance[x, y] = (short) TileInfo.Sky;
+                    if (buffer[x + y * 352] == -16777216)
+                        World.Instance[x + titleOffsetX, y + titleOffsetY - 28] = (short)TileInfo.GroundSoft;
+                    else
+                        World.Instance[x + titleOffsetX, y + titleOffsetY - 28] = (short)TileInfo.Sky;
                 }
+            }
+            for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+            {
+                World.Instance[x, titleOffsetY + 8] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 9] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 10] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 11] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 1] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 2] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 3] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 4] = (short)TileInfo.Sky;
             }
             ReticulateDirtLayers();
 
@@ -157,6 +184,53 @@ namespace PuissANT
                 && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))
             {
                 PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition));
+                
+                // If this is the first click in the game, we switch the title image
+                if (!queenPlaced)
+                {
+                    queenPlaced = true;
+
+                    // Switch update screen
+                    Int32[] buffer = new Int32[28160];
+                    Image img = new Image();
+                    img.LoadContent("title/Title_1", String.Empty);
+                    img.Texture.GetData<Int32>(buffer, 0, 28160);
+                    for (int y = 0; y < GameWindow.Height / 5; y++)
+                    {
+                        for (int x = 0; x < GameWindow.Width; x++)
+                        {
+                            World.Instance[x, y] = (short)TileInfo.Sky;
+                        }
+                    }
+                    for (int y = 0; y < 80; y++)
+                    {
+                        for (int x = 0; x < 352; x++)
+                        {
+                            if (buffer[x + y * 352] == -16777216)
+                                World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
+                            else
+                                if(y > 28)
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                                else
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                        }
+                    }
+                    for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                    {
+                        World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
+                        World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
+                    }
+                }
             }
 
             foreach (Actor a in ActorManager.Instance.GetAllActors())

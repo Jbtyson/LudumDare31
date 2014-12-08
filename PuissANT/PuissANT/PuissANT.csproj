@@ -81,6 +81,7 @@
     <Compile Include="Ui\CommandPanel.cs" />
     <Compile Include="Ui\UiManager.cs" />
     <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Ui\NumberRenderer.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +117,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\attackPressedButton.png">
+    <Content Include="Content\title\Title_0.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\title\Title_1.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\commandBar.png">
@@ -143,6 +148,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\nestPressedButton.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ui\numbers.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ui\panelBackground.png">

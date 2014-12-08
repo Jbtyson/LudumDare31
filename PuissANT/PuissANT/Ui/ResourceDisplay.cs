@@ -35,7 +35,7 @@ namespace PuissANT.Ui
         {
             BarOffset = new Vector2(0, 0);
             IconOffset = new Vector2(0, 0);
-            FontOffset = new Vector2(50, 6);
+            FontOffset = new Vector2(50, 10);
             
             Icon.LoadContent(Icon.Path, String.Empty);
             Icon.Position = new Vector2(position.X + IconOffset.X, position.Y + IconOffset.Y);
