@@ -12,7 +12,7 @@ namespace PuissANT.Ui
     public class UiManager
     {
         private List<IPanel> _panels;
-        private DropDownBox _box;
+        public DropDownBox _box;
 
         public List<IPanel> PanelList
         {
