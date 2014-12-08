@@ -33,7 +33,7 @@ namespace PuissANT
 
         private ScreenManager()
         {
-            ScreenSize = new Vector2(1200, 640);
+            ScreenSize = new Vector2(1280, 720);
             UiManager = new UiManager();
         }
 

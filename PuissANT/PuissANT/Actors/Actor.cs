@@ -17,7 +17,18 @@ namespace PuissANT.Actors
         public Point Position
         {
             get { return _position; }
-            set { _position = value; updatePosition(); }
+            set 
+            {
+                _position = value; 
+                
+                //Update hitbox position.
+                _hitbox.X = _position.X - _hitbox.Width / 2;
+                _hitbox.Y = _position.Y - _hitbox.Height / 2;
+
+                //Update texture position
+                _texturePoint.X = _position.X - _texture.Width / 2;
+                _texturePoint.Y = _position.Y - _texture.Height / 2;
+            }
         }
 
         public Actor(Vector2 position, int width, int height, Texture2D tex)
@@ -32,6 +43,17 @@ namespace PuissANT.Actors
             _hitbox = new Rectangle(_position.X - width/2, _position.Y - height/2, width, height);
             _texture = tex;
             _texturePoint = new Point(_position.X - tex.Width/2, _position.Y - tex.Height/2);
+
+            Color[] cbuf = new Color[tex.Width * tex.Height];
+            _texture.GetData<Color>(cbuf);
+
+            for (int i = 0; i < cbuf.Length; i++)
+            {
+                if (cbuf[i].A == 255)
+                    cbuf[i] = Color.Yellow;
+            }
+
+            _texture.SetData<Color>(cbuf);
         }
 
         public abstract void Update(GameTime time);
@@ -40,17 +62,6 @@ namespace PuissANT.Actors
         {
             Vector2 pos = new Vector2(GameWindow.X + Position.X, GameWindow.Y + Position.Y);
             batch.Draw(_texture, pos, Color.White);
-        }
-
-        private void updatePosition()
-        {
-            //Update hitbox position.
-            _hitbox.X = _position.X - _hitbox.Width/2;
-            _hitbox.Y = _position.Y - _hitbox.Height/2;
-
-            //Update texture position
-            _texturePoint.X = _position.X - _texture.Width/2;
-            _texturePoint.Y = _position.Y - _texture.Height/2;
         }
     }
 }

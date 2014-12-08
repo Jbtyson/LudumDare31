@@ -50,6 +50,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Buildings\BaseBuilding.cs" />
+    <Compile Include="Buildings\Nurseries\BaseNursery.cs" />
+    <Compile Include="Buildings\Nurseries\WorkerNursery.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="TerrainManager.cs" />
     <Compile Include="Actors\Actor.cs" />
@@ -167,6 +170,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

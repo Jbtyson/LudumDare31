@@ -83,6 +83,33 @@ namespace PuissANT
             ClearRectangle(new Rectangle((int)position.X, (int)position.Y, width, height), percentTrim);
         }
 
+        /// <summary>
+        /// Will only clear out pixels with an alpha value above 0
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="pixelElements"></param>
+        /// <returns>The color array that was blended to the background</returns>
+        public static Color[] ClearColorMask(Rectangle bounds, Color[] pixelElements)
+        {
+            int startIndex = (bounds.Y * _screenSize.Width) + bounds.X;
+            int currentIndex = startIndex;
+
+            for (int y = 0; y < bounds.Height; y++)
+            {
+                currentIndex = startIndex + (y * _screenSize.Width);
+                for (int x = 0; x < bounds.Width; x++)
+                {
+                    if (pixelElements[(y * bounds.Width) + x].A > 0)
+                        pixelElements[(y * bounds.Width) + x] = _colorBuffer[currentIndex + x];
+                    else
+                        pixelElements[(y * bounds.Width) + x] = new Color(0, 0, 0, 0);
+                }
+            }
+
+            UpdateRectangle(bounds, pixelElements);
+
+            return pixelElements;
+        }
 
         public static void UpdateRectangle(Rectangle bounds, Color[] pixelElements, float percentTrim = 0.0f)
         {
@@ -102,7 +129,7 @@ namespace PuissANT
                 currentIndex = startIndex + (y * _screenSize.Width);
                 for(int x = (int)widthTrim; x < (int)(rectWidth - widthTrim); x++)
                 {
-                    _colorBuffer[currentIndex + x] = pixelElements[(y * (int)rectWidth) + x];
+                        _colorBuffer[currentIndex + x] = pixelElements[(y * (int)rectWidth) + x];
                 }
             }
         }

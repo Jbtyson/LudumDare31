@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
 using PuissANT.Util;
+using PuissANT.Buildings.Nurseries;
 
 #endregion
 
@@ -56,6 +57,8 @@ namespace PuissANT
 
             base.Initialize();
         }
+
+        WorkerNursery nursery;
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -108,6 +111,13 @@ namespace PuissANT
                 ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
             }
+
+            Point screenMiddle = ScreenManager.Instance.ScreenSize.ToPoint();
+            screenMiddle.X /= 2;
+            screenMiddle.Y /= 2;
+
+            nursery = WorkerNursery.Debug_Spawn(screenMiddle, new Texture2D(GraphicsDevice, 10, 10));
+            nursery.Debug_InitializeTest();
         }
 
         /// <summary>
@@ -146,11 +156,16 @@ namespace PuissANT
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
 
+            nursery.Update(gameTime);
+            Window.Title = "Percent Complete = " + (nursery.PercentOfBuildCompleted * 100).ToString() + "%";
+
             MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
             ResourceManager.Instance.Update(gameTime);
-            if(isGameOver())
+            if (isGameOver())
+            {
                 //handleGameOver
+            }
 
             base.Update(gameTime);
         }
@@ -161,12 +176,14 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(new Color(70,70,70,255));
+            GraphicsDevice.Clear(new Color(70, 70, 70, 255));
             TerrainManager.SetTexture();
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            
+
+            nursery.Draw(spriteBatch, GameWindow);
+
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
             TerrainManager.DrawTerrain(spriteBatch);
