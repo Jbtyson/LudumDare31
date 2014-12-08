@@ -79,10 +79,10 @@ namespace PuissANT
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
             
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
-            int gameWindowHorizontalOffset = 0; //(int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
+            //int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
             GameWindow = new Rectangle(0, gameWindowVerticalOffset,
-                (int)ScreenManager.Instance.ScreenSize.X - gameWindowHorizontalOffset,
+                (int)ScreenManager.Instance.ScreenSize.X,// - gameWindowHorizontalOffset,
                 (int)ScreenManager.Instance.ScreenSize.Y - gameWindowVerticalOffset);
             ScreenManager.Instance.GameWindow = GameWindow;
 
@@ -128,17 +128,18 @@ namespace PuissANT
             }
             antTexture.SetData<Color>(colorBuf);*/
 
+
             QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5))); 
             ActorManager.Instance.Add(queen);
 
-            /*Random r = new Random();
-            for (int i = 0; i < 1; i++)
+            Random r = new Random();
+            for (int i = 0; i < 10; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
                     new Point(GameWindow.Width / 2, (GameWindow.Height/5)));
                 //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
-            }*/
+            }
 
             PheromoneManger.Instance.MousePheromoneType = TileInfo.Nest;
         }
@@ -246,7 +247,8 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            //new Color(255,211,155)
+            GraphicsDevice.Clear(new Color(255, 211, 155));
             TerrainManager.SetTexture();
 
             // TODO: Add your drawing code here

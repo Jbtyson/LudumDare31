@@ -24,14 +24,16 @@ namespace PuissANT.Ui
             ResourceDisplayOffset = Vector2.Zero;
             Image = new Image();
             Resources = new List<ResourceDisplay>();
-            _imagePath = "ui/statsBar";
-            _text = "this is the stats bar";
+            //http://opengameart.org/content/window-frame
+            _imagePath = "ui/panelBackground";
+            //_imagePath = "ui/statsBar";
+            _text = String.Empty;
         }
 
         public void LoadContent()
         {
             Dimensions = new Vector2(1080, 35);
-            ResourceDisplayStartPosition = new Vector2(22, 2);
+            ResourceDisplayStartPosition = new Vector2(14, 14);
             ResourceDisplayOffset = new Vector2(192, 0);
             Image.Position = new Vector2(0, 0);
             Image.LoadContent(_imagePath, _text);
@@ -45,7 +47,7 @@ namespace PuissANT.Ui
                 ResourceDisplayStartPosition.Y));
             Resources.Add(new ResourceDisplay("dirt"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
-                ResourceDisplayStartPosition.Y));
+                ResourceDisplayStartPosition.Y));           
             Resources.Add(new ResourceDisplay("food"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
                 ResourceDisplayStartPosition.Y));
