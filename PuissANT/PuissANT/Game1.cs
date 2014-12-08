@@ -1,5 +1,8 @@
 ﻿#region Using Statements
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -34,6 +37,7 @@ namespace PuissANT
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.ScreenSize.X;
             graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.ScreenSize.Y;
+            
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -175,14 +179,24 @@ namespace PuissANT
         {
             GraphicsDevice.Clear(Color.White);
             TerrainManager.SetTexture();
+            spriteBatch.Begin(
+                SpriteSortMode.Immediate, 
+                BlendState.NonPremultiplied);
 
-            // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
+            foreach(Actor actor in actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue))
+                actor.Render(gameTime, spriteBatch);
+
+            TerrainManager.DrawTerrain(spriteBatch);
+
+            foreach(Actor actor in actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue))
+                actor.Render(gameTime, spriteBatch);
             
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
 
-            TerrainManager.DrawTerrain(spriteBatch);
+            
+
             ScreenManager.Instance.Draw(spriteBatch);
             PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 

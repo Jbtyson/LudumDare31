@@ -9,6 +9,7 @@ using PuissANT.Util;
 
 namespace PuissANT.Actors.Ants
 {
+
     public class WorkerAnt : Ant
     {
         private static readonly TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
@@ -48,7 +49,12 @@ namespace PuissANT.Actors.Ants
                 {
                     _openQueue.Clear();
                     _closedList.Clear();
-                    PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
+                    Pheromone p = PheromoneManger.Instance.GetPheromoneAt(Position);
+                    if (p != null)
+                    {
+                        //Ohterwise not the first on here.
+                        PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
+                    }
                     Target = INVALID_POINT;
                 }
             }

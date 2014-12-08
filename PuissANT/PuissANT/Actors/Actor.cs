@@ -18,7 +18,9 @@ namespace PuissANT.Actors
         protected Texture2D _texture;
         protected Vector2 _texturePoint;
         protected Rectangle _drawingWindow;
-        
+
+        //Everything less then 128 will be rendered before dirt. Everything greater then 128 is rendered after dirt.
+        public byte ZValue;
         
         public Point Position
         {
@@ -57,7 +59,7 @@ namespace PuissANT.Actors
             batch.Draw(_texture, _texturePoint, _drawingWindow, Color.White);
         }
 
-        private void updatePosition()
+        protected virtual void updatePosition()
         {
             //Update hitbox position.
             _hitbox.X = _position.X - _hitbox.Width/2;

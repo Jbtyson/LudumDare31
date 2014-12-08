@@ -17,11 +17,13 @@ namespace PuissANT.Actors.Ants
         protected Ant(Point position,int width, int heigth, Texture2D tex)
             : base(position, width, heigth, tex)
         {
+            ZValue = 127;
         }
 
         protected Ant(Point position, int width, int heigth, Texture2D tex, Rectangle rect)
             : base(position, width, heigth, tex, rect)
         {
+            ZValue = 127;
         }
 
         public void SetTarget(Point t)
