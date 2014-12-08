@@ -71,8 +71,9 @@ namespace PuissANT.Actors.Ants
                     for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
                     {
                         TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
-                        World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
-                            (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                        if(!tile.IsTileType(TileInfo.Sky) && !tile.IsTileType(TileInfo.GroundImp))
+                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
+                                (short)tile.OverwriteTileValue(TileInfo.GroundDug);
                     }
                 }
             }

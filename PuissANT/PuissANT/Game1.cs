@@ -184,55 +184,62 @@ namespace PuissANT
                 && ScreenManager.Instance.isPointWithinGameWindow(MouseManager.Instance.MousePosition)
                 && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))
             {
-                placePheromone();
-                
-                // If this is the first click in the game, we switch the title image
-                if (!queenPlaced)
+                Point p = ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition);
+
+                //Just make sure that you can't place the nest higher than the horizon
+                if ((queenPlaced || (p.Y > GameWindow.Height / 5 && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.Sky)))
+                    && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.GroundImp))
                 {
-                    queenPlaced = true;
+                    placePheromone(p);
 
-                    // Switch update screen
-                    Int32[] buffer = new Int32[28160];
-                    Image img = new Image();
-                    img.LoadContent("title/Title_1", String.Empty);
-                    img.Texture.GetData<Int32>(buffer, 0, 28160);
-                    for (int y = 0; y < GameWindow.Height / 5; y++)
+                    // If this is the first click in the game, we switch the title image
+                    if (!queenPlaced)
                     {
-                        for (int x = 0; x < GameWindow.Width; x++)
+                        queenPlaced = true;
+
+                        // Switch update screen
+                        Int32[] buffer = new Int32[28160];
+                        Image img = new Image();
+                        img.LoadContent("title/Title_1", String.Empty);
+                        img.Texture.GetData<Int32>(buffer, 0, 28160);
+                        for (int y = 0; y < GameWindow.Height / 5; y++)
                         {
-                            World.Instance[x, y] = (short)TileInfo.Sky;
+                            for (int x = 0; x < GameWindow.Width; x++)
+                            {
+                                World.Instance[x, y] = (short)TileInfo.Sky;
+                            }
                         }
-                    }
-                    for (int y = 0; y < 80; y++)
-                    {
-                        for (int x = 0; x < 352; x++)
+                        for (int y = 0; y < 80; y++)
                         {
-                            if (buffer[x + y * 352] == -16777216)
-                                World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
-                            else
-                                if(y > 28)
-                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                            for (int x = 0; x < 352; x++)
+                            {
+                                if (buffer[x + y * 352] == -16777216)
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
                                 else
-                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    if (y > 28)
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    else
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                            }
                         }
-                    }
-                    for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
-                    {
-                        World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
-                    }
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
+                        }
 
-                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                        PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                    }
                 }
             }
             
@@ -720,9 +727,8 @@ namespace PuissANT
             }
         }
 
-        private void placePheromone()
+        private void placePheromone(Point p)
         {
-            Point p = ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition);
             while (((TileInfo) World.Instance[p.X, p.Y + 1]).IsTileType(TileInfo.Sky))
             {
                 p = new Point(p.X, p.Y + 1);
