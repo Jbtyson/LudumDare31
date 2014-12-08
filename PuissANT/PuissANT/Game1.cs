@@ -86,7 +86,12 @@ namespace PuissANT
             try
             {
                 SongCollection playlist = new SongCollection();
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - the shovel"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - HS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - WS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - DT3"));
                 playlist.Add(Content.Load<Song>("music/Robert del Naja - BC"));
+                MediaPlayer.IsRepeating = true;
                 MediaPlayer.Play(playlist);
             }
             catch (Exception e) { }
