@@ -28,7 +28,7 @@ namespace PuissANT.Ui
             IconOffset = FontOffset = Vector2.Zero;
             Name = name;
             _iconPath = Icon.Path = "ui\\" + name + "Icon";
-            _barPath = "ui\\scrollbar";
+            _barPath = "ui\\resourceBackground";
         }
 
         public void LoadContent(Vector2 position)

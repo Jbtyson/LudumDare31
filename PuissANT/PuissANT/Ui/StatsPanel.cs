@@ -25,8 +25,8 @@ namespace PuissANT.Ui
             Image = new Image();
             Resources = new List<ResourceDisplay>();
             //http://opengameart.org/content/window-frame
-            _imagePath = "ui/panelBackground";
-            //_imagePath = "ui/statsBar";
+            //_imagePath = "ui/panelBackground";
+            _imagePath = "ui/statsBar";
             _text = String.Empty;
         }
 
