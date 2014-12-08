@@ -28,16 +28,14 @@ namespace PuissANT.Ui
             IconOffset = FontOffset = Vector2.Zero;
             Name = name;
             _iconPath = Icon.Path = "ui\\" + name + "Icon";
-            _barPath = "ui\\scrollbar";
+            _barPath = "ui\\resourceBackground";
         }
 
         public void LoadContent(Vector2 position)
         {
-            Position = new Vector2(0, 660);
-
             BarOffset = new Vector2(0, 0);
-            IconOffset = new Vector2(6, 2);
-            FontOffset = new Vector2(50, 6);
+            IconOffset = new Vector2(0, 0);
+            FontOffset = new Vector2(50, 10);
             
             Icon.LoadContent(Icon.Path, String.Empty);
             Icon.Position = new Vector2(position.X + IconOffset.X, position.Y + IconOffset.Y);

@@ -74,6 +74,7 @@ namespace PuissANT
             ScreenManager.Instance.LoadContent();
             ResourceManager.Instance.LoadContent();
             PhermoneCursor.Instance.LoadContent(Content);
+            NumberRenderer.Instance.LoadContent(Content);
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
@@ -112,10 +113,10 @@ namespace PuissANT
                 World.Instance[x, titleOffsetY + 9] = (short)TileInfo.Sky;
                 World.Instance[x, titleOffsetY + 10] = (short)TileInfo.Sky;
                 World.Instance[x, titleOffsetY + 11] = (short)TileInfo.Sky;
-                World.Instance[x + GameWindow.Width / 2 + 140, titleOffsetY - 1] = (short)TileInfo.Sky;
-                World.Instance[x + GameWindow.Width / 2 + 140, titleOffsetY - 2] = (short)TileInfo.Sky;
-                World.Instance[x + GameWindow.Width / 2 + 140, titleOffsetY - 3] = (short)TileInfo.Sky;
-                World.Instance[x + GameWindow.Width / 2 + 140, titleOffsetY - 4] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 1] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 2] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 3] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 4] = (short)TileInfo.Sky;
             }
             ReticulateDirtLayers();
 
@@ -206,12 +207,12 @@ namespace PuissANT
                         for (int x = 0; x < 352; x++)
                         {
                             if (buffer[x + y * 352] == -16777216)
-                                World.Instance[x + 300, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
+                                World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
                             else
                                 if(y > 28)
-                                    World.Instance[x + 300, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
                                 else
-                                    World.Instance[x + 300, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
                         }
                     }
                     for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
@@ -257,7 +258,7 @@ namespace PuissANT
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
 
-            //TerrainManager.DrawTerrain(spriteBatch);
+            TerrainManager.DrawTerrain(spriteBatch);
             ScreenManager.Instance.Draw(spriteBatch);
             PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 
