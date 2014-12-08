@@ -79,7 +79,7 @@ namespace PuissANT
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
             
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
-            int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
+            int gameWindowHorizontalOffset = 0; //(int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
             GameWindow = new Rectangle(0, gameWindowVerticalOffset,
                 (int)ScreenManager.Instance.ScreenSize.X - gameWindowHorizontalOffset,

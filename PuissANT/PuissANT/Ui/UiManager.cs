@@ -22,7 +22,7 @@ namespace PuissANT.Ui
         {
             _panels = new List<IPanel>();
             _panels.Add(new StatsPanel());
-            _panels.Add(new CommandPanel());
+            //_panels.Add(new CommandPanel());
         }
 
         public void LoadContent()
