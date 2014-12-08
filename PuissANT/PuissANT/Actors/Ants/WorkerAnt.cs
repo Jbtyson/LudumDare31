@@ -38,7 +38,7 @@ namespace PuissANT.Actors.Ants
 
         public override void Update(GameTime time)
         {
-            _updateTimer += time.ElapsedGameTime.Ticks;
+            _updateTimer += time.ElapsedGameTime.Milliseconds;
             if (_updateTimer >= UPDATE_TIME)
             {
                 _updateTimer = 0;
@@ -56,59 +56,19 @@ namespace PuissANT.Actors.Ants
                 else
                 {
                     //Find new target
-                    Target = GetNewTarget();
+                    Target = GetNewTarget(
+                        typeof(NestPheromone));
                 }
             }
             
         }
 
-        protected bool MoveTowardsTarget()
-        {
-            Position = getNextPosition();
-            for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
-            {
-                for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
-                {
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
-                }
-            }
-
-            return Position == Target;
-        }
-
         private Point GetNewTarget()
         {
-            return GetNewTarget<NestPheromone>();
+            return GetNewTarget(typeof(NestPheromone));
         }
 
-        protected Point GetNewTarget<T>()
-            where T : Pheromone
-        {
-            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType<T>();
-            double minDistance;
-            if (points.Any())
-            {
-                Pheromone bestPoint = points.First();
-                minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
-                foreach (Pheromone p in points)
-                {
-                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
-                    if (d2 < minDistance)
-                    {
-                        bestPoint = p;
-                        minDistance = d2;
-                    }
-                }
-                return bestPoint.Position;
-            }
-            else
-            {
-                return INVALID_POINT;
-            }
-        }
-
-        private Point getNextPosition()
+        protected override Point getNextPosition()
         {
             for (int i = -1; i < 2; i++)
             {
@@ -123,18 +83,20 @@ namespace PuissANT.Actors.Ants
                     if (tempPosition.X < 0 || tempPosition.X >= World.Instance.Width)
                         continue;
 
-                    if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
+                    if (tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
                     if ((World.Instance[(int) tempPosition.X, (int) tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
                         continue;
-                    
-                    if(_closedList.All(t => t != tempPosition.ToPoint()))
+
+                    if (_closedList.All(t => t != tempPosition.ToPoint()))
                     {
-                        int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100))/100;
+                        int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100)) / 100;
                         value *= RAND.Next(1, 3);
                         if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
-                            value *= RAND.Next(1, 3);
+                            value *= 3;
+                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                            value *= 2;
                         if (tempPosition.ToPoint() == Target)
                             value = 0;
                         if (_openQueue.Count == MEMORY)
@@ -145,7 +107,7 @@ namespace PuissANT.Actors.Ants
             }
 
             Point v = _openQueue.Dequeue();
-            if(_closedList.Count == MEMORY)
+            if (_closedList.Count == MEMORY)
                 _closedList.RemoveAt(0);
             _closedList.Add(v);
             return v;

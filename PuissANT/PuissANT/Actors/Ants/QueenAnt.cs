@@ -55,7 +55,7 @@ namespace PuissANT.Actors.Ants
             }
             else
             {
-                Target = GetNewTarget<NestPheromone>();
+                Target = GetNewTarget(typeof(NestPheromone));
             }
         }
     }

@@ -56,6 +56,11 @@ namespace PuissANT.Pheromones
             return _activePheromones.OfType<T>();
         }
 
+        public IEnumerable<Pheromone> GetPheromoneOfTypes(params Type[] types)
+        {
+            return _activePheromones.Where(p => types.Any(t => t == p.GetType()));
+        }
+
         public Pheromone GetPheromoneAt(Point p)
         {
             return _activePheromones.FirstOrDefault(pheromone => pheromone.Position == p);
