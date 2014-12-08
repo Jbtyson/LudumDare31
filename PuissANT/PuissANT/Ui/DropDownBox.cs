@@ -17,7 +17,7 @@ namespace PuissANT.Ui
         public Vector2 Position, PherDimensions, DropdownDimensions;
         public Rectangle Hitbox;
         public string Text;
-        public bool Expanded;
+        public bool Expanded, ButtonClickedLast, ButtonClickedCurrent;
 
         public DropDownBox()
         {
@@ -83,6 +83,14 @@ namespace PuissANT.Ui
             Dropdown.Update(gameTime);
             foreach (Button b in Children)
                 b.Update(gameTime);
+
+            // Handle button clicks
+            if (ButtonClickedLast)
+                ButtonClickedCurrent = false;
+            else
+            {
+                ButtonClickedLast = ButtonClickedCurrent;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -106,11 +114,13 @@ namespace PuissANT.Ui
                 Expanded = false;
                 PheromoneManger.Instance.HandlePheremoneButtonClick((TileInfo)sender.Value);
             }
+            ButtonClickedCurrent = true;
         }
 
         public void HandleDropDownButtonClick(Button sender)
         {
             Expanded = !Expanded;
+            ButtonClickedCurrent = true;
         }
     }
 }
