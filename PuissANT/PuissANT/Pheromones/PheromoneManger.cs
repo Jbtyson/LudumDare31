@@ -67,18 +67,8 @@ namespace PuissANT.Pheromones
             return true;
         }
 
-        public void HandlePheremoneButtonClick(string text) {
-            TileInfo type = TileInfo.Attack;
-            TileInfo[] array = TileInfoSets.PheromoneTypes;
-            foreach (TileInfo t in array)
-            {
-                if (text == t.ToString())
-                {
-                    type = t;
-                    break;
-                }
-            }
-
+        public void HandlePheremoneButtonClick(TileInfo type) 
+        { 
             MousePheromoneType = type;
         }
 

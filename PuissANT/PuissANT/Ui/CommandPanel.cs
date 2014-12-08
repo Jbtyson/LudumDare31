@@ -68,14 +68,8 @@ namespace PuissANT.Ui
             temp = new Image();
             temp.LoadContent("ui/" + text + "PherInactive", String.Empty);
             b.SetTexture(temp.Texture, Button.ButtonState.Pressed);
-            b.ButtonClicked = HandleButtonClick;
 
             return b;
-        }
-
-        public void HandleButtonClick(string text)
-        {
-            PheromoneManger.Instance.HandlePheremoneButtonClick(text);
         }
 
         public void UnloadContent()
