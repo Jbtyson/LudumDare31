@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Actors;
+using PuissANT.Actors.Ants;
 
 namespace PuissANT.Pheromones
 {
@@ -11,6 +14,9 @@ namespace PuissANT.Pheromones
     /// </summary>
     public class PheromoneManger
     {
+        private static Color SOILDER_HIGHLIGHT = new Color(255f, 1f, 0f, 0.1f);
+        private static Color WORKER_HIGHLIGHT = new Color(255f, 0f, 0f, 0.1f);
+
         public static PheromoneManger Instance = new PheromoneManger();
 
         /// <summary>
@@ -34,26 +40,52 @@ namespace PuissANT.Pheromones
 
         public void Add(TileInfo type, Point poistion)
         {
+            Pheromone p = null;
             if ((type & TileInfo.Nest) != 0)
             {
-                _tempAdd.Add(new NestPheromone()
+                p = new NestPheromone()
                 {
-                    Intensity = 0.0,
+                    Intensity = 100.0f,
                     Position = poistion
-                });
+                };
+                PheromoneActor actor = new PheromoneActor(poistion,
+                    p.Intensity,
+                    SOILDER_HIGHLIGHT, 
+                    Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"));
+                p.Actor = actor;
+            }
+            else
+            {
+                throw new Exception();
             }
 
+            _tempAdd.Add(p);
+            ActorManager.Instance.Add(p.Actor);
             World.Instance.Set(poistion.X, poistion.Y, type);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public void Remove(Pheromone p)
         {
             _tempRemove.Add(p);
+            ActorManager.Instance.Remove(p.Actor);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public IEnumerable<T> GetPheromoneOfType<T>()
         {
             return _activePheromones.OfType<T>();
+        }
+
+        public IEnumerable<Pheromone> GetPheromoneOfTypes(params Type[] types)
+        {
+            return _activePheromones.Where(p => types.Any(t => t == p.GetType()));
         }
 
         public Pheromone GetPheromoneAt(Point p)

@@ -50,8 +50,10 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Actors\PheromoneActor.cs" />
     <Compile Include="PhermoneCursor.cs" />
     <Compile Include="Pheromones\NestPheromone.cs" />
+    <Compile Include="Pheromones\SoilderPheromone.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="TerrainManager.cs" />
     <Compile Include="Actors\Actor.cs" />
