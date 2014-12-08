@@ -207,19 +207,15 @@ namespace PuissANT
             ActorManager.Instance.Update(gameTime);
 
             //Enemy spawner
-            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+            _spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
             if (_spawnTimer > SPAWN_TIME)
             {
                 int x = ScreenManager.Instance.GameWindow.X;
                 if (RAND.Next(0, 100)%2 == 0)
                     x += ScreenManager.Instance.GameWindow.Width;
-                int y = 0;
-                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
-                {
-                    y++;
-                }
+                int y = ScreenManager.Instance.GameWindow.Height / 5;
                 ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
-            }*/
+            }
 
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
@@ -281,13 +277,8 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
                     }
-                    /*for (int y = 0; y < 16; y++)
-                    {
-                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
-                        {
-                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
-                        }
-                    }*/
+
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                 }
             }
             
