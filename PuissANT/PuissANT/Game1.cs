@@ -1,13 +1,16 @@
 ﻿#region Using Statements
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.ui;
 using PuissANT.Util;
@@ -33,13 +36,19 @@ namespace PuissANT
         SpriteBatch spriteBatch;
 
         Rectangle GameWindow;
-
+        Texture2D splashScreen;
+        Texture2D backgroundTop;
         Texture2D antTexture;
-
+        
         bool queenPlaced = false;
         int titleOffsetX;
         int titleOffsetY;
         private int scrollOffset;
+
+        private const int SPAWN_TIME = 30000;
+        private static readonly Random RAND = new Random();
+        private int _spawnTimer = SPAWN_TIME;
+
 
         public Game1()
             : base()
@@ -88,7 +97,26 @@ namespace PuissANT
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
+
+            // Load Background textures
+            splashScreen = Content.Load<Texture2D>("ui/splashScreen");
+            backgroundTop = Content.Load<Texture2D>("ui/BackgroundTop");
+            antTexture = Content.Load<Texture2D>("ui/antCursor");
             
+            // Load And Play Music.
+            try
+            {
+                SongCollection playlist = new SongCollection();
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - the shovel"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - HS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - WS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - DT3"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - BC"));
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(playlist);
+            }
+            catch (Exception e) { }
+
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
             //int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
@@ -98,15 +126,15 @@ namespace PuissANT
             ScreenManager.Instance.GameWindow = GameWindow;
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
-            World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundSoft);
-            
+            World.Init((short) GameWindow.Width, (short) GameWindow.Height, TileInfo.GroundSoft);
+
+            titleOffsetX = GameWindow.Width / 2 - 200;
+            titleOffsetY = GameWindow.Height / 5;
             // Load the title into the world
             Int32[] buffer = new Int32[28160];
             Image img = new Image();
             img.LoadContent("title/Title_0", String.Empty);
             img.Texture.GetData<Int32>(buffer, 0, 28160);
-            titleOffsetX = GameWindow.Width / 2 - 200;
-            titleOffsetY = GameWindow.Height / 5;
             for (int y = 0; y < 80; y++)
             {
                 for (int x = 0; x < 352; x++)
@@ -178,6 +206,21 @@ namespace PuissANT
             PheromoneManger.Instance.Update(gameTime);
             ActorManager.Instance.Update(gameTime);
 
+            //Enemy spawner
+            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (_spawnTimer > SPAWN_TIME)
+            {
+                int x = ScreenManager.Instance.GameWindow.X;
+                if (RAND.Next(0, 100)%2 == 0)
+                    x += ScreenManager.Instance.GameWindow.Width;
+                int y = 0;
+                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
+                {
+                    y++;
+                }
+                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
+            }*/
+
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
             if (MouseManager.Instance.WasJustClicked
@@ -237,9 +280,14 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
-
-                        PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                     }
+                    /*for (int y = 0; y < 16; y++)
+                    {
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
+                        }
+                    }*/
                 }
             }
             
@@ -275,24 +323,41 @@ namespace PuissANT
             spriteBatch.Begin(
                 SpriteSortMode.Immediate, 
                 BlendState.NonPremultiplied);
-
-            IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
-            IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
-            IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
-            foreach(Actor actor in ug)
-                actor.Render(gameTime, spriteBatch);
-
-            TerrainManager.DrawTerrain(spriteBatch);
-
-            foreach(Actor actor in ag)
-                actor.Render(gameTime, spriteBatch);
             
-            foreach (Actor a in ActorManager.Instance.GetAllActors())
-                a.Render(gameTime, spriteBatch);
+            if (!queenPlaced)
+            {
+                TerrainManager.DrawTerrain(spriteBatch);
 
-            ScreenManager.Instance.Draw(spriteBatch);
-            PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
 
+                foreach (Actor a in ActorManager.Instance.GetAllActors())
+                    a.Render(gameTime, spriteBatch);
+
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                //spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
+            }
+            else
+            {
+                IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
+                IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
+                IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
+
+                spriteBatch.Draw(backgroundTop, Vector2.Zero, Color.White);
+
+                foreach (Actor actor in ug)
+                    actor.Render(gameTime, spriteBatch);
+
+                TerrainManager.DrawTerrain(spriteBatch);
+
+                foreach (Actor actor in ag)
+                    actor.Render(gameTime, spriteBatch);
+
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+
+            }
+                
             spriteBatch.End();
 
             base.Draw(gameTime);
