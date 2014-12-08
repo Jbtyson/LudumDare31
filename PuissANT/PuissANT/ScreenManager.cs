@@ -17,7 +17,7 @@ namespace PuissANT
         public SpriteBatch SpriteBatch;
         public Vector2 ScreenSize;
         public UiManager UiManager;
-        public ContentManager Content;
+        public Rectangle GameWindow;
 
         private static ScreenManager _instance;
         
@@ -37,9 +37,8 @@ namespace PuissANT
             UiManager = new UiManager();
         }
 
-        public void LoadContent(ContentManager Content)
+        public void LoadContent()
         {
-            this.Content = Content;
             UiManager.LoadContent();
         }
 
@@ -56,6 +55,21 @@ namespace PuissANT
         public void Draw(SpriteBatch spriteBatch)
         {
             UiManager.Draw(spriteBatch);
+        }
+
+        public Point getPointWithinGameWindow(Point p)
+        {
+            return new Point(
+                p.X - GameWindow.X,
+                p.Y - GameWindow.Y);
+        }
+
+        public bool isPointWithinGameWindow(Point p)
+        {
+            return p.X >= GameWindow.X
+                   && p.X <= (GameWindow.Width + GameWindow.X)
+                   && p.Y >= GameWindow.Y
+                   && p.Y <= (GameWindow.Width + GameWindow.Y);
         }
     }
 }

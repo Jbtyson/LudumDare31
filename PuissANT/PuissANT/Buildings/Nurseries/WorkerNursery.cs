@@ -48,7 +48,7 @@ namespace PuissANT.Buildings.Nurseries
                 r.Next(_texture.Width) - _texture.Width / 2,
                 r.Next(_texture.Height) - _texture.Height / 2);
 
-            _unit = new WorkerAnt(_buildingPosition + randomVariance, 1,1);
+            _unit = new WorkerAnt(_buildingPosition + randomVariance);
 
             tempBuf = new Color[_texture.Width * _texture.Height];
             shadeTexture = new Texture2D(_texture.GraphicsDevice, _texture.Width, _texture.Height);

@@ -1,15 +1,18 @@
 ﻿#region Using Statements
 using System;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-//using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Media;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Actors.Enemies;
+using PuissANT.Pheromones;
+using PuissANT.ui;
 using PuissANT.Util;
 using PuissANT.Buildings.Nurseries;
 
@@ -24,12 +27,28 @@ namespace PuissANT
     {
         public static Game1 Instance;
 
+        /// <summary>
+        /// The amount to scroll before changing pheromones.
+        /// </summary>
+        private const int CHANGE_OFFSET = 500;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         Rectangle GameWindow;
-
+        Texture2D splashScreen;
+        Texture2D backgroundTop;
         Texture2D antTexture;
+        
+        bool queenPlaced = false;
+        int titleOffsetX;
+        int titleOffsetY;
+        private int scrollOffset;
+
+        private const int SPAWN_TIME = 30000;
+        private static readonly Random RAND = new Random();
+        private int _spawnTimer = SPAWN_TIME;
+
 
         public Game1()
             : base()
@@ -38,6 +57,7 @@ namespace PuissANT
             graphics.IsFullScreen = false;
             graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.ScreenSize.X;
             graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.ScreenSize.Y;
+            
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -52,8 +72,7 @@ namespace PuissANT
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            
-            
+            IsMouseVisible = false;
 
             base.Initialize();
         }
@@ -73,44 +92,87 @@ namespace PuissANT
 
             ScreenManager.Instance.GraphicsDevice = GraphicsDevice;
             ScreenManager.Instance.SpriteBatch = spriteBatch;
-            ScreenManager.Instance.LoadContent(Content);
+            ScreenManager.Instance.LoadContent();
             ResourceManager.Instance.LoadContent();
+            PhermoneCursor.Instance.LoadContent(Content);
+            NumberRenderer.Instance.LoadContent(Content);
+
+            // Load Cursor Icons
+            Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
+
+            // Load Background textures
+            splashScreen = Content.Load<Texture2D>("ui/splashScreen");
+            backgroundTop = Content.Load<Texture2D>("ui/BackgroundTop");
+            antTexture = Content.Load<Texture2D>("ui/antCursor");
             
+            // Load And Play Music.
+            try
+            {
+                SongCollection playlist = new SongCollection();
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - the shovel"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - HS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - WS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - DT3"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - BC"));
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(playlist);
+            }
+            catch (Exception e) { }
+
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
-            int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
+            //int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
             GameWindow = new Rectangle(0, gameWindowVerticalOffset,
-                (int)ScreenManager.Instance.ScreenSize.X - gameWindowHorizontalOffset,
+                (int)ScreenManager.Instance.ScreenSize.X,
                 (int)ScreenManager.Instance.ScreenSize.Y - gameWindowVerticalOffset);
-            Actor.GameWindow = GameWindow;
+            ScreenManager.Instance.GameWindow = GameWindow;
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
-            World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundUndug);
-            for (int x = 0; x < GameWindow.Width; x++)
+            World.Init((short) GameWindow.Width, (short) GameWindow.Height, TileInfo.GroundSoft);
+
+            titleOffsetX = GameWindow.Width / 2 - 200;
+            titleOffsetY = GameWindow.Height / 5;
+            // Load the title into the world
+            Int32[] buffer = new Int32[28160];
+            Image img = new Image();
+            img.LoadContent("title/Title_0", String.Empty);
+            img.Texture.GetData<Int32>(buffer, 0, 28160);
+            for (int y = 0; y < 80; y++)
             {
-                for (int y = 0; y < GameWindow.Height / 5; y++)
+                for (int x = 0; x < 352; x++)
                 {
-                    World.Instance[x, y] = (short) TileInfo.Sky;
+                    if (buffer[x + y * 352] == -16777216)
+                        World.Instance[x + titleOffsetX, y + titleOffsetY - 28] = (short)TileInfo.GroundSoft;
+                    else
+                        World.Instance[x + titleOffsetX, y + titleOffsetY - 28] = (short)TileInfo.Sky;
                 }
             }
-
-            //antTexture = Content.Load<Texture2D>("ants/fireant.png");
-            /*antTexture = new Texture2D(graphics.GraphicsDevice, 2, 2);
-            Color[] colorBuf = new Color[antTexture.Width * antTexture.Height];
-            for (int i = 0; i < colorBuf.Length; i++)
+            for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
             {
-                colorBuf[i] = Color.Yellow;
+                //colorBuf[i] = Color.Yellow;
+                World.Instance[x, titleOffsetY + 8] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 9] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 10] = (short)TileInfo.Sky;
+                World.Instance[x, titleOffsetY + 11] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 1] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 2] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 3] = (short)TileInfo.Sky;
+                World.Instance[x + titleOffsetX + 340, titleOffsetY - 4] = (short)TileInfo.Sky;
             }
-            antTexture.SetData<Color>(colorBuf);*/
+            ReticulateDirtLayers();
 
-            Random r = new Random();
-            for (int i = 0; i < 20; i++)
+
+            QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5))); 
+            ActorManager.Instance.Add(queen);
+
+            /*Random r = new Random();
+            for (int i = 0; i < 10; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)).ToPoint(), 1, 1);
-                ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
+                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)));
+                //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
-            }
+            }*/
 
             Point screenMiddle = ScreenManager.Instance.ScreenSize.ToPoint();
             screenMiddle.X /= 2;
@@ -118,6 +180,8 @@ namespace PuissANT
 
             nursery = WorkerNursery.Debug_Spawn(screenMiddle, new Texture2D(GraphicsDevice, 50, 50));
             nursery.Debug_InitializeTest();
+
+            PheromoneManger.Instance.MousePheromoneType = TileInfo.Nest;
         }
 
         /// <summary>
@@ -137,34 +201,127 @@ namespace PuissANT
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        private bool _start = false;
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            
+            Point mouse = Mouse.GetState().Position;
+            Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                _start = true;
+            //Update managers.
+            MouseManager.Instance.Update(gameTime);
+            ScreenManager.Instance.Update(gameTime);
+            ResourceManager.Instance.Update(gameTime);
+            PheromoneManger.Instance.Update(gameTime);
+            ActorManager.Instance.Update(gameTime);
 
-            if (!_start)
-                return;
+            //Enemy spawner
+            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (_spawnTimer > SPAWN_TIME)
+            {
+                int x = ScreenManager.Instance.GameWindow.X;
+                if (RAND.Next(0, 100)%2 == 0)
+                    x += ScreenManager.Instance.GameWindow.Width;
+                int y = 0;
+                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
+                {
+                    y++;
+                }
+                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
+            }*/
 
-            /*Point mouse = Mouse.GetState().Position;
-            Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;*/
+            //Update user input.
+            PhermoneCursor.Instance.Update(gameTime);
+            if (MouseManager.Instance.WasJustClicked
+                && ScreenManager.Instance.isPointWithinGameWindow(MouseManager.Instance.MousePosition)
+                && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))
+            {
+                Point p = ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition);
+
+                //Just make sure that you can't place the nest higher than the horizon
+                if ((queenPlaced || (p.Y > GameWindow.Height / 5 && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.Sky)))
+                    && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.GroundImp))
+                {
+                    placePheromone(p);
+
+                    // If this is the first click in the game, we switch the title image
+                    if (!queenPlaced)
+                    {
+                        queenPlaced = true;
+
+                        // Switch update screen
+                        Int32[] buffer = new Int32[28160];
+                        Image img = new Image();
+                        img.LoadContent("title/Title_1", String.Empty);
+                        img.Texture.GetData<Int32>(buffer, 0, 28160);
+                        for (int y = 0; y < GameWindow.Height / 5; y++)
+                        {
+                            for (int x = 0; x < GameWindow.Width; x++)
+                            {
+                                World.Instance[x, y] = (short)TileInfo.Sky;
+                            }
+                        }
+                        for (int y = 0; y < 80; y++)
+                        {
+                            for (int x = 0; x < 352; x++)
+                            {
+                                if (buffer[x + y * 352] == -16777216)
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
+                                else
+                                    if (y > 28)
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    else
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                            }
+                        }
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
+                        }
+                    }
+                    /*for (int y = 0; y < 16; y++)
+                    {
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
+                        }
+                    }*/
+                }
+            }
+            
+            if(queenPlaced)
+            {
+                scrollOffset += MouseManager.Instance.ScrollOffset();
+                if (scrollOffset > CHANGE_OFFSET)
+                {
+                    scrollOffset = 0;
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                    Console.Out.WriteLine(PheromoneManger.Instance.MousePheromoneType.ToString());
+                }
+            }
 
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
 
+//DEBUG Code
             nursery.Update(gameTime);
 
             nursery.Debug_DamageBuilding();
 
             Window.Title = "Health = " + (nursery.PercentOfHealth * 100).ToString() + "%";
 
-            MouseManager.Instance.Update(gameTime);
-            ScreenManager.Instance.Update(gameTime);
-            ResourceManager.Instance.Update(gameTime);
             if (isGameOver())
             {
                 //handleGameOver
@@ -179,19 +336,48 @@ namespace PuissANT
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(new Color(70, 70, 70, 255));
+            GraphicsDevice.Clear(new Color(216, 199, 84));
             TerrainManager.SetTexture();
-
-            // TODO: Add your drawing code here
-            spriteBatch.Begin();
-
+            spriteBatch.Begin(
+                SpriteSortMode.Immediate, 
+                BlendState.NonPremultiplied);
+            
             nursery.Draw(spriteBatch, GameWindow);
 
-            foreach (Actor a in ActorManager.Instance.GetAllActors())
-                a.Render(gameTime, spriteBatch);
-            TerrainManager.DrawTerrain(spriteBatch);
-            ScreenManager.Instance.Draw(spriteBatch);
+            if (!queenPlaced)
+            {
+                TerrainManager.DrawTerrain(spriteBatch);
 
+                spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
+
+                foreach (Actor a in ActorManager.Instance.GetAllActors())
+                    a.Render(gameTime, spriteBatch);
+
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                //spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
+            }
+            else
+            {
+                IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
+                IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
+                IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
+
+                spriteBatch.Draw(backgroundTop, Vector2.Zero, Color.White);
+
+                foreach (Actor actor in ug)
+                    actor.Render(gameTime, spriteBatch);
+
+                TerrainManager.DrawTerrain(spriteBatch);
+
+                foreach (Actor actor in ag)
+                    actor.Render(gameTime, spriteBatch);
+
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+
+            }
+                
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -201,6 +387,439 @@ namespace PuissANT
         {
             //return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
             return false;
+        }
+
+        private void ReticulateDirtLayers()
+        {
+            //Add in layers of dirt. Will randomize better later
+            float minMediumDirtLayerFraction = 5.0f / 13.0f;
+            float maxMediumDirtLayerFraction = 8.0f / 13.0f;
+            float minHardDirtLayerFraction = 9.0f / 13.0f;
+            float maxHardDirtLayerFraction = 12.0f / 13.0f;
+
+            float minMediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * minMediumDirtLayerFraction;
+            float maxMediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * maxMediumDirtLayerFraction;
+            float minHardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * minHardDirtLayerFraction;
+            float maxHardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * maxHardDirtLayerFraction;
+            
+            Random RAND = new Random();
+
+            int currentMediumDirtLevel = RAND.Next((int)minMediumDirtLayer, (int)maxMediumDirtLayer);
+            int currentHardDirtLevel = RAND.Next((int)minHardDirtLayer, (int)maxHardDirtLayer);
+
+            int MAX_DIRT_DELTA = 3;
+
+            for (int x = 0; x < GameWindow.Width; x++)
+            {
+                //Recalculate the dirt level
+                int direction = (RAND.Next((int)minMediumDirtLayer, (int)maxMediumDirtLayer) > currentMediumDirtLevel ? 1 : -1);
+                int vel = RAND.Next(0, MAX_DIRT_DELTA);
+
+                currentMediumDirtLevel += vel * direction;
+
+                direction = (RAND.Next((int)minHardDirtLayer, (int)maxHardDirtLayer) > currentHardDirtLevel ? 1 : -1);
+                vel = RAND.Next(0, MAX_DIRT_DELTA);
+
+                currentHardDirtLevel += vel * direction;
+
+                for (int y = 0; y < GameWindow.Height; y++)
+                {
+                    if (((TileInfo)World.Instance[x, y]).IsTileType(TileInfo.Sky))
+                        continue;
+
+                    if (y >= currentHardDirtLevel)
+                    {
+                        World.Instance[x, y] = (short)TileInfo.GroundHard;
+                    }
+                    else if (y >= currentMediumDirtLevel)
+                    {
+                        World.Instance[x, y] = (short)TileInfo.GroundMed;
+                    }
+                }
+            }
+
+            int MAX_STONES, MIN_STONES, MIN_STONE_SIZE, MAX_STONE_SIZE;
+            
+            List<Point> allStones = new List<Point>();
+            //List<Tuple<int, int>> openStones = new List<Tuple<int, int>>();
+            List<KeyValuePair<Point, int>> possibleStones = new List<KeyValuePair<Point, int>>();
+
+            int stoneCount, possibleStoneRandCount;
+
+            //QUICK, EXTREMELY DIRTY COPY/PASTE CODE TO MAKE THINGS EASIER.
+
+            //Here's a description of the rock creation code. It picks a point randomly on the map.
+            //It calculates the size of the rock, then starts choosing a pixel that is next to
+            //one that the rock currently is on. It then adds the neighboring pixels to the new one
+            //to the list of potential next rock parts. It also keeps a count of the # of rock pixels
+            //adjacent to the possible next rock pixel to have a better chance of picking ones that
+            //are surrounded. After it hits the size limit, it goes through and finds any that are
+            //surrounded on all 4 sides and fills them in, then makes the rock on the map.
+
+            //It does this for pockets of soft dirt, pockets of medium dirt and for rocks. It takes a
+            // while, sorry it's not better optimized
+
+            //Note: it may be better to try Nick's approach & use Bernoulli's Line Drawing Algorithm
+
+            #region SoftDirtPatches
+            MAX_STONES = 100;
+            MIN_STONES = 50;
+
+            MIN_STONE_SIZE = 100;
+            MAX_STONE_SIZE = 250;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next((int)minMediumDirtLayer, (int)(minMediumDirtLayer + (maxMediumDirtLayer - minMediumDirtLayer) * 9 / 8));
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundSoft;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+            #region MediumDirtPatches
+            MAX_STONES = 30;
+            MIN_STONES = 15;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next((int)minHardDirtLayer, (int)(minHardDirtLayer + (maxHardDirtLayer - minHardDirtLayer) * 9 / 8));
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundMed;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+            #region rocks
+            MAX_STONES = 10;
+            MIN_STONES = 5;
+
+            MIN_STONE_SIZE = 100;
+            MAX_STONE_SIZE = 1000;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next(GameWindow.Height / 5, GameWindow.Height);
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundImp;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+        }
+
+        private void addNewPossibleStone(Point newStone, List<KeyValuePair<Point, int>> possibleStones)
+        {
+            bool foundIt = false;
+            for (int k = 0; k < possibleStones.Count; k++)
+            {
+                if (possibleStones[k].Key == newStone)
+                {
+                    //If it's already in there, increment the count so it has
+                    // a higher chance of being done
+                    possibleStones[k] = new KeyValuePair<Point, int>(
+                        possibleStones[k].Key, possibleStones[k].Value + 1);
+                    foundIt = true;
+                    break;
+                }
+            }
+            if (!foundIt)
+            {
+                //Add it
+                possibleStones.Add(new KeyValuePair<Point, int>(newStone, 1));
+            }
+        }
+
+        private void placePheromone(Point p)
+        {
+            while (((TileInfo) World.Instance[p.X, p.Y + 1]).IsTileType(TileInfo.Sky))
+            {
+                p = new Point(p.X, p.Y + 1);
+            }
+
+            PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, p);
         }
     }
 }

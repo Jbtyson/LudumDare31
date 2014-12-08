@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.ui;
 
 namespace PuissANT
 {
@@ -24,7 +25,7 @@ namespace PuissANT
         public bool IsActive;
         public string Text, FontName, Path, Effects;
         public SpriteFont Font;
-        public Vector2 Position, Scale;
+        public Vector2 Position, Scale, FontPosition;
         public Rectangle SourceRect;
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace PuissANT
         {
             Path = Text = Effects = string.Empty;
             FontName = "fonts/font";
-            Position = Vector2.Zero;
+            Position = FontPosition = Vector2.Zero;
             Scale = Vector2.One;
             Alpha = 1.0f;
             SourceRect = Rectangle.Empty;
@@ -46,7 +47,7 @@ namespace PuissANT
             Text = text;
 
             // Get the content
-            _content = ScreenManager.Instance.Content;
+            _content = Game1.Instance.Content;
 
             // Load the texture
             if (Path != string.Empty)
@@ -79,7 +80,11 @@ namespace PuissANT
             ScreenManager.Instance.SpriteBatch.Begin();
             if (Texture != null)
                 ScreenManager.Instance.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
-            ScreenManager.Instance.SpriteBatch.DrawString(Font, Text, Vector2.Zero, Color.White);
+
+            // Use the NumberRenderer to draw the text instead of a standard font.
+            //ScreenManager.Instance.SpriteBatch.DrawString(Font, Text, FontPosition, Color.White);
+            NumberRenderer.Instance.DrawText(ScreenManager.Instance.SpriteBatch, FontPosition, Text);
+            
             ScreenManager.Instance.SpriteBatch.End();
 
             // Store the render target and then reset it

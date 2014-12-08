@@ -31,11 +31,13 @@ namespace PuissANT.Ui
         private Color _buttonTextColor;
         private Vector2 _buttonTextPosition;
 
+        private object _value;
+
         /// <summary>
         /// A Click event. When the button is clicked (called on release),
         ///  it calls this event.
         /// </summary>
-        public delegate void ButtonEvent(string text);
+        public delegate void ButtonEvent(object sender);
 
         public ButtonEvent ButtonClicked;
 
@@ -75,6 +77,11 @@ namespace PuissANT.Ui
         {
             get { return _spriteFont; }
             set { _spriteFont = value; }
+        }
+        public object Value 
+        {
+            get { return _value; }
+            set { _value = value; }
         }
 
         public void SetTexture(Texture2D texture, ButtonState buttonState = ButtonState.Neutral)
@@ -150,7 +157,7 @@ namespace PuissANT.Ui
                             _buttonState = ButtonState.Over;
                         else
                             _buttonState = ButtonState.Neutral;
-                        ButtonClicked(_buttonText);
+                        ButtonClicked(_value);
                     }
                     else if (!isMouseOver)
                     {
@@ -162,7 +169,7 @@ namespace PuissANT.Ui
         }
 
         public void Draw(SpriteBatch spriteBatch)
-        {
+       {
             Texture2D buttonTexture = GetStateTexture();
             if(buttonTexture != null)
                 spriteBatch.Draw(buttonTexture, _buttonLocation, Color.White);

@@ -69,6 +69,7 @@ namespace PuissANT
         private MouseState _lastMouseState;
 
         private bool _clickStateChanged = false;
+        private int _scrollOffset = 0;
 
         /// <summary>
         /// Singleton access to the MouseManager class. Allows any
@@ -123,6 +124,8 @@ namespace PuissANT
             else
                 _clickStateChanged = false;
 
+            _scrollOffset = newMouseState.ScrollWheelValue - _lastMouseState.ScrollWheelValue;
+
             _lastMouseState = newMouseState;
         }
 
@@ -134,6 +137,11 @@ namespace PuissANT
         public bool IsReleased()
         {
             return _lastMouseState.LeftButton == ButtonState.Released;
+        }
+
+        public int ScrollOffset()
+        {
+            return _scrollOffset;
         }
 
         public Point MousePosition

@@ -24,32 +24,34 @@ namespace PuissANT.Ui
             ResourceDisplayOffset = Vector2.Zero;
             Image = new Image();
             Resources = new List<ResourceDisplay>();
+            //http://opengameart.org/content/window-frame
+            //_imagePath = "ui/panelBackground";
             _imagePath = "ui/statsBar";
-            _text = "this is the stats bar";
+            _text = String.Empty;
         }
 
         public void LoadContent()
         {
-            Dimensions = new Vector2(1080, 80);
-            ResourceDisplayStartPosition = new Vector2(22, 22);
+            Dimensions = new Vector2(1080, 35);
+            ResourceDisplayStartPosition = new Vector2(14, 14);
             ResourceDisplayOffset = new Vector2(192, 0);
             Image.Position = new Vector2(0, 0);
             Image.LoadContent(_imagePath, _text);
 
             int numResources = 0;
-            Resources.Add(new ResourceDisplay("dirt"));
-            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
-                ResourceDisplayStartPosition.Y));
-            Resources.Add(new ResourceDisplay("food"));
+            Resources.Add(new ResourceDisplay("queenHealth"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
                 ResourceDisplayStartPosition.Y));
             Resources.Add(new ResourceDisplay("ants"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
                 ResourceDisplayStartPosition.Y));
-            Resources.Add(new ResourceDisplay("birthsPerSec"));
+            Resources.Add(new ResourceDisplay("dirt"));
+            Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
+                ResourceDisplayStartPosition.Y));           
+            Resources.Add(new ResourceDisplay("food"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
                 ResourceDisplayStartPosition.Y));
-            Resources.Add(new ResourceDisplay("queenHealth"));
+            Resources.Add(new ResourceDisplay("birthsPerSec"));
             Resources[numResources].LoadContent(new Vector2(ResourceDisplayStartPosition.X + numResources++ * ResourceDisplayOffset.X,
                 ResourceDisplayStartPosition.Y));
         }
@@ -68,7 +70,7 @@ namespace PuissANT.Ui
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Image.Draw(spriteBatch);
+            //Image.Draw(spriteBatch);
             foreach (ResourceDisplay r in Resources)
                 r.Draw(spriteBatch);
         }
