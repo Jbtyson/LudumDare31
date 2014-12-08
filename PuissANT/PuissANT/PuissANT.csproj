@@ -129,8 +129,12 @@
     <Content Include="Content\sprites\ants\hierophANT_2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\sprites\enemies\beetle.png" />
-    <Content Include="Content\sprites\enemies\worm.png" />
+    <Content Include="Content\sprites\enemies\beetle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\sprites\enemies\worm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ui\attackNeutralButton.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

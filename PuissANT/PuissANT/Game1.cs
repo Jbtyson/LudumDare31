@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.ui;
 using PuissANT.Util;
@@ -40,6 +41,11 @@ namespace PuissANT
         int titleOffsetX;
         int titleOffsetY;
         private int scrollOffset;
+
+        private const int SPAWN_TIME = 30000;
+        private static readonly Random RAND = new Random();
+        private int _spawnTimer = SPAWN_TIME;
+
 
         public Game1()
             : base()
@@ -177,6 +183,21 @@ namespace PuissANT
             ResourceManager.Instance.Update(gameTime);
             PheromoneManger.Instance.Update(gameTime);
             ActorManager.Instance.Update(gameTime);
+
+            //Enemy spawner
+            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (_spawnTimer > SPAWN_TIME)
+            {
+                int x = ScreenManager.Instance.GameWindow.X;
+                if (RAND.Next(0, 100)%2 == 0)
+                    x += ScreenManager.Instance.GameWindow.Width;
+                int y = 0;
+                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
+                {
+                    y++;
+                }
+                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
+            }*/
 
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);

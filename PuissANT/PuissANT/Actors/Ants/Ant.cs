@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.Util;
 
@@ -13,6 +14,11 @@ namespace PuissANT.Actors.Ants
     {
         public double Health;
         protected Point Target;
+
+        public virtual int Damage
+        {
+            get { return 1; }
+        }
 
         protected Ant(Point position,int width, int heigth, Texture2D tex)
             : base(position, width, heigth, tex)
@@ -77,6 +83,11 @@ namespace PuissANT.Actors.Ants
                 }
             }
             return Position == Target;
+        }
+
+        public virtual void Attacked(Enemy e)
+        {
+            Health -= e.Damage;
         }
 
         protected abstract Point getNextPosition();
