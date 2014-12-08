@@ -13,6 +13,7 @@ namespace PuissANT.Ui
     {
         private List<IPanel> _panels;
         private DropDownBox _box;
+        public List<Rectangle> HitBoxes;
 
         public List<IPanel> PanelList
         {
@@ -24,6 +25,7 @@ namespace PuissANT.Ui
             _panels = new List<IPanel>();
             _panels.Add(new StatsPanel());
             _box = new DropDownBox();
+            HitBoxes = new List<Rectangle>();
         }
 
         public void LoadContent()
@@ -52,6 +54,11 @@ namespace PuissANT.Ui
             foreach (IPanel p in _panels)
                 p.Draw(spriteBatch);
             _box.Draw(spriteBatch);
+        }
+
+        public bool IsMouseInHitbox()
+        {
+
         }
     }
 }
