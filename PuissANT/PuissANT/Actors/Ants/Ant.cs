@@ -61,19 +61,21 @@ namespace PuissANT.Actors.Ants
             }
         }
 
-        protected virtual bool MoveTowardsTarget()
+        protected virtual bool MoveTowardsTarget(bool clear = true)
         {
             Position = getNextPosition();
-            for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
+            if (clear)
             {
-                for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
+                for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
                 {
-                    TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
-                        (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                    for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
+                    {
+                        TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
+                        World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
+                            (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                    }
                 }
             }
-
             return Position == Target;
         }
 

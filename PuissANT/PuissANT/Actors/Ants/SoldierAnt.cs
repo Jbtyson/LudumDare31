@@ -12,17 +12,18 @@ namespace PuissANT.Actors.Ants
     {
         private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug};
         private const int MEMORY = 500;
-        private const int UPDATE_TIME = 1000;
+        private const int UPDATE_TIME = 1;
 
         private PriorityQueue<Point> _openQueue;
         private List<Point> _closedList;
         private int _updateTimer;
 
-        public SoldierAnt(Point position, int width, int height, Texture2D tex)
-            : base(position, width, height, tex)
+        public SoldierAnt(Point position)
+            : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>(MEMORY);
+            Target = INVALID_POINT;
         }
 
         public override void Update(GameTime time)
@@ -34,7 +35,7 @@ namespace PuissANT.Actors.Ants
                 _updateTimer = 0;
                 if (Target != INVALID_POINT)
                 {
-                    if (MoveTowardsTarget())
+                    if (MoveTowardsTarget(false))
                     {
                         _openQueue.Clear();
                         _closedList.Clear();
@@ -45,7 +46,8 @@ namespace PuissANT.Actors.Ants
                 }
                 else
                 {
-                    Target = GetNewTarget();
+                    Target = GetNewTarget(
+                        typeof(AttackPheromone));
                 }
             }
         }

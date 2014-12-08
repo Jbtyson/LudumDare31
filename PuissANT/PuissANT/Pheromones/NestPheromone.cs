@@ -21,6 +21,7 @@ namespace PuissANT.Pheromones
             for (int i = 0; i < 3; i++)
             {
                 ActorManager.Instance.Add(new WorkerAnt(ant.Position));
+                //ActorManager.Instance.Add(new SoldierAnt(ant.Position));
             }
 
             base.Reached();
