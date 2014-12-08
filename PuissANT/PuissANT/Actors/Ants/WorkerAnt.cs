@@ -11,12 +11,11 @@ namespace PuissANT.Actors.Ants
 {
     public class WorkerAnt : Ant
     {
-        private static readonly Random RAND = new Random();
-        private const short PASSIBLE_TERRIAN = 0x1;
-        private const long UPDATE_TIME = 100000;
+        private static readonly TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
+        private const float UPDATE_TIME = 1;
         private const short MEMORY = 500;
 
-        private long _updateTimer;
+        private float _updateTimer;
         private readonly PriorityQueue<Point> _openQueue;
         private readonly List<Point> _closedList; 
 
@@ -24,7 +23,7 @@ namespace PuissANT.Actors.Ants
             : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
-            _closedList = new List<Point>();
+            _closedList = new List<Point>(MEMORY);
             Target = INVALID_POINT;
         }
 
@@ -39,33 +38,25 @@ namespace PuissANT.Actors.Ants
         public override void Update(GameTime time)
         {
             _updateTimer += time.ElapsedGameTime.Milliseconds;
-            if (_updateTimer >= UPDATE_TIME)
+            if (!(_updateTimer > UPDATE_TIME)) return;
+
+            _updateTimer = 0;
+            if (Target != INVALID_POINT)
             {
-                _updateTimer = 0;
-                if (Target != INVALID_POINT)
+                //Build tunnel
+                if (MoveTowardsTarget())
                 {
-                    //Build tunnel
-                    if (MoveTowardsTarget())
-                    {
-                        _openQueue.Clear();
-                        _closedList.Clear();
-                        PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
-                        Target = INVALID_POINT;
-                    }
-                }
-                else
-                {
-                    //Find new target
-                    Target = GetNewTarget(
-                        typeof(NestPheromone));
+                    _openQueue.Clear();
+                    _closedList.Clear();
+                    PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
+                    Target = INVALID_POINT;
                 }
             }
-            
-        }
-
-        private Point GetNewTarget()
-        {
-            return GetNewTarget(typeof(NestPheromone));
+            else
+            {
+                //Find new target
+                Target = GetNewTarget(typeof(NestPheromone));
+            }
         }
 
         protected override Point getNextPosition()
@@ -86,23 +77,29 @@ namespace PuissANT.Actors.Ants
                     if (tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable()) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable(PASSABLE_TILES)) //Cannot go through this terrian anyway
                         continue;
 
                     if (_closedList.All(t => t != tempPosition.ToPoint()))
                     {
                         int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100)) / 100;
-                        value *= RAND.Next(1, 3);
-                        if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
-                            value *= 3;
-                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
-                            value *= 2;
-                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
-                            value *= RAND.Next(1, 2);
-                        //else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
-                            //value *= RAND.Next(1, 1);
                         if (tempPosition.ToPoint() == Target)
+                        {
                             value = 0;
+                        }
+                        else
+                        {
+                            value *= RAND.Next(1, 8);
+                            if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
+                                value /= 4;
+                            else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                                value /= 3;
+                            else if(((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                                value /= 2;
+                            else if(((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundDug))
+                                value *= 2;
+                            
+                        }
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition.ToPoint());

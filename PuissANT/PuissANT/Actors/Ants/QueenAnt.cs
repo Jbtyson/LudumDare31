@@ -11,7 +11,7 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : WorkerAnt
     {
-        private const float PATH_UPDATE_TIME = 1000;
+        private const float PATH_UPDATE_TIME = 1;
         private const float ANI_UPDATE_TIME = 500;
 
         private float pathTimer;
@@ -30,7 +30,6 @@ namespace PuissANT.Actors.Ants
 
         public override void Update(GameTime time)
         {
-            
             aniTimer += time.ElapsedGameTime.Milliseconds;
             if (aniTimer > ANI_UPDATE_TIME)
             {
@@ -44,6 +43,7 @@ namespace PuissANT.Actors.Ants
             pathTimer += time.ElapsedGameTime.Milliseconds;
             if (!(pathTimer > PATH_UPDATE_TIME)) return;
 
+            pathTimer = 0;
             if (Target != INVALID_POINT)
             {
                 if (MoveTowardsTarget())

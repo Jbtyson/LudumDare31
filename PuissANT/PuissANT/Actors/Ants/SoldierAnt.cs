@@ -10,6 +10,7 @@ namespace PuissANT.Actors.Ants
 {
     public class SoldierAnt : Ant
     {
+        private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug};
         private const int MEMORY = 500;
         private const int UPDATE_TIME = 1000;
 
@@ -67,7 +68,7 @@ namespace PuissANT.Actors.Ants
                     if (tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable()) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable(PASSIBLE_TILES)) //Cannot go through this terrian anyway
                         continue;
 
                     if (_closedList.All(t => t != tempPosition.ToPoint()))
