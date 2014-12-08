@@ -10,7 +10,7 @@ namespace PuissANT
     static class TerrainManager
     {
         private static readonly Color DEFAULT_COLOR = Color.Transparent;
-        private static readonly Color DIRT_COLOR = Color.Black;
+        private static readonly Color DIRT_COLOR = new Color(92,51,23);
 
         private static Rectangle _screenSize;
         private static Texture2D _texture;
@@ -43,7 +43,7 @@ namespace PuissANT
             CheckIfInitialized();
             Color currentColor = _colorBuffer[(y * _screenSize.Width) + x];
             currentColor.A = 0;
-            
+
             UpdatePixel(x, y, currentColor);
 
         }
