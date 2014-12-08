@@ -28,11 +28,12 @@ namespace PuissANT.Actors.Ants
             Target = INVALID_POINT;
         }
 
-        protected WorkerAnt(Point position, int width, int height, Texture2D tex)
-            : base(position, width, height, tex)
+        protected WorkerAnt(Point position, int width, int height, Texture2D tex, Rectangle rect)
+            : base(position, width, height, tex, rect)
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
+            Target = INVALID_POINT;
         }
 
         public override void Update(GameTime time)
@@ -44,21 +45,10 @@ namespace PuissANT.Actors.Ants
                 if (Target != INVALID_POINT)
                 {
                     //Build tunnel
-                    Position = getNextPosition();
-                    for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
-                    {
-                        for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
-                        {
-                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
-                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
-                        }
-                    }
-
-                    if (Position == Target)
+                    if (MoveTowardsTarget())
                     {
                         _openQueue.Clear();
                         _closedList.Clear();
-                        ;
                         PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
                         Target = INVALID_POINT;
                     }
@@ -66,26 +56,55 @@ namespace PuissANT.Actors.Ants
                 else
                 {
                     //Find new target
-                    IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType(TileInfo.Nest);
-                    double minDistance;
-                    if (points.Any())
-                    {
-                        Pheromone bestPoint = points.First();
-                        minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
-                        foreach (Pheromone p in points)
-                        {
-                            double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
-                            if (d2 < minDistance)
-                            {
-                                bestPoint = p;
-                                minDistance = d2;
-                            }
-                        }
-                        Target = bestPoint.Position;
-                    }
+                    Target = GetNewTarget();
                 }
             }
             
+        }
+
+        protected bool MoveTowardsTarget()
+        {
+            Position = getNextPosition();
+            for (int x = 0; x < this._hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
+            {
+                for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
+                {
+                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] |= (short)TileInfo.GroundDug;
+                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] &= ~((short)TileInfo.GroundUndug);
+                }
+            }
+
+            return Position == Target;
+        }
+
+        private Point GetNewTarget()
+        {
+            return GetNewTarget(TileInfo.Nest);
+        }
+
+        protected Point GetNewTarget(TileInfo type)
+        {
+            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType(type);
+            double minDistance;
+            if (points.Any())
+            {
+                Pheromone bestPoint = points.First();
+                minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
+                foreach (Pheromone p in points)
+                {
+                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
+                    if (d2 < minDistance)
+                    {
+                        bestPoint = p;
+                        minDistance = d2;
+                    }
+                }
+                return bestPoint.Position;
+            }
+            else
+            {
+                return INVALID_POINT;
+            }
         }
 
         private Point getNextPosition()

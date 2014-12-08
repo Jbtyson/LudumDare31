@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq.Expressions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace PuissANT.Actors.Ants
@@ -13,6 +14,11 @@ namespace PuissANT.Actors.Ants
 
         protected Ant(Point position,int width, int heigth, Texture2D tex)
             : base(position, width, heigth, tex)
+        {
+        }
+
+        protected Ant(Point position, int width, int heigth, Texture2D tex, Rectangle rect)
+            : base(position, width, heigth, tex, rect)
         {
         }
 

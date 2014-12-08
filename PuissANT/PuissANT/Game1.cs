@@ -101,17 +101,17 @@ namespace PuissANT
             }
             antTexture.SetData<Color>(colorBuf);*/
 
-            QueenAnt queen = new QueenAnt(new Vector2(50, 100).ToPoint(), 4, 4); 
+            QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 6, 6); 
             ActorManager.Instance.Add(queen);
 
-            Random r = new Random();
-            for (int i = 0; i < 5; i++)
+            /*Random r = new Random();
+            for (int i = 0; i < 1; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Vector2(GameWindow.Width / 2, (GameWindow.Height/5)).ToPoint(), 1, 1);
+                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 1, 1);
                 //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
-            }
+            }*/
 
             PheromoneManger.Instance.MousePheromoneType = TileInfo.Nest;
         }
@@ -133,21 +133,13 @@ namespace PuissANT
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        private bool _start = false;
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                _start = true;
-            PhermoneCursor.Instance.Update(gameTime);
+            
             Point mouse = Mouse.GetState().Position;
             Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
-
-            if (!_start)
-                return;
 
             //Update managers.
             MouseManager.Instance.Update(gameTime);
@@ -155,6 +147,7 @@ namespace PuissANT
             ResourceManager.Instance.Update(gameTime);
 
             //Update user input.
+            PhermoneCursor.Instance.Update(gameTime);
             if (MouseManager.Instance.WasJustClicked
                 && ScreenManager.Instance.isPointWithinGameWindow(MouseManager.Instance.MousePosition)
                 && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))

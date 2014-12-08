@@ -11,28 +11,50 @@ namespace PuissANT.Actors.Ants
 {
     public class QueenAnt : WorkerAnt
     {
-        private float timer;
+        private const float PATH_UPDATE_TIME = 1000;
+        private const float ANI_UPDATE_TIME = 500;
+
+        private float pathTimer;
+        private float aniTimer;
         private int frame;
+
+        private bool _nestFound;
+
         public QueenAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"))
+            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
         {
-            timer = 0;
+            aniTimer = 0;
+            pathTimer = 0;
             frame = 0;
         }
 
         public override void Update(GameTime time)
         {
-            timer += time.ElapsedGameTime.Milliseconds;
-            if (timer > 500)
+            
+            aniTimer += time.ElapsedGameTime.Milliseconds;
+            if (aniTimer > ANI_UPDATE_TIME)
             {
                 frame = ++frame % 3;
-                timer = 0;
+                _drawingWindow = new Rectangle(0, frame*20, 30, 20);
+                aniTimer = 0;
             }
-        }
 
-        public override void Render(GameTime time, SpriteBatch batch)
-        {
-            batch.Draw(_texture, _texturePoint.ToVector2(), new Rectangle(0,frame*20,30,20), Color.White);
+            if (_nestFound) return;
+
+            pathTimer += time.ElapsedGameTime.Milliseconds;
+            if (!(pathTimer > PATH_UPDATE_TIME)) return;
+
+            if (Target != INVALID_POINT)
+            {
+                if (MoveTowardsTarget())
+                {
+                    _nestFound = true;
+                }
+            }
+            else
+            {
+                Target = GetNewTarget(TileInfo.Nest);
+            }
         }
     }
 }

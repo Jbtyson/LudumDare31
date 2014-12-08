@@ -3,6 +3,7 @@ using System.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Util;
 
 namespace PuissANT.ui
 {
@@ -14,6 +15,7 @@ namespace PuissANT.ui
         private Vector2 Center = new Vector2(12, 12);
 
         private Texture2D[] cursors = new Texture2D[1];
+        private bool _drawCursor;
 
         public static PhermoneCursor Instance
         {
@@ -33,13 +35,13 @@ namespace PuissANT.ui
 
         public void Update(GameTime gameTime)
         {
-            Position.X = MouseManager.Instance.MouseX+500;
-            Position.Y = MouseManager.Instance.MouseY;
+            /*Position.X = MouseManager.Instance.MouseX+500;
+            Position.Y = MouseManager.Instance.MouseY;*/
         }
 
         public void Render(GameTime gameTime, SpriteBatch spriteBatch) 
         {
-            spriteBatch.Draw(cursors[0], Position - Center, Color.White);
+            spriteBatch.Draw(cursors[0], MouseManager.Instance.MousePosition.ToVector2() - Center, Color.White);
         }
 
 
