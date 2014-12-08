@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.Util;
 
@@ -10,13 +12,21 @@ namespace PuissANT.Actors.Ants
 {
     public class SoldierAnt : Ant
     {
-        private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug};
+        private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug };
         private const int MEMORY = 500;
         private const int UPDATE_TIME = 1;
+        private const int MIN_ENEMY_DIS = 100;
+        private const int DAMAGE = 2;
+        private const int HEALTH = 10;
 
         private PriorityQueue<Point> _openQueue;
         private List<Point> _closedList;
         private int _updateTimer;
+
+        public override int Damage
+        {
+            get { return DAMAGE; }
+        }
 
         public SoldierAnt(Point position)
             : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
@@ -43,11 +53,15 @@ namespace PuissANT.Actors.Ants
                     }
 
                     //Check for enemy to attack.
+                    foreach (Enemy e in ActorManager.Instance.GetActorsByType<Enemy>(Position.ToVector2(), 10))
+                    {
+                        if (canAttack(e))
+                            e.Attacked(this);
+                    }
                 }
                 else
                 {
-                    Target = GetNewTarget(
-                        typeof(AttackPheromone));
+                    Target = getNewTarget();
                 }
             }
         }
@@ -91,6 +105,33 @@ namespace PuissANT.Actors.Ants
                 _closedList.RemoveAt(0);
             _closedList.Add(v);
             return v;
+        }
+
+        private Point getNewTarget(params Type[] types)
+        {
+            //First check for an enemy.
+            foreach (Enemy e in ActorManager.Instance.GetActorsByType<Enemy>())
+            {
+                double distance = Vector2.DistanceSquared(Position.ToVector2(), e.Position.ToVector2());
+                if (distance < MIN_ENEMY_DIS)
+                {
+                    return e.Position;
+                }
+            }
+
+            return GetNewTarget(
+                typeof (AttackPheromone));
+        }
+
+        private bool canAttack(Enemy a)
+        {
+            return true;
+        }
+
+        public override void Attacked(Enemy a)
+        {
+            base.Attacked(a);
+            Target = a.Position;
         }
     }
 }

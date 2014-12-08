@@ -58,6 +58,7 @@ namespace PuissANT.Actors.Ants
                     if (p != null)
                     {
                         //Ohterwise not the first on here.
+                        p.Reached();
                         PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
                     }
                     Target = INVALID_POINT;

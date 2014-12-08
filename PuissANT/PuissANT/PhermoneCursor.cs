@@ -31,7 +31,7 @@ namespace PuissANT.ui
         public void LoadContent(ContentManager Content)
         {
             // Load Cursor Icons
-            cursors[TileInfo.Nest] = Content.Load<Texture2D>("phermones/NestPheromone");
+            cursors[TileInfo.Nest] = Content.Load<Texture2D>("ui/antCursor");
             cursors[TileInfo.Attack] = Content.Load<Texture2D>("phermones/AttackPheromone");
             cursors[TileInfo.Gather] = Content.Load<Texture2D>("phermones/GatherPheromone");
             cursors[TileInfo.WorkerSpawn] = Content.Load<Texture2D>("phermones/WorkerPhermone");

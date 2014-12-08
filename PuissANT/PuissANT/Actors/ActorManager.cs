@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using PuissANT.Util;
 
 namespace PuissANT.Actors
 {
@@ -37,10 +38,21 @@ namespace PuissANT.Actors
             return _actors.AsReadOnly();
         }
 
+        public IEnumerable<Actor> GetAllActors(Vector2 origin, double radius)
+        {
+            return _actors.Where(a => Vector2.DistanceSquared(a.Position.ToVector2(), origin) < radius);
+        }
+
         public IEnumerable<T> GetActorsByType<T>() 
             where T : Actor
         {
             return _actors.OfType<T>();
+        }
+
+        public IEnumerable<T> GetActorsByType<T>(Vector2 origin, double radius)
+            where T : Actor
+        {
+            return _actors.OfType<T>().Where(a => Vector2.DistanceSquared(a.Position.ToVector2(), origin) < radius);
         }
 
         public void Update(GameTime game)
