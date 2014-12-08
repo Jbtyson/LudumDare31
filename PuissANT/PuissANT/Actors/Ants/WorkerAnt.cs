@@ -20,8 +20,8 @@ namespace PuissANT.Actors.Ants
         private readonly PriorityQueue<Point> _openQueue;
         private readonly List<Point> _closedList; 
 
-        public WorkerAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
+        public WorkerAnt(Point position)
+            : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
         {
             _openQueue = new PriorityQueue<Point>();
             _closedList = new List<Point>();
@@ -79,12 +79,13 @@ namespace PuissANT.Actors.Ants
 
         private Point GetNewTarget()
         {
-            return GetNewTarget(TileInfo.Nest);
+            return GetNewTarget<NestPheromone>();
         }
 
-        protected Point GetNewTarget(TileInfo type)
+        protected Point GetNewTarget<T>()
+            where T : Pheromone
         {
-            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType(type);
+            IEnumerable<Pheromone> points = PheromoneManger.Instance.GetPheromoneOfType<T>();
             double minDistance;
             if (points.Any())
             {
@@ -125,13 +126,12 @@ namespace PuissANT.Actors.Ants
                     if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if ((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
+                    if ((World.Instance[(int) tempPosition.X, (int) tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
                         continue;
                     
-                    //if(!_openQueue.ContainsValue(tempPosition) && _closedList.All(t => t != tempPosition))
                     if(_closedList.All(t => t != tempPosition.ToPoint()))
                     {
-                        int value = (int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100);
+                        int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100))/100;
                         value *= RAND.Next(1, 3);
                         if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
                             value *= RAND.Next(1, 3);

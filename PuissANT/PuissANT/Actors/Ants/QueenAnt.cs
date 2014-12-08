@@ -20,8 +20,8 @@ namespace PuissANT.Actors.Ants
 
         private bool _nestFound;
 
-        public QueenAnt(Point position, int width, int height)
-            : base(position, width, height, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
+        public QueenAnt(Point position)
+            : base(position, 6, 6, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
         {
             aniTimer = 0;
             pathTimer = 0;
@@ -49,11 +49,13 @@ namespace PuissANT.Actors.Ants
                 if (MoveTowardsTarget())
                 {
                     _nestFound = true;
+                    NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
+                    p.Reached();
                 }
             }
             else
             {
-                Target = GetNewTarget(TileInfo.Nest);
+                Target = GetNewTarget<NestPheromone>();
             }
         }
     }

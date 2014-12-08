@@ -101,14 +101,14 @@ namespace PuissANT
             }
             antTexture.SetData<Color>(colorBuf);*/
 
-            QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 6, 6); 
+            QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5))); 
             ActorManager.Instance.Add(queen);
 
             /*Random r = new Random();
             for (int i = 0; i < 1; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 1, 1);
+                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)));
                 //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
             }*/
@@ -145,6 +145,8 @@ namespace PuissANT
             MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
             ResourceManager.Instance.Update(gameTime);
+            PheromoneManger.Instance.Update(gameTime);
+            ActorManager.Instance.Update(gameTime);
 
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
