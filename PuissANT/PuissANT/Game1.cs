@@ -281,13 +281,8 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
                     }
-                    /*for (int y = 0; y < 16; y++)
-                    {
-                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
-                        {
-                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
-                        }
-                    }*/
+
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                 }
             }
             
