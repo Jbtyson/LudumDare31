@@ -48,6 +48,26 @@ namespace PuissANT
         {
             
         }
-        
+
+        public void AddDirt(double num)
+        {
+            Resources["dirt"] += num;
+        }
+        public void AddFood(double num)
+        {
+            Resources["food"] += num;
+        }
+        public void AddAnts(double num)
+        {
+            Resources["ants"] += num;
+        }
+        public void AddLarvae(double num)
+        {
+            Resources["birthsPerSec"] += num;
+        }
+        public void AddHealth(double num)
+        {
+            Resources["queenHealth"] += num;
+        }
     }
 }

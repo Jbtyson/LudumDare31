@@ -26,7 +26,7 @@ namespace PuissANT.Ui
             Children = new List<Button>();
             Text = String.Empty;
             Hitbox = new Rectangle();
-            Expanded = false;
+            Expanded = ButtonClickedCurrent = ButtonClickedLast = false;
         }
 
         public void LoadContent()
