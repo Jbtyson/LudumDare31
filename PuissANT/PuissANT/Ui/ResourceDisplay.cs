@@ -33,10 +33,8 @@ namespace PuissANT.Ui
 
         public void LoadContent(Vector2 position)
         {
-            Position = new Vector2(0, 660);
-
             BarOffset = new Vector2(0, 0);
-            IconOffset = new Vector2(6, 2);
+            IconOffset = new Vector2(0, 0);
             FontOffset = new Vector2(50, 6);
             
             Icon.LoadContent(Icon.Path, String.Empty);

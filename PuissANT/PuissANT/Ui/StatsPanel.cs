@@ -70,7 +70,7 @@ namespace PuissANT.Ui
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Image.Draw(spriteBatch);
+            //Image.Draw(spriteBatch);
             foreach (ResourceDisplay r in Resources)
                 r.Draw(spriteBatch);
         }
