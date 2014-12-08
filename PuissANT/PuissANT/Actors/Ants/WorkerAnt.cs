@@ -20,7 +20,8 @@ namespace PuissANT.Actors.Ants
 
         private long _updateTimer;
         private readonly PriorityQueue<Point> _openQueue;
-        private readonly List<Point> _closedList; 
+        private readonly List<Point> _closedList;
+        private byte _diggingWaitTime = 0;
 
         public WorkerAnt(Point position)
             : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
@@ -66,14 +67,28 @@ namespace PuissANT.Actors.Ants
 
         protected bool MoveTowardsTarget()
         {
-            Position = getNextPosition();
+            Point newPosition = getNextPosition();
+
+            if (newPosition == Position)
+                return false;
+
+            Position = newPosition;
+
             for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
             {
                 for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
                 {
                     TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
+                    if (tile.IsTileType(TileInfo.GroundImp))
+                        continue;
+
                     World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
                         (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+
+                    if (tile.IsTileType(TileInfo.GroundMed))
+                        _diggingWaitTime = 1;
+                    else if (tile.IsTileType(TileInfo.GroundHard))
+                        _diggingWaitTime = 2;
                 }
             }
 
@@ -113,6 +128,11 @@ namespace PuissANT.Actors.Ants
 
         private Point getNextPosition()
         {
+            if (_diggingWaitTime > 0)
+            {
+                _diggingWaitTime--;
+                return Position;
+            }
             for (int i = -1; i < 2; i++)
             {
                 for (int j = -1; j < 2; j++)
@@ -139,11 +159,17 @@ namespace PuissANT.Actors.Ants
                         if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
                             value *= RAND.Next(1, 3);
                         else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                        {
+                            _diggingWaitTime = 1;
                             value *= RAND.Next(1, 2);
-                        //else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                        }
+                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                        {
+                            _diggingWaitTime = 2;
                             //value *= RAND.Next(1, 1);
-                        if (tempPosition.ToPoint() == Target)
-                            value = 0;
+                        }
+                            if (tempPosition.ToPoint() == Target)
+                                value = 0;
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition.ToPoint());

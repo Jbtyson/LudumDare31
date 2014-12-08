@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PuissANT
 {
-    [Flags]
+    //[Flags]
     public enum TileInfo
     {
         //TileInfo is split like this:
@@ -117,7 +117,7 @@ namespace PuissANT
 
         public static bool IsPassable(this TileInfo tile, TileInfo[] passableTiles)
         {
-            return passableTiles.Contains<TileInfo>(tile); 
+            return passableTiles.Any(t => ((short) t & (short)tile) != 0); 
         }
     }
 }

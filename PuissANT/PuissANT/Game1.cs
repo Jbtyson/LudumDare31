@@ -8,6 +8,7 @@ using PuissANT.Actors.Ants;
 using PuissANT.Pheromones;
 using PuissANT.ui;
 using PuissANT.Util;
+using System.Collections.Generic;
 
 #endregion
 
@@ -200,25 +201,423 @@ namespace PuissANT
         private void ReticulateDirtLayers()
         {
             //Add in layers of dirt. Will randomize better later
-            float mediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 / 2;
-            float HardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * 5 / 6;
+            float minMediumDirtLayerFraction = 5.0f / 13.0f;
+            float maxMediumDirtLayerFraction = 8.0f / 13.0f;
+            float minHardDirtLayerFraction = 9.0f / 13.0f;
+            float maxHardDirtLayerFraction = 12.0f / 13.0f;
+
+            float minMediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * minMediumDirtLayerFraction;
+            float maxMediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * maxMediumDirtLayerFraction;
+            float minHardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * minHardDirtLayerFraction;
+            float maxHardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * maxHardDirtLayerFraction;
+            
+            Random RAND = new Random();
+
+            int currentMediumDirtLevel = RAND.Next((int)minMediumDirtLayer, (int)maxMediumDirtLayer);
+            int currentHardDirtLevel = RAND.Next((int)minHardDirtLayer, (int)maxHardDirtLayer);
+
+            int MAX_DIRT_DELTA = 3;
 
             for (int x = 0; x < GameWindow.Width; x++)
             {
+                //Recalculate the dirt level
+                int direction = (RAND.Next((int)minMediumDirtLayer, (int)maxMediumDirtLayer) > currentMediumDirtLevel ? 1 : -1);
+                int vel = RAND.Next(0, MAX_DIRT_DELTA);
+
+                currentMediumDirtLevel += vel * direction;
+
+                direction = (RAND.Next((int)minHardDirtLayer, (int)maxHardDirtLayer) > currentHardDirtLevel ? 1 : -1);
+                vel = RAND.Next(0, MAX_DIRT_DELTA);
+
+                currentHardDirtLevel += vel * direction;
+
                 for (int y = 0; y < GameWindow.Height; y++)
                 {
                     if (((TileInfo)World.Instance[x, y]).IsTileType(TileInfo.Sky))
                         continue;
 
-                    if (y - (float)Math.Abs(GameWindow.Width / 2 - x) / (GameWindow.Width / 2) * 50 + 25 >= HardDirtLayer)
+                    if (y >= currentHardDirtLevel)
                     {
                         World.Instance[x, y] = (short)TileInfo.GroundHard;
                     }
-                    else if (y - (float)Math.Abs(GameWindow.Width / 2 - x) / (GameWindow.Width / 2) * 50 + 25 >= mediumDirtLayer)
+                    else if (y >= currentMediumDirtLevel)
                     {
                         World.Instance[x, y] = (short)TileInfo.GroundMed;
                     }
                 }
+            }
+
+            int MAX_STONES, MIN_STONES, MIN_STONE_SIZE, MAX_STONE_SIZE;
+            
+            List<Point> allStones = new List<Point>();
+            //List<Tuple<int, int>> openStones = new List<Tuple<int, int>>();
+            List<KeyValuePair<Point, int>> possibleStones = new List<KeyValuePair<Point, int>>();
+
+            int stoneCount, possibleStoneRandCount;
+
+            //QUICK, EXTREMELY DIRTY COPY/PASTE CODE TO MAKE THINGS EASIER.
+
+            //Here's a description of the rock creation code. It picks a point randomly on the map.
+            //It calculates the size of the rock, then starts choosing a pixel that is next to
+            //one that the rock currently is on. It then adds the neighboring pixels to the new one
+            //to the list of potential next rock parts. It also keeps a count of the # of rock pixels
+            //adjacent to the possible next rock pixel to have a better chance of picking ones that
+            //are surrounded. After it hits the size limit, it goes through and finds any that are
+            //surrounded on all 4 sides and fills them in, then makes the rock on the map.
+
+            //It does this for pockets of soft dirt, pockets of medium dirt and for rocks. It takes a
+            // while, sorry it's not better optimized
+
+            //Note: it may be better to try Nick's approach & use Bernoulli's Line Drawing Algorithm
+
+            #region SoftDirtPatches
+            MAX_STONES = 100;
+            MIN_STONES = 50;
+
+            MIN_STONE_SIZE = 100;
+            MAX_STONE_SIZE = 250;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next((int)minMediumDirtLayer, (int)(minMediumDirtLayer + (maxMediumDirtLayer - minMediumDirtLayer) * 9 / 8));
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundSoft;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+            #region MediumDirtPatches
+            MAX_STONES = 30;
+            MIN_STONES = 15;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next((int)minHardDirtLayer, (int)(minHardDirtLayer + (maxHardDirtLayer - minHardDirtLayer) * 9 / 8));
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundMed;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+            #region rocks
+            MAX_STONES = 10;
+            MIN_STONES = 5;
+
+            MIN_STONE_SIZE = 100;
+            MAX_STONE_SIZE = 1000;
+
+            stoneCount = RAND.Next(MIN_STONES, MAX_STONES);
+            possibleStoneRandCount = 0;
+
+            for (int i = 0; i < stoneCount; i++)
+            {
+                //Determine stone seed spot
+                int x, y;
+                x = RAND.Next(0, GameWindow.Width);
+                y = RAND.Next(GameWindow.Height / 5, GameWindow.Height);
+
+                Point stone = new Point(x, y);
+                //openStones.Add(stone);
+                allStones.Add(stone);
+
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x + 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x - 1, y), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y + 1), 1));
+                possibleStones.Add(new KeyValuePair<Point, int>(new Point(x, y - 1), 1));
+
+                possibleStoneRandCount = 4;
+
+                int stoneSize = RAND.Next(MIN_STONE_SIZE, MAX_STONE_SIZE);
+
+                for (int j = 0; j < stoneSize; j++)
+                {
+                    int randIndex = RAND.Next(0, possibleStoneRandCount);
+                    int curIndex = 0;
+                    foreach (KeyValuePair<Point, int> keyValue in possibleStones)
+                    {
+                        curIndex += keyValue.Value;
+                        if (curIndex > randIndex)
+                        {
+                            //Add this stone
+                            allStones.Add(keyValue.Key);
+
+                            possibleStoneRandCount -= keyValue.Value;
+
+                            //Add the surrounding stones to the possible stone count
+                            Point newStone = new Point(keyValue.Key.X + 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X - 1, keyValue.Key.Y);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y + 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            newStone = new Point(keyValue.Key.X, keyValue.Key.Y - 1);
+                            if (!allStones.Contains(newStone))
+                            {
+                                addNewPossibleStone(newStone, possibleStones);
+                                possibleStoneRandCount++;
+                            }
+
+                            possibleStones.Remove(keyValue);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                //Clean up the stone
+                while (possibleStones.Count > 0)
+                {
+                    if (possibleStones[0].Value == 4)
+                    {
+                        //Fill in surrounded holes
+                        allStones.Add(possibleStones[0].Key);
+                    }
+                    possibleStones.RemoveAt(0);
+                }
+                possibleStoneRandCount = 0;
+
+                //Create the stones
+                while (allStones.Count > 0)
+                {
+                    if (allStones[0].X >= 0 && allStones[0].X < GameWindow.Width &&
+                        allStones[0].Y >= GameWindow.Height / 5 &&
+                        allStones[0].Y < GameWindow.Height)
+                    {
+                        World.Instance[allStones[0].X, allStones[0].Y] = (short)TileInfo.GroundImp;
+                    }
+
+                    allStones.RemoveAt(0);
+                }
+
+
+            }
+            #endregion
+
+        }
+
+        private void addNewPossibleStone(Point newStone, List<KeyValuePair<Point, int>> possibleStones)
+        {
+            bool foundIt = false;
+            for (int k = 0; k < possibleStones.Count; k++)
+            {
+                if (possibleStones[k].Key == newStone)
+                {
+                    //If it's already in there, increment the count so it has
+                    // a higher chance of being done
+                    possibleStones[k] = new KeyValuePair<Point, int>(
+                        possibleStones[k].Key, possibleStones[k].Value + 1);
+                    foundIt = true;
+                    break;
+                }
+            }
+            if (!foundIt)
+            {
+                //Add it
+                possibleStones.Add(new KeyValuePair<Point, int>(newStone, 1));
             }
         }
     }
