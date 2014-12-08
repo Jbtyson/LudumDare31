@@ -327,15 +327,14 @@ namespace PuissANT
             if (!queenPlaced)
             {
                 TerrainManager.DrawTerrain(spriteBatch);
+                ScreenManager.Instance.Draw(spriteBatch);
 
                 spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
 
                 foreach (Actor a in ActorManager.Instance.GetAllActors())
                     a.Render(gameTime, spriteBatch);
 
-                ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
-                //spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
             }
             else
             {
