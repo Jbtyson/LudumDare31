@@ -29,8 +29,6 @@ namespace PuissANT
         Rectangle GameWindow;
         Texture2D splashScreen;
         Texture2D backgroundTop;
-        
-
         Texture2D antTexture;
         
         bool queenPlaced = false;
@@ -88,6 +86,7 @@ namespace PuissANT
             // Load Background textures
             splashScreen = Content.Load<Texture2D>("ui/splashScreen");
             backgroundTop = Content.Load<Texture2D>("ui/BackgroundTop");
+            antTexture = Content.Load<Texture2D>("ui/antCursor");
             
             // Load And Play Music.
             try
@@ -113,7 +112,7 @@ namespace PuissANT
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
             World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundSoft);
-            
+            /*
             // Load the title into the world
             Int32[] buffer = new Int32[28160];
             Image img = new Image();
@@ -141,7 +140,7 @@ namespace PuissANT
                 World.Instance[x + titleOffsetX + 340, titleOffsetY - 2] = (short)TileInfo.Sky;
                 World.Instance[x + titleOffsetX + 340, titleOffsetY - 3] = (short)TileInfo.Sky;
                 World.Instance[x + titleOffsetX + 340, titleOffsetY - 4] = (short)TileInfo.Sky;
-            }
+            }*/
             ReticulateDirtLayers();
 
             //antTexture = Content.Load<Texture2D>("ants/fireant.png");
@@ -282,12 +281,14 @@ namespace PuissANT
             if (!queenPlaced)
             {
                 TerrainManager.DrawTerrain(spriteBatch);
+
                 spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
 
                 foreach (Actor a in ActorManager.Instance.GetAllActors())
                     a.Render(gameTime, spriteBatch);
 
-                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
+
             }
             else
             {
@@ -299,8 +300,9 @@ namespace PuissANT
                 TerrainManager.DrawTerrain(spriteBatch);
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
-            }
 
+            }
+                
             spriteBatch.End();
 
             base.Draw(gameTime);
