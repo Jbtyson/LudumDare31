@@ -27,6 +27,9 @@ namespace PuissANT
         SpriteBatch spriteBatch;
 
         Rectangle GameWindow;
+        Texture2D splashScreen;
+        Texture2D backgroundTop;
+        
 
         Texture2D antTexture;
         
@@ -81,6 +84,10 @@ namespace PuissANT
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
+
+            // Load Background textures
+            splashScreen = Content.Load<Texture2D>("ui/splashScreen");
+            backgroundTop = Content.Load<Texture2D>("ui/BackgroundTop");
             
             // Load And Play Music.
             try
@@ -266,18 +273,33 @@ namespace PuissANT
         protected override void Draw(GameTime gameTime)
         {
             //new Color(255,211,155)
-            GraphicsDevice.Clear(new Color(255, 211, 155));
+            GraphicsDevice.Clear(new Color(216, 199, 84));
             TerrainManager.SetTexture();
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            
-            foreach (Actor a in ActorManager.Instance.GetAllActors())
-                a.Render(gameTime, spriteBatch);
 
-            TerrainManager.DrawTerrain(spriteBatch);
-            ScreenManager.Instance.Draw(spriteBatch);
-            PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+            if (!queenPlaced)
+            {
+                TerrainManager.DrawTerrain(spriteBatch);
+                spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
+
+                foreach (Actor a in ActorManager.Instance.GetAllActors())
+                    a.Render(gameTime, spriteBatch);
+
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+            }
+            else
+            {
+                spriteBatch.Draw(backgroundTop, Vector2.Zero, Color.White);
+
+                foreach (Actor a in ActorManager.Instance.GetAllActors())
+                    a.Render(gameTime, spriteBatch);
+
+                TerrainManager.DrawTerrain(spriteBatch);
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+            }
 
             spriteBatch.End();
 
