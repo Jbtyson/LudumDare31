@@ -34,7 +34,13 @@ namespace PuissANT.Ui
             PherDimensions = new Vector2(150, 32);
             DropdownDimensions = new Vector2(32, 32);
             Position = new Vector2(1000, 14);
-            foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+            TileInfo[] pt = new TileInfo[]
+            {
+                TileInfo.Nest,
+                TileInfo.Attack
+            };
+            //foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+            foreach (TileInfo t in pt)
             {
                 string neutralPath = "ui/" + t.ToString().Trim().ToLower() + "NeutralButton";
                 string overPath = "ui/" + t.ToString().Trim().ToLower() + "OverButton";

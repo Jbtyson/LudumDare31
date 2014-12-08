@@ -58,6 +58,7 @@ namespace PuissANT.Actors.Ants
                     if (p != null)
                     {
                         //Ohterwise not the first on here.
+                        p.Reached();
                         PheromoneManger.Instance.Remove(PheromoneManger.Instance.GetPheromoneAt(Position));
                     }
                     Target = INVALID_POINT;
@@ -79,7 +80,8 @@ namespace PuissANT.Actors.Ants
             else
             {
                 Target = GetNewTarget(
-                    typeof (NestPheromone));
+                    typeof (WorkerSpawnPheromone),
+                    typeof(SoilderSpawnPheromone));
             }
             
         }
@@ -134,7 +136,7 @@ namespace PuissANT.Actors.Ants
                             else if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y])
                                     .IsTileType(TileInfo.GroundDug))
                             {
-                                value *= 2;
+                                value  = (int)Math.Round((double)value * 2);
                             }
                         }
 

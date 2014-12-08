@@ -13,6 +13,7 @@ namespace PuissANT.Pheromones
         public float Intensity;
         public PheromoneActor Actor;
 
+        public abstract void Update(GameTime time);
         public abstract void Reached();
     }
 }
