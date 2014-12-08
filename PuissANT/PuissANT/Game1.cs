@@ -83,7 +83,7 @@ namespace PuissANT
             ScreenManager.Instance.GameWindow = GameWindow;
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
-            World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundUndug);
+            World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundSoft);
             for (int x = 0; x < GameWindow.Width; x++)
             {
                 for (int y = 0; y < GameWindow.Height / 5; y++)
@@ -91,6 +91,7 @@ namespace PuissANT
                     World.Instance[x, y] = (short) TileInfo.Sky;
                 }
             }
+            ReticulateDirtLayers();
 
             //antTexture = Content.Load<Texture2D>("ants/fireant.png");
             /*antTexture = new Texture2D(graphics.GraphicsDevice, 2, 2);
@@ -101,15 +102,16 @@ namespace PuissANT
             }
             antTexture.SetData<Color>(colorBuf);*/
 
-            //QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 6, 6); 
-            //ActorManager.Instance.Add(queen);
+
+            QueenAnt queen = new QueenAnt(new Point(GameWindow.Width / 2, (GameWindow.Height/5))); 
+            ActorManager.Instance.Add(queen);
 
             Random r = new Random();
             for (int i = 0; i < 10; i++)
             {
                 WorkerAnt ant = new WorkerAnt(
-                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)), 1, 1);
-                ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
+                    new Point(GameWindow.Width / 2, (GameWindow.Height/5)));
+                //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
             }
 
@@ -145,6 +147,8 @@ namespace PuissANT
             MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
             ResourceManager.Instance.Update(gameTime);
+            PheromoneManger.Instance.Update(gameTime);
+            ActorManager.Instance.Update(gameTime);
 
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
@@ -193,6 +197,31 @@ namespace PuissANT
         {
             //return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
             return false;
+        }
+
+        private void ReticulateDirtLayers()
+        {
+            //Add in layers of dirt. Will randomize better later
+            float mediumDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 / 2;
+            float HardDirtLayer = GameWindow.Height / 5 + GameWindow.Height * 4 / 5 * 5 / 6;
+
+            for (int x = 0; x < GameWindow.Width; x++)
+            {
+                for (int y = 0; y < GameWindow.Height; y++)
+                {
+                    if (((TileInfo)World.Instance[x, y]).IsTileType(TileInfo.Sky))
+                        continue;
+
+                    if (y - (float)Math.Abs(GameWindow.Width / 2 - x) / (GameWindow.Width / 2) * 50 + 25 >= HardDirtLayer)
+                    {
+                        World.Instance[x, y] = (short)TileInfo.GroundHard;
+                    }
+                    else if (y - (float)Math.Abs(GameWindow.Width / 2 - x) / (GameWindow.Width / 2) * 50 + 25 >= mediumDirtLayer)
+                    {
+                        World.Instance[x, y] = (short)TileInfo.GroundMed;
+                    }
+                }
+            }
         }
     }
 }

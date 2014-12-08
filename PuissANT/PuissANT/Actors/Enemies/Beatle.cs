@@ -10,6 +10,8 @@ namespace PuissANT.Actors.Enemies
 {
     public class Beatle : Enemy
     {
+        private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
+
         public Beatle(Vector2 position, int width, int height, Texture2D tex)
             : base(position, width, height, tex)
         {

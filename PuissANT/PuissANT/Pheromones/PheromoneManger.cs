@@ -21,31 +21,39 @@ namespace PuissANT.Pheromones
         /// <summary>
         /// Pheromones active on the map.
         /// </summary>
+        public List<Pheromone> _tempAdd;  
+        public List<Pheromone> _tempRemove;  
         public List<Pheromone> _activePheromones;
 
         private PheromoneManger()
         {
+            _tempAdd = new List<Pheromone>();
+            _tempRemove = new List<Pheromone>();
             _activePheromones = new List<Pheromone>();
         }
 
         public void Add(TileInfo type, Point poistion)
         {
-            _activePheromones.Add(new Pheromone()
+            if ((type & TileInfo.Nest) != 0)
             {
-                Type = type,
-                Position = poistion
-            });
+                _tempAdd.Add(new NestPheromone()
+                {
+                    Intensity = 0.0,
+                    Position = poistion
+                });
+            }
+
             World.Instance.Set(poistion.X, poistion.Y, type);
         }
 
         public void Remove(Pheromone p)
         {
-            _activePheromones.Remove(p);
+            _tempRemove.Add(p);
         }
 
-        public IEnumerable<Pheromone> GetPheromoneOfType(TileInfo type)
+        public IEnumerable<T> GetPheromoneOfType<T>()
         {
-            return _activePheromones.Where(p => p.Type == type);
+            return _activePheromones.OfType<T>();
         }
 
         public Pheromone GetPheromoneAt(Point p)
@@ -72,6 +80,15 @@ namespace PuissANT.Pheromones
             }
 
             MousePheromoneType = type;
+        }
+
+        public void Update(GameTime time)
+        {
+            _activePheromones.AddRange(_tempAdd);
+            _tempAdd.Clear();
+            foreach (Pheromone p in _tempRemove)
+                _activePheromones.Remove(p);
+            _tempRemove.Clear();
         }
     }
 }

@@ -6,6 +6,8 @@ namespace PuissANT.Actors.Ants
 {
     public abstract class Ant : Actor
     {
+        private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug };
+
         protected static readonly Point INVALID_POINT = new Point(-1, -1);
 
         public double Health;
