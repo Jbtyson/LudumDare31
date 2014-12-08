@@ -26,12 +26,12 @@ namespace PuissANT.Actors.Ants
             ZValue = 127;
         }
 
-        public void SetTarget(Point t)
+        public virtual void SetTarget(Point t)
         {
             Target = t;
         }
 
-        public void ClearTarget()
+        public virtual void ClearTarget()
         {
             Target = INVALID_POINT;
         }
@@ -61,7 +61,7 @@ namespace PuissANT.Actors.Ants
             }
         }
 
-        protected bool MoveTowardsTarget()
+        protected virtual bool MoveTowardsTarget()
         {
             Position = getNextPosition();
             for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)

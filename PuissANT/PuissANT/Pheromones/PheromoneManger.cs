@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PuissANT.Actors;
+using PuissANT.Actors.Ants;
 
 namespace PuissANT.Pheromones
 {
@@ -61,12 +62,20 @@ namespace PuissANT.Pheromones
             _tempAdd.Add(p);
             ActorManager.Instance.Add(p.Actor);
             World.Instance.Set(poistion.X, poistion.Y, type);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public void Remove(Pheromone p)
         {
             _tempRemove.Add(p);
             ActorManager.Instance.Remove(p.Actor);
+            foreach (WorkerAnt a in ActorManager.Instance.GetActorsByType<WorkerAnt>())
+            {
+                a.ClearTarget();
+            }
         }
 
         public IEnumerable<T> GetPheromoneOfType<T>()

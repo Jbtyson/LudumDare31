@@ -51,6 +51,7 @@ namespace PuissANT.Actors.Ants
                     _nestFound = true;
                     NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
                     p.Reached();
+                    PheromoneManger.Instance.Remove(p);
                 }
             }
             else

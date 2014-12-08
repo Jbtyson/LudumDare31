@@ -18,7 +18,8 @@ namespace PuissANT.Actors.Ants
 
         private float _updateTimer;
         private readonly PriorityQueue<Point> _openQueue;
-        private readonly List<Point> _closedList; 
+        private readonly List<Point> _closedList;
+        private byte _diggingWaitTime;
 
         public WorkerAnt(Point position)
             : base(position, 1, 1, Game1.Instance.Content.Load<Texture2D>("sprites/ants/fireant.png"))
@@ -45,7 +46,11 @@ namespace PuissANT.Actors.Ants
             if (Target != INVALID_POINT)
             {
                 //Build tunnel
-                if (MoveTowardsTarget())
+                if (_diggingWaitTime > 0)
+                {
+                    _diggingWaitTime--;
+                }
+                else if (MoveTowardsTarget())
                 {
                     _openQueue.Clear();
                     _closedList.Clear();
@@ -57,12 +62,26 @@ namespace PuissANT.Actors.Ants
                     }
                     Target = INVALID_POINT;
                 }
+                else
+                {
+                    if (((TileInfo) World.Instance[(int) Position.X, (int) Position.Y]).IsTileType(
+                        TileInfo.GroundMed))
+                    {
+                        _diggingWaitTime = 1;
+                    }
+                    else if (((TileInfo) World.Instance[(int) Position.X, (int) Position.Y]).IsTileType(
+                        TileInfo.GroundHard))
+                    {
+                        _diggingWaitTime = 2;
+                    }
+                }
             }
             else
             {
-                //Find new target
-                Target = GetNewTarget(typeof(NestPheromone));
+                Target = GetNewTarget(
+                    typeof (NestPheromone));
             }
+            
         }
 
         protected override Point getNextPosition()
@@ -88,24 +107,37 @@ namespace PuissANT.Actors.Ants
 
                     if (_closedList.All(t => t != tempPosition.ToPoint()))
                     {
-                        int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100)) / 100;
+                        int value;
                         if (tempPosition.ToPoint() == Target)
                         {
                             value = 0;
                         }
                         else
                         {
+                            value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100))/100;
                             value *= RAND.Next(1, 8);
-                            if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
+                            if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y]).IsTileType(
+                                    TileInfo.GroundSoft))
+                            {
                                 value /= 4;
-                            else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                            }
+                            else if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y]).IsTileType(
+                                    TileInfo.GroundMed))
+                            {
                                 value /= 3;
-                            else if(((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                            }
+                            else if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y])
+                                    .IsTileType(TileInfo.GroundHard))
+                            {
                                 value /= 2;
-                            else if(((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundDug))
+                            }
+                            else if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y])
+                                    .IsTileType(TileInfo.GroundDug))
+                            {
                                 value *= 2;
-                            
+                            }
                         }
+
                         if (_openQueue.Count == MEMORY)
                             _openQueue.DequeueLast();
                         _openQueue.Enqueue(value, tempPosition.ToPoint());
@@ -118,6 +150,13 @@ namespace PuissANT.Actors.Ants
                 _closedList.RemoveAt(0);
             _closedList.Add(v);
             return v;
+        }
+
+        public override void ClearTarget()
+        {
+            base.ClearTarget();
+            _openQueue.Clear();
+            _closedList.Clear();
         }
     }
 }

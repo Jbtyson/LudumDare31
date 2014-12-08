@@ -9,11 +9,12 @@ namespace PuissANT
 {
     static class TerrainManager
     {
+        private static Random _randomColorChooser;
         private static readonly Color DEFAULT_COLOR = Color.Transparent;
-        private static readonly Color DIRT_COLOR = Color.Black;
-        private static readonly Color HARD_DIRT_COLOR = Color.DarkSlateGray;
-        private static readonly Color CLAY_COLOR = Color.Gray;
-        private static readonly Color ROCK_COLOR = Color.LightGray;
+        private static Color[] SOFT_DIRT_COLOR;
+        private static Color[] MEDIUM_DIRT_COLOR;
+        private static Color[] HARD_DIRT_COLOR;
+        private static Color[] ROCK_COLOR;
 
         private static Rectangle _screenSize;
         private static Texture2D _texture;
@@ -22,6 +23,15 @@ namespace PuissANT
         static TerrainManager()
         {
             _initialized = false;
+        }
+        // 
+        private static void InitGroundColors()
+        {
+            _randomColorChooser = new Random();
+            SOFT_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(112, 88, 26), new Color(112, 88, 26), new Color(157, 154, 68) };
+            MEDIUM_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(63, 22, 29), new Color(63, 22, 29), new Color(63, 22, 29) };
+            HARD_DIRT_COLOR = new Color[] { new Color(63, 28, 5), new Color(67, 24, 53), new Color(67, 24, 53), new Color(67, 24, 53) };
+            ROCK_COLOR = new Color[] { new Color(219, 228, 237), new Color(219, 228, 237), new Color(219, 228, 237), new Color(157, 154, 68) };
         }
 
         public static void Initialize(GraphicsDevice graphicsDevice, Rectangle windowsize)
@@ -33,6 +43,8 @@ namespace PuissANT
                 _colorBuffer[i] = Color.Black;
             _initialized = true;
             SetTexture();
+
+            InitGroundColors();
         }
 
         private static void CheckIfInitialized()
@@ -63,19 +75,19 @@ namespace PuissANT
             TileInfo tile = (TileInfo)info;
             if (tile.IsTileType(TileInfo.GroundSoft))
             {
-                c = DIRT_COLOR;
+                c = SOFT_DIRT_COLOR[_randomColorChooser.Next(SOFT_DIRT_COLOR.Length)];
             }
             else if (tile.IsTileType(TileInfo.GroundMed))
             {
-                c = HARD_DIRT_COLOR;
+                c = MEDIUM_DIRT_COLOR[_randomColorChooser.Next(MEDIUM_DIRT_COLOR.Length)];
             }
             else if (tile.IsTileType(TileInfo.GroundHard))
             {
-                c = CLAY_COLOR;
+                c = HARD_DIRT_COLOR[_randomColorChooser.Next(HARD_DIRT_COLOR.Length)];
             }
             if (tile.IsTileType(TileInfo.GroundImp))
             {
-                c = ROCK_COLOR;
+                c = ROCK_COLOR[_randomColorChooser.Next(ROCK_COLOR.Length)];
             }
 
             UpdatePixel(x, y, c);
