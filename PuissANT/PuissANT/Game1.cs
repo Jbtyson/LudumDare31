@@ -214,6 +214,8 @@ namespace PuissANT
                     queenPlaced = true;
 
                     // Switch update screen
+                    int titleOffsetX = 440;
+                    int titleOffsetY = 137;
                     Int32[] buffer = new Int32[28160];
                     Image img = new Image();
                     img.LoadContent("title/Title_1", String.Empty);
@@ -238,20 +240,12 @@ namespace PuissANT
                                     World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
                         }
                     }
-                    for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                    for (int y = 0; y < 16; y++)
                     {
-                        World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
+                        }
                     }
                 }
             }
