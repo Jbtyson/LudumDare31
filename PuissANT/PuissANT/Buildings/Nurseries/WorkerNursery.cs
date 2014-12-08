@@ -147,8 +147,6 @@ namespace PuissANT.Buildings.Nurseries
                 SpawnAnt();
             }
 
-
-
             if (_currentHealth <= 0)
             {
                 _buildingState = BuildingState.DESTROYED;
@@ -158,7 +156,7 @@ namespace PuissANT.Buildings.Nurseries
 
         private void Update_DestroyedPhase(int millisecondsPassed)
         {
-            _currentHealth += millisecondsPassed * _repairRate;
+            _currentHealth += millisecondsPassed * _repairRate * _currentBuilders;
 
             if (_currentHealth >= _totalHealth)
             {
@@ -266,7 +264,7 @@ namespace PuissANT.Buildings.Nurseries
             throw new NotImplementedException();
         }
 
-        protected override bool AddBuilder()
+        public override bool AddBuilder()
         {
             if (_currentBuilders + 1 <= _maxBuilders)
             {

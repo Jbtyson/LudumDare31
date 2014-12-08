@@ -67,7 +67,7 @@ namespace PuissANT.Buildings
 
         protected abstract void KillBuilders();
 
-        protected abstract bool AddBuilder();
+        public abstract bool AddBuilder();
 
         public abstract void Draw(SpriteBatch spriteBatch, Rectangle gameWindow); 
     }
