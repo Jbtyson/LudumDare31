@@ -57,7 +57,7 @@ namespace PuissANT.Pheromones
                         Actor = new PheromoneActor(position,
                             100.0f,
                             SOILDER_HIGHLIGHT,
-                            Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"))
+                            Game1.Instance.Content.Load<Texture2D>("phermones/NestPheromone.png"))
                     };
                     break;
                 case TileInfo.WorkerSpawn:
@@ -68,7 +68,7 @@ namespace PuissANT.Pheromones
                         Actor = new PheromoneActor(position,
                             100.0f,
                             SOILDER_HIGHLIGHT,
-                            Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"))
+                            Game1.Instance.Content.Load<Texture2D>("phermones/WorkerPhermone.png"))
                     };
                     break;
                 case TileInfo.SoilderSpawn:
@@ -88,7 +88,7 @@ namespace PuissANT.Pheromones
                         Actor = new PheromoneActor(position,
                             100.0f,
                             SOILDER_HIGHLIGHT,
-                            Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"))
+                            Game1.Instance.Content.Load<Texture2D>("phermones/AttackPheromone.png"))
                     };
                     break;
                 case TileInfo.Gather:
@@ -97,7 +97,7 @@ namespace PuissANT.Pheromones
                         Actor = new PheromoneActor(position,
                             100.0f,
                             SOILDER_HIGHLIGHT,
-                            Game1.Instance.Content.Load<Texture2D>("phermones/SoldierPhermone.png"))
+                            Game1.Instance.Content.Load<Texture2D>("phermones/GatherPheromone.png"))
                     };
                     break;
                 default:

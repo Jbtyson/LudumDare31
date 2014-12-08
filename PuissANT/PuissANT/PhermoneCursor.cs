@@ -31,10 +31,10 @@ namespace PuissANT.ui
         public void LoadContent(ContentManager Content)
         {
             // Load Cursor Icons
-            cursors[TileInfo.Nest] = Content.Load<Texture2D>("phermones/SoldierPhermone");
-            cursors[TileInfo.Attack] = Content.Load<Texture2D>("phermones/SoldierPhermone");
-            cursors[TileInfo.Gather] = Content.Load<Texture2D>("phermones/SoldierPhermone");
-            cursors[TileInfo.WorkerSpawn] = Content.Load<Texture2D>("phermones/SoldierPhermone");
+            cursors[TileInfo.Nest] = Content.Load<Texture2D>("phermones/NestPheromone");
+            cursors[TileInfo.Attack] = Content.Load<Texture2D>("phermones/AttackPheromone");
+            cursors[TileInfo.Gather] = Content.Load<Texture2D>("phermones/GatherPheromone");
+            cursors[TileInfo.WorkerSpawn] = Content.Load<Texture2D>("phermones/WorkerPhermone");
             cursors[TileInfo.SoilderSpawn] = Content.Load<Texture2D>("phermones/SoldierPhermone");
         }
 
