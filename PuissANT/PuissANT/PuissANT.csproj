@@ -52,8 +52,13 @@
   <ItemGroup>
     <Compile Include="Actors\PheromoneActor.cs" />
     <Compile Include="PhermoneCursor.cs" />
+    <Compile Include="Pheromones\AttackPheromone.cs" />
+    <Compile Include="Pheromones\GatherPheromone.cs" />
     <Compile Include="Pheromones\NestPheromone.cs" />
-    <Compile Include="Pheromones\SoilderPheromone.cs" />
+    <Compile Include="Pheromones\RemoveOnLife.cs" />
+    <Compile Include="Pheromones\RemoveWhenReached.cs" />
+    <Compile Include="Pheromones\SoilderSpawnPheromone.cs" />
+    <Compile Include="Pheromones\WorkerSpawnPheromone.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="TerrainManager.cs" />
     <Compile Include="Actors\Actor.cs" />

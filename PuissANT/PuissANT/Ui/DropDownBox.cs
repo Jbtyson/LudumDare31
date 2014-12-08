@@ -33,7 +33,13 @@ namespace PuissANT.Ui
         {
             Dimensions = new Vector2(150, 54);
             Position = new Vector2(1000, 50);
-            foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+            TileInfo[] pt = new TileInfo[]
+            {
+                TileInfo.Nest,
+                TileInfo.Attack
+            };
+            //foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+            foreach (TileInfo t in pt)
             {
                 string neutralPath = "ui/" + t.ToString().Trim().ToLower() + "NeutralButton";
                 string overPath = "ui/" + t.ToString().Trim().ToLower() + "OverButton";

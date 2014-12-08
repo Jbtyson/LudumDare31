@@ -46,8 +46,8 @@ namespace PuissANT.Actors.Ants
                 minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
                 foreach (Pheromone p in points)
                 {
-                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
-                    if (d2 < minDistance || RAND.Next(0, 4) == 0)
+                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2()) / RAND.Next(1, (int)p.Intensity);
+                    if (d2 < minDistance)
                     {
                         bestPoint = p;
                         minDistance = d2;

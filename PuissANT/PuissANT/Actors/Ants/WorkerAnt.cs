@@ -13,7 +13,7 @@ namespace PuissANT.Actors.Ants
     public class WorkerAnt : Ant
     {
         private static readonly TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
-        private const float UPDATE_TIME = 100;
+        private const float UPDATE_TIME = 1;
         private const short MEMORY = 500;
 
         private float _updateTimer;
@@ -79,7 +79,8 @@ namespace PuissANT.Actors.Ants
             else
             {
                 Target = GetNewTarget(
-                    typeof (NestPheromone));
+                    typeof (WorkerSpawnPheromone),
+                    typeof(SoilderSpawnPheromone));
             }
             
         }
@@ -134,7 +135,7 @@ namespace PuissANT.Actors.Ants
                             else if (((TileInfo) World.Instance[(int) tempPosition.X, (int) tempPosition.Y])
                                     .IsTileType(TileInfo.GroundDug))
                             {
-                                value *= 2;
+                                value  = (int)Math.Round((double)value * 2);
                             }
                         }
 

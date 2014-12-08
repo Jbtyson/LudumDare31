@@ -24,6 +24,11 @@ namespace PuissANT
     {
         public static Game1 Instance;
 
+        /// <summary>
+        /// The amount to scroll before changing pheromones.
+        /// </summary>
+        private const int CHANGE_OFFSET = 500;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -34,6 +39,7 @@ namespace PuissANT
         bool queenPlaced = false;
         int titleOffsetX;
         int titleOffsetY;
+        private int scrollOffset;
 
         public Game1()
             : base()
@@ -178,7 +184,7 @@ namespace PuissANT
                 && ScreenManager.Instance.isPointWithinGameWindow(MouseManager.Instance.MousePosition)
                 && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))
             {
-                PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition));
+                placePheromone();
                 
                 // If this is the first click in the game, we switch the title image
                 if (!queenPlaced)
@@ -225,6 +231,19 @@ namespace PuissANT
                         World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
                         World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                     }
+
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                }
+            }
+            
+            if(queenPlaced)
+            {
+                scrollOffset += MouseManager.Instance.ScrollOffset();
+                if (scrollOffset > CHANGE_OFFSET)
+                {
+                    scrollOffset = 0;
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                    Console.Out.WriteLine(PheromoneManger.Instance.MousePheromoneType.ToString());
                 }
             }
 
@@ -251,18 +270,18 @@ namespace PuissANT
                 BlendState.NonPremultiplied);
 
             IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
-            foreach(Actor actor in actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue))
+            IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
+            IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
+            foreach(Actor actor in ug)
                 actor.Render(gameTime, spriteBatch);
 
             TerrainManager.DrawTerrain(spriteBatch);
 
-            foreach(Actor actor in actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue))
+            foreach(Actor actor in ag)
                 actor.Render(gameTime, spriteBatch);
             
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Render(gameTime, spriteBatch);
-
-            
 
             ScreenManager.Instance.Draw(spriteBatch);
             PhermoneCursor.Instance.Render(gameTime, spriteBatch);
@@ -699,6 +718,17 @@ namespace PuissANT
                 //Add it
                 possibleStones.Add(new KeyValuePair<Point, int>(newStone, 1));
             }
+        }
+
+        private void placePheromone()
+        {
+            Point p = ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition);
+            while (((TileInfo) World.Instance[p.X, p.Y + 1]).IsTileType(TileInfo.Sky))
+            {
+                p = new Point(p.X, p.Y + 1);
+            }
+
+            PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, p);
         }
     }
 }
