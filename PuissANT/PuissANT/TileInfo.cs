@@ -33,6 +33,16 @@ namespace PuissANT
 
     }
 
+    public static class TileInfoSets
+    {
+        public static TileInfo[] PheromoneTypes = new TileInfo[]
+        {
+            TileInfo.Nest, 
+            TileInfo.Attack, 
+            //TileInfo.Gather
+        };
+    }
+
     public static class TileInfoExtentions
     {
         private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };

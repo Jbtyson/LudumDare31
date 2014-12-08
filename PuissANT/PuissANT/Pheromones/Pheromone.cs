@@ -6,10 +6,11 @@ using Microsoft.Xna.Framework;
 
 namespace PuissANT.Pheromones
 {
-    public struct Pheromone
+    public abstract class Pheromone
     {
-        public PheromoneType Type;
         public Point Position;
         public double Intensity;
+
+        public abstract void Reached();
     }
 }

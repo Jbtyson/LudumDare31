@@ -5,28 +5,58 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PuissANT.Pheromones;
+using PuissANT.Util;
 
 namespace PuissANT.Actors.Ants
 {
-    public class QueenAnt : Ant
+    public class QueenAnt : WorkerAnt
     {
-        public QueenAnt(Point position, int width, int height, Texture2D tex)
-            : base(position, width, height, tex)
+        private const float PATH_UPDATE_TIME = 1000;
+        private const float ANI_UPDATE_TIME = 500;
+
+        private float pathTimer;
+        private float aniTimer;
+        private int frame;
+
+        private bool _nestFound;
+
+        public QueenAnt(Point position)
+            : base(position, 6, 6, Game1.Instance.Content.Load<Texture2D>("sprites/ants/hierophANT"), new Rectangle(0, 0, 30, 20))
         {
-            
+            aniTimer = 0;
+            pathTimer = 0;
+            frame = 0;
         }
 
         public override void Update(GameTime time)
         {
-            //Move towards nest pheromone.
-            Pheromone p = PheromoneManger.Instance.GetPheromoneOfType(PheromoneType.Nest).FirstOrDefault();
-            //After that do nothing.
-            throw new NotImplementedException();
-        }
+            
+            aniTimer += time.ElapsedGameTime.Milliseconds;
+            if (aniTimer > ANI_UPDATE_TIME)
+            {
+                frame = ++frame % 3;
+                _drawingWindow = new Rectangle(0, frame*20, 30, 20);
+                aniTimer = 0;
+            }
 
-        public override void Render(GameTime time, SpriteBatch batch)
-        {
-            throw new NotImplementedException();
+            if (_nestFound) return;
+
+            pathTimer += time.ElapsedGameTime.Milliseconds;
+            if (!(pathTimer > PATH_UPDATE_TIME)) return;
+
+            if (Target != INVALID_POINT)
+            {
+                if (MoveTowardsTarget())
+                {
+                    _nestFound = true;
+                    NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
+                    p.Reached();
+                }
+            }
+            else
+            {
+                Target = GetNewTarget<NestPheromone>();
+            }
         }
     }
 }
