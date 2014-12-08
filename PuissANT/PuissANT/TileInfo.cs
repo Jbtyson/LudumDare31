@@ -45,8 +45,6 @@ namespace PuissANT
 
     public static class TileInfoExtentions
     {
-        private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
-
         public static TileInfo ClearTileInfo(this TileInfo tile)
         {
             tile &= TileInfo.CLEAR_TILE;
@@ -64,7 +62,14 @@ namespace PuissANT
             if (IsObjectTile(newTileType))
                 tile = ClearTileObject(tile);
             else
+            {
+                //Make sure it's not sky
+                TileInfo tileValue = tile.ClearTileObject();
+                if (tileValue == TileInfo.Sky)
+                    return tile;
+
                 tile = ClearTileInfo(tile);
+            }
 
             tile |= newTileType;
             return tile;
@@ -110,11 +115,9 @@ namespace PuissANT
             return false;
         }
 
-        public static bool IsPassable(this TileInfo tile)
+        public static bool IsPassable(this TileInfo tile, TileInfo[] passableTiles)
         {
-            TileInfo val = tile;
-            val = val.ClearTileObject();
-            return val.IsTileType(PASSABLE_TILES); 
+            return passableTiles.Contains<TileInfo>(tile); 
         }
     }
 }

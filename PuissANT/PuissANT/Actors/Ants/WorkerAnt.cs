@@ -11,6 +11,8 @@ namespace PuissANT.Actors.Ants
 {
     public class WorkerAnt : Ant
     {
+        private static TileInfo[] PASSABLE_TILES = { TileInfo.GroundDug, TileInfo.GroundSoft, TileInfo.GroundMed, TileInfo.GroundHard };
+
         private static readonly Random RAND = new Random();
         private const short PASSIBLE_TERRIAN = 0x1;
         private const long UPDATE_TIME = 100000;
@@ -127,7 +129,7 @@ namespace PuissANT.Actors.Ants
                     if(tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable()) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable(PASSABLE_TILES)) //Cannot go through this terrian anyway
                         continue;
                     
                     if(_closedList.All(t => t != tempPosition.ToPoint()))
