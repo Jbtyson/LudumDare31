@@ -12,7 +12,7 @@ namespace PuissANT.Actors.Ants
     public class WorkerAnt : Ant
     {
         private static readonly Random RAND = new Random();
-        private const short PASSIBLE_TERRIAN = (short) TileInfo.GroundDug | (short) TileInfo.GroundUndug;
+        private const short PASSIBLE_TERRIAN = 0x1;
         private const long UPDATE_TIME = 100000;
         private const short MEMORY = 500;
 
@@ -86,17 +86,21 @@ namespace PuissANT.Actors.Ants
                     if (tempPosition.Y < 0 || tempPosition.Y >= World.Instance.Height)
                         continue;
 
-                    if ((World.Instance[(int) tempPosition.X, (int) tempPosition.Y] & PASSIBLE_TERRIAN) == 0) //Cannot go through this terrian anyway
+                    if (!((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsPassable()) //Cannot go through this terrian anyway
                         continue;
 
                     if (_closedList.All(t => t != tempPosition.ToPoint()))
                     {
                         int value = ((int)(Vector2.DistanceSquared(tempPosition, Target.ToVector2()) * 100)) / 100;
                         value *= RAND.Next(1, 3);
-                        if((World.Instance[(int)tempPosition.X, (int)tempPosition.Y] & (short)TileInfo.GroundUndug) != 0)
+                        if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundSoft))
                             value *= 3;
                         else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
                             value *= 2;
+                        else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundMed))
+                            value *= RAND.Next(1, 2);
+                        //else if (((TileInfo)World.Instance[(int)tempPosition.X, (int)tempPosition.Y]).IsTileType(TileInfo.GroundHard))
+                            //value *= RAND.Next(1, 1);
                         if (tempPosition.ToPoint() == Target)
                             value = 0;
                         if (_openQueue.Count == MEMORY)
