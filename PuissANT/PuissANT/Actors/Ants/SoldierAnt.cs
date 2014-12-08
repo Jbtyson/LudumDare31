@@ -10,7 +10,7 @@ namespace PuissANT.Actors.Ants
 {
     public class SoldierAnt : Ant
     {
-        private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug};
+        private static readonly TileInfo[] PASSIBLE_TILES = new TileInfo[] { TileInfo.GroundDug };
         private const int MEMORY = 500;
         private const int UPDATE_TIME = 1;
 

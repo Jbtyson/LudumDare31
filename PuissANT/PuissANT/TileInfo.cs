@@ -121,7 +121,7 @@ namespace PuissANT
 
         public static bool IsPassable(this TileInfo tile, TileInfo[] passableTiles)
         {
-            return passableTiles.Any(t => ((short) t & (short)tile) != 0);
+            return passableTiles.Any(t => t == tile.ClearTileObject());
         }
     }
 }
