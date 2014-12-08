@@ -26,7 +26,7 @@ namespace PuissANT.Buildings
         protected int _previousNurseryCount;
 
         public BaseNursery(
-            Point position, Texture2D texture, long buildTime, int repairRate, 
+            Point position, Texture2D texture, long buildTime, double repairRate, 
             int baseProductionTime, int totalHealth, short maxBuilders, 
             int currentNurseryCount, double builderProductionFactor = 1.0)
         :base(position, texture, buildTime, repairRate, totalHealth, maxBuilders, builderProductionFactor)

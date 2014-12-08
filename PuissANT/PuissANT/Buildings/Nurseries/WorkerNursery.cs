@@ -22,18 +22,21 @@ namespace PuissANT.Buildings.Nurseries
 
         //Defaults
         private const long d_buildTime = 5000;
-        private const int d_repairRate = 2;
+        private const double d_repairRate = 0.8;
         private const int d_baseProductionTime = 1000;
         private const int d_totalHealth = 3000;
         private const short d_maxBuilders = 3;
         private const double d_builderProductionFactor = 1.0;
+
+        private Color[] tempBuf;
+        private Texture2D shadeTexture;
 
         public WorkerNursery( 
             Point position, Texture2D texture)
         :base(position, texture, d_buildTime, d_repairRate, d_baseProductionTime, 
             d_totalHealth, d_maxBuilders, ++_currentWorkerNurseryCount, d_builderProductionFactor)
         {
-            percentPerLine = 100 / _texture.Height;
+            percentPerLine = 100 / (double)_texture.Height;
             previousDrawnPercent = 0.0d;
             nextLineNumberToDraw = _texture.Height - 1;
             reusableColorBuffer = new Color[_texture.Width];
@@ -46,6 +49,9 @@ namespace PuissANT.Buildings.Nurseries
                 r.Next(_texture.Height) - _texture.Height / 2);
 
             _unit = new WorkerAnt(_buildingPosition + randomVariance, 1,1);
+
+            tempBuf = new Color[_texture.Width * _texture.Height];
+            shadeTexture = new Texture2D(_texture.GraphicsDevice, _texture.Width, _texture.Height);
         }
 
         #region Debug Methods
@@ -55,12 +61,15 @@ namespace PuissANT.Buildings.Nurseries
         {
             Color[] colorBuf = new Color[testTex.Width * testTex.Height];
 
-            for (int i = 0; i < colorBuf.Length; i++)
+            for (int y = 0; y < testTex.Height; y++)
             {
-                if (i < colorBuf.Length * .35 || i > colorBuf.Length * .65)
-                    colorBuf[i] = new Color(0, 0, 0, 0);
-                else
-                    colorBuf[i] = Color.Black;
+                for (int x = 0; x < testTex.Width; x++)
+                {
+                    if (x < (testTex.Width * .35) || x > (testTex.Width * .65))
+                        colorBuf[(y * testTex.Width) + x] = new Color(0, 0, 0, 0);
+                    else
+                        colorBuf[(y * testTex.Width) + x] = Color.Black;
+                }
             }
 
             testTex.SetData<Color>(colorBuf);
@@ -74,6 +83,13 @@ namespace PuissANT.Buildings.Nurseries
         {
             _currentBuilders = 1;
         }
+
+        public void Debug_DamageBuilding()
+        {
+            if (_buildingState == BuildingState.COMPLETE)
+                this.Attack(7);
+        }
+
         #endregion
 
         public override void Update(GameTime gameTime)
@@ -207,17 +223,32 @@ namespace PuissANT.Buildings.Nurseries
         private void Draw_CompletedPhase(SpriteBatch spriteBatch, Point gameWindow)
         {
             //draw texture over position that was cleared out and shade white
-            Color tint = Color.White;
             if (_tookDamage)
-                tint = Color.Red;
+            {
+                for(int x = 0; x < tempBuf.Length; x++)
+                {
+                    tempBuf[x] = new Color(1f, 0, 0, 0.1f);
+                }
 
-            spriteBatch.Draw(_texture, new Vector2(_buildingPosition.X + gameWindow.X, _buildingPosition.Y + gameWindow.Y), tint);
+                _tookDamage = false;
+            }
+
+            shadeTexture.SetData<Color>(tempBuf);
+
+            spriteBatch.Draw(shadeTexture, new Vector2(_buildingPosition.X + gameWindow.X, _buildingPosition.Y + gameWindow.Y), Color.White);
         }
 
         private void Draw_DestroyedPhase(SpriteBatch spriteBatch, Point gameWindow)
         {
             //draw texture over position that was cleared out and shade gray
-            spriteBatch.Draw(_texture, new Vector2(_buildingPosition.X + gameWindow.X, _buildingPosition.Y + gameWindow.Y), new Color(70, 70, 70, 255));
+
+            for (int x = 0; x < tempBuf.Length; x++)
+            {
+                tempBuf[x] = new Color(.25f, .7f, 0, 0.1f);
+            }
+            shadeTexture.SetData<Color>(tempBuf);
+
+            spriteBatch.Draw(shadeTexture, new Vector2(_buildingPosition.X + gameWindow.X, _buildingPosition.Y + gameWindow.Y), Color.White);
         }
 
         #endregion
@@ -225,6 +256,7 @@ namespace PuissANT.Buildings.Nurseries
         protected override void SpawnAnt()
         {
             //ActorManager.Instance.Add(new WorkerAnt(new Point(xpoint,ypoint));
+            return;
             throw new NotImplementedException();
         }
 

@@ -49,7 +49,7 @@ namespace PuissANT.Buildings
         /// rate represents the amount of hp repaired per millisecond.
         /// Will also scale with the builderProductionFactor.
         /// </summary>
-        protected int _repairRate;
+        protected double _repairRate;
 
         /// <summary>
         /// the total health of the building
@@ -59,7 +59,7 @@ namespace PuissANT.Buildings
         /// <summary>
         /// The current health of the building
         /// </summary>
-        protected int _currentHealth;
+        protected double _currentHealth;
 
         protected bool _tookDamage;
 
@@ -77,12 +77,12 @@ namespace PuissANT.Buildings
 
         public long TotalBuildTime { get { return _buildTime; } }
         public long RemainingBuildTime { get { return _currentBuildTime; } }
-        public int RepairRate { get { return _repairRate; } }
+        public double RepairRate { get { return _repairRate; } }
         public double PercentOfBuildCompleted { get { return ((TotalBuildTime - RemainingBuildTime) / (double)TotalBuildTime); } }
         
         public int TotalHealth { get { return _totalHealth; } }
-        public int RemainingHealth { get { return _currentHealth; } }
-        public double PercentOfHealth { get { return (RemainingHealth / TotalHealth); } }
+        public double RemainingHealth { get { return _currentHealth; } }
+        public double PercentOfHealth { get { return (RemainingHealth / (double)TotalHealth); } }
 
         public Point Position { get { return _buildingPosition; } }
         public Point Center { get { return new Point(_buildingPosition.X - _texture.Width / 2, _buildingPosition.Y - _texture.Height / 2); } }
@@ -90,14 +90,15 @@ namespace PuissANT.Buildings
         public BuildingState State { get { return _buildingState; } }
 
         public BaseBuilding(
-            Point position, Texture2D texture, long buildTime, int repairRate, 
+            Point position, Texture2D texture, long buildTime, double repairRate, 
             int totalHealth, short maxBuilders, double builderProductionFactor = 1.0)
         {
             _buildingPosition = position;
             _texture = texture;
             _buildTime = _currentBuildTime = buildTime;
             _repairRate = repairRate;
-            _totalHealth = _currentHealth = totalHealth;
+            _totalHealth = totalHealth;
+            _currentHealth = (double)_totalHealth;
             _maxBuilders = maxBuilders;
             _currentBuilders = 0;
             _builderProductionFactor = builderProductionFactor;

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
+//using Microsoft.Xna.Framework.GamerServices;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
 using PuissANT.Util;
@@ -116,7 +116,7 @@ namespace PuissANT
             screenMiddle.X /= 2;
             screenMiddle.Y /= 2;
 
-            nursery = WorkerNursery.Debug_Spawn(screenMiddle, new Texture2D(GraphicsDevice, 10, 10));
+            nursery = WorkerNursery.Debug_Spawn(screenMiddle, new Texture2D(GraphicsDevice, 50, 50));
             nursery.Debug_InitializeTest();
         }
 
@@ -157,7 +157,10 @@ namespace PuissANT
                 a.Update(gameTime);
 
             nursery.Update(gameTime);
-            Window.Title = "Percent Complete = " + (nursery.PercentOfBuildCompleted * 100).ToString() + "%";
+
+            nursery.Debug_DamageBuilding();
+
+            Window.Title = "Health = " + (nursery.PercentOfHealth * 100).ToString() + "%";
 
             MouseManager.Instance.Update(gameTime);
             ScreenManager.Instance.Update(gameTime);
