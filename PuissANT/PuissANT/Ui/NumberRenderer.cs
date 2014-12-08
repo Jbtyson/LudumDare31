@@ -38,6 +38,7 @@ namespace PuissANT.ui
             _characterMap['7'] = new Rectangle(84, 1, 12, 16);
             _characterMap['8'] = new Rectangle(96, 1, 12, 16);
             _characterMap['9'] = new Rectangle(108, 1, 12, 16);
+            _characterMap['.'] = new Rectangle(119, 1, 5, 16);
         }
 
         
