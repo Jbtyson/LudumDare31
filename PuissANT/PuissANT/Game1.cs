@@ -231,9 +231,10 @@ namespace PuissANT
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
 
-            if(isGameOver())
+            if (isGameOver())
+            {
                 //handleGameOver
-
+            }
             base.Update(gameTime);
         }
 
