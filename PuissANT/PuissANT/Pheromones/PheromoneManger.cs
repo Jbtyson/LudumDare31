@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Ui;
 
 namespace PuissANT.Pheromones
 {
@@ -60,7 +61,7 @@ namespace PuissANT.Pheromones
                             Game1.Instance.Content.Load<Texture2D>("ui/AntCursor"))
                     };
                     break;
-                case TileInfo.WorkerSpawn:
+                case TileInfo.Worker:
                     p = new WorkerSpawnPheromone()
                     {
                         Position = position,
@@ -71,7 +72,7 @@ namespace PuissANT.Pheromones
                             Game1.Instance.Content.Load<Texture2D>("phermones/WorkerPhermone.png"))
                     };
                     break;
-                case TileInfo.SoilderSpawn:
+                case TileInfo.Soldier:
                     p = new SoilderSpawnPheromone()
                     {
                         Position = position,
@@ -141,6 +142,10 @@ namespace PuissANT.Pheromones
         public bool CanSetPheromone(TileInfo type)
         {
             //Evalute if ther are enough resources to set the given type.
+            if (ScreenManager.Instance.UiManager.IsMouseOnUi())
+            {
+                return false;
+            }
             return true;
         }
 

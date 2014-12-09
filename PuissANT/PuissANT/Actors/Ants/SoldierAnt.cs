@@ -19,6 +19,9 @@ namespace PuissANT.Actors.Ants
         private const int DAMAGE = 2;
         private const int HEALTH = 10;
 
+        private const int ATTACK_DELAY = 200;
+        private int attackDelayTimer;
+
         private PriorityQueue<Point> _openQueue;
         private List<Point> _closedList;
         private int _updateTimer;
@@ -53,10 +56,26 @@ namespace PuissANT.Actors.Ants
                     }
 
                     //Check for enemy to attack.
-                    foreach (Enemy e in ActorManager.Instance.GetActorsByType<Enemy>(Position.ToVector2(), 10))
+
+                    //Attack
+                    if (attackDelayTimer != 0)
                     {
-                        if (canAttack(e))
-                            e.Attacked(this);
+                        attackDelayTimer -= time.ElapsedGameTime.Milliseconds;
+                        if (attackDelayTimer < 0)
+                            attackDelayTimer = 0;
+                    }
+
+                    if (attackDelayTimer == 0)
+                    {
+                        foreach (Enemy e in ActorManager.Instance.GetActorsByType<Enemy>(Position.ToVector2(), 10))
+                        {
+                            if (canAttack(e))
+                            {
+                                e.Attacked(this);
+                                attackDelayTimer = ATTACK_DELAY;
+                                break;
+                            }
+                        }
                     }
                 }
                 else
@@ -132,6 +151,12 @@ namespace PuissANT.Actors.Ants
         {
             base.Attacked(a);
             Target = a.Position;
+
+            if (Health <= 0)
+            {
+                //Kill this beetle
+                ActorManager.Instance.Remove(this);
+            }
         }
     }
 }

@@ -89,6 +89,12 @@ namespace PuissANT.Actors.Ants
         public virtual void Attacked(Enemy e)
         {
             Health -= e.Damage;
+
+            if (Health <= 0)
+            {
+                //Kill this beetle
+                ActorManager.Instance.Remove(this);
+            }
         }
 
         protected abstract Point getNextPosition();

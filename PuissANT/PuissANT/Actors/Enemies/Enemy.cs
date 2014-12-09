@@ -25,9 +25,21 @@ namespace PuissANT.Actors.Enemies
             
         }
 
+        protected Enemy(Point position, int width, int heigth, Texture2D tex, Rectangle drawingWindow)
+            : base(position, width, heigth, tex, drawingWindow)
+        {
+
+        }
+
         public virtual void Attacked(Ant a)
         {
             Health -= a.Damage;
+
+            if (Health <= 0)
+            {
+                //Kill this beetle
+                ActorManager.Instance.Remove(this);
+            }
         }
     }
 }

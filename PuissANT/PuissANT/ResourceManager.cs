@@ -34,7 +34,7 @@ namespace PuissANT
         {
             Resources.Add("dirt", 10);
             Resources.Add("food", 100);
-            Resources.Add("ants", 3);
+            Resources.Add("ants", 0);
             Resources.Add("birthsPerSec", 0.1);
             Resources.Add("queenHealth", 100);
         }
@@ -48,6 +48,26 @@ namespace PuissANT
         {
             
         }
-        
+
+        public void AddDirt(double num)
+        {
+            Resources["dirt"] += num;
+        }
+        public void AddFood(double num)
+        {
+            Resources["food"] += num;
+        }
+        public void AddAnts(double num)
+        {
+            Resources["ants"] += num;
+        }
+        public void AddLarvae(double num)
+        {
+            Resources["birthsPerSec"] += num;
+        }
+        public void AddHealth(double num)
+        {
+            Resources["queenHealth"] += num;
+        }
     }
 }

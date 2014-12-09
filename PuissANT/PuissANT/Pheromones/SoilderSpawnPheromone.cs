@@ -17,7 +17,7 @@ namespace PuissANT.Pheromones
 
         public override void Reached()
         {
-            //Create Soilder nest.
+            //Create Soldier nest.
             for(int i = 0; i < 3; i++)
                 ActorManager.Instance.Add(new SoldierAnt(Position));
 
