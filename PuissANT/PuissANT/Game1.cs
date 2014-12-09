@@ -46,6 +46,7 @@ namespace PuissANT
         private int scrollOffset;
 
         private const int SPAWN_TIME = 30000;
+        private const int MAX_BEETLE_COUNT = 3;
         private static readonly Random RAND = new Random();
         private int _spawnTimer = SPAWN_TIME;
 
@@ -207,14 +208,21 @@ namespace PuissANT
             ActorManager.Instance.Update(gameTime);
 
             //Enemy spawner
-            _spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (_spawnTimer > SPAWN_TIME)
+            if (queenPlaced)
             {
-                int x = ScreenManager.Instance.GameWindow.X;
-                if (RAND.Next(0, 100)%2 == 0)
-                    x += ScreenManager.Instance.GameWindow.Width;
-                int y = ScreenManager.Instance.GameWindow.Height / 5;
-                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
+                _spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (_spawnTimer > SPAWN_TIME)
+                {
+                    if (Beatle.BEETLE_COUNT < MAX_BEETLE_COUNT)
+                    {
+                        int x = 0;
+                        if (RAND.Next(0, 100) % 2 == 0)
+                            x += ScreenManager.Instance.GameWindow.Width - 1;
+                        int y = ScreenManager.Instance.GameWindow.Height / 5;
+                        ActorManager.Instance.Add(new Beatle(new Point(x, y)));
+                    }
+                    _spawnTimer -= SPAWN_TIME;
+                }
             }
 
             //Update user input.
@@ -271,10 +279,47 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
+
                             World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
-                            World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 15] = (short)TileInfo.GroundDug;
+                        }
+                        for (int x = GameWindow.Width - 1; x > GameWindow.Width / 2 + 25; x--)
+                        {
+
+                            World.Instance[x, titleOffsetY] = (short)TileInfo.GroundDug;
+                            /*World.Instance[x, titleOffsetY + 1] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 2] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 3] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 4] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 5] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 6] = (short)TileInfo.GroundDug;
+                            World.Instance[x, titleOffsetY + 7] = (short)TileInfo.GroundDug;*/
+                        }
+                        int lastHorizonHeight = titleOffsetY + 15;
+                        for (int x = GameWindow.Width / 2 - 140; x <= GameWindow.Width / 2 + 25; x++)
+                        {
+                            while (((TileInfo)World.Instance[x, lastHorizonHeight]).IsTileType(TileInfo.Sky))
+                            {
+                                lastHorizonHeight++;
+                            }
+
+                            World.Instance[x, lastHorizonHeight] = (short)TileInfo.GroundDug;
+
+
+                            while (!((TileInfo)World.Instance[x, lastHorizonHeight - 1]).IsTileType(TileInfo.Sky))
+                            {
+                                lastHorizonHeight--;
+                                World.Instance[x, lastHorizonHeight] = (short)TileInfo.GroundDug;
+                            }
+
+                            while (((TileInfo)World.Instance[x + 1, lastHorizonHeight]).IsTileType(TileInfo.Sky))
+                            {
+                                lastHorizonHeight++;
+                                World.Instance[x, lastHorizonHeight] = (short)TileInfo.GroundDug;
+                            }
+
                         }
                     }
 

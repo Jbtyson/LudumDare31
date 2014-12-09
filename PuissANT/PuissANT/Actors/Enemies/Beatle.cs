@@ -16,6 +16,11 @@ namespace PuissANT.Actors.Enemies
         private const int DAMAGE = 5;
         private const int HEALTH = 50;
 
+        public static int BEETLE_COUNT = 0;
+
+        private const int ATTACK_DELAY = 1000;
+        private int attackDelayTimer;
+
         private float pathTimer;
         private float aniTimer;
         private int frame;
@@ -27,42 +32,84 @@ namespace PuissANT.Actors.Enemies
             get { return DAMAGE; }
         }
 
-        public Beatle(Vector2 position)
-            : base(position, 9, 6, Game1.Instance.Content.Load<Texture2D>("sprites/enemies/beetle"))
+        public Beatle(Point position)
+            : base(position, 9, 6, Game1.Instance.Content.Load<Texture2D>("sprites/enemies/beetle"), new Rectangle(0,0,69,50))
         {
+            BEETLE_COUNT++;
+
             buffer = new List<Vector2>(8);
+            aniTimer = 0;
+            attackDelayTimer = 0;
+
+            while (((TileInfo)World.Instance[Position]).IsTileType(TileInfo.GroundSoft))
+            {
+                Position = new Point(Position.X, Position.Y - 1);
+                if (Position.Y < 0)
+                {
+                    Position = new Point(Position.X, World.Instance.Height - 1);
+                }
+            }
+
+            while (((TileInfo)World.Instance[Position]).IsTileType(TileInfo.Sky))
+            {
+                Position = new Point(Position.X, Position.Y + 1);
+                if (Position.Y > World.Instance.Height - 1)
+                {
+                    Position = new Point(Position.X, 0);
+                }
+            }
         }
 
         public override void Update(GameTime time)
         {
-            /*aniTimer += time.ElapsedGameTime.Milliseconds;
+            aniTimer += time.ElapsedGameTime.Milliseconds;
             if (aniTimer > ANI_UPDATE_TIME)
             {
                 frame = ++frame % 3;
-                _drawingWindow = new Rectangle(0, frame * 20, 30, 20);
+                _drawingWindow = new Rectangle(0, frame * 50, 69, 50);
                 aniTimer = 0;
-            }*/
+            }
 
             pathTimer += time.ElapsedGameTime.Milliseconds;
             if (!(pathTimer > PATH_UPDATE_TIME)) return;
 
             pathTimer = 0;
-            Point newPostion = getNextPosition();
-            if (newPostion.X - Position.X > 0)
-                faceForward = true;
-            else if (newPostion.X - Position.X < 0)
+            Position = getNextPosition();
+            if (Position.X > World.Instance.Width / 2)
                 faceForward = false;
+            else
+                faceForward = true;
 
-            //Attack
-            foreach (Ant a in ActorManager.Instance.GetActorsByType<Ant>(Position.ToVector2(), _hitbox.Width*_hitbox.Height))
+            if (faceForward)
             {
-                if (canAttack(a))
-                {
-                    a.Attacked(this);
-                    break;
-                }
+                this._drawingWindow.X = 0;
+            }
+            else
+            {
+
+                this._drawingWindow.X = 73;
             }
 
+            //Attack
+            if (attackDelayTimer != 0)
+            {
+                attackDelayTimer -= time.ElapsedGameTime.Milliseconds;
+                if (attackDelayTimer < 0)
+                    attackDelayTimer = 0;
+            }
+
+            if (attackDelayTimer == 0)
+            {
+                foreach (Ant a in ActorManager.Instance.GetActorsByType<Ant>(Position.ToVector2(), _hitbox.Width * _hitbox.Height))
+                {
+                    if (canAttack(a))
+                    {
+                        a.Attacked(this);
+                        attackDelayTimer = ATTACK_DELAY;
+                        break;
+                    }
+                }
+            }
         }
 
         protected Point getNextPosition()
@@ -88,6 +135,15 @@ namespace PuissANT.Actors.Enemies
                         continue;
 
                     buffer.Add(tempPosition);
+
+                    //Only bias it towards the middle when it's on the surface
+                    if (tempPosition.Y < World.Instance.Height / 5 + 20)
+                    {
+                        if (tempPosition.X > World.Instance.Width / 2 + 100 && i < 0)
+                            buffer.Add(tempPosition);
+                        else if (tempPosition.X < World.Instance.Width / 2 - 100 && i > 0)
+                            buffer.Add(tempPosition);
+                    }
                 }
             }
 
@@ -97,6 +153,12 @@ namespace PuissANT.Actors.Enemies
         private bool canAttack(Ant a)
         {
             return true;
+        }
+
+        public override void Attacked(Ant a)
+        {
+            base.Attacked(a);
+            BEETLE_COUNT--;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace PuissANT
         {
             Resources.Add("dirt", 10);
             Resources.Add("food", 100);
-            Resources.Add("ants", 3);
+            Resources.Add("ants", 0);
             Resources.Add("birthsPerSec", 0.1);
             Resources.Add("queenHealth", 100);
         }

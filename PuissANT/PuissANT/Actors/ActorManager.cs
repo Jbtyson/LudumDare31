@@ -26,11 +26,19 @@ namespace PuissANT.Actors
         public void Add(Actor a)
         {
             _tempAdd.Add(a);
+            if (a is Ants.Ant)
+            {
+                ResourceManager.Instance.Resources["ants"] += 1;
+            }
         }
 
         public void Remove(Actor a)
         {
             _tempRemove.Add(a);
+            if (a is Ants.Ant)
+            {
+                ResourceManager.Instance.Resources["ants"] -= 1;
+            }
         }
 
         public IEnumerable<Actor> GetAllActors()
