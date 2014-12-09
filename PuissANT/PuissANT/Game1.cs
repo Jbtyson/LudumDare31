@@ -47,7 +47,7 @@ namespace PuissANT
 
         private const int SPAWN_TIME = 30000;
         private static readonly Random RAND = new Random();
-        private int _spawnTimer = SPAWN_TIME;
+        private int _spawnWormTimer = SPAWN_TIME;
 
 
         public Game1()
@@ -207,19 +207,14 @@ namespace PuissANT
             ActorManager.Instance.Update(gameTime);
 
             //Enemy spawner
-            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (_spawnTimer > SPAWN_TIME)
+            _spawnWormTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (_spawnWormTimer > SPAWN_TIME)
             {
-                int x = ScreenManager.Instance.GameWindow.X;
-                if (RAND.Next(0, 100)%2 == 0)
-                    x += ScreenManager.Instance.GameWindow.Width;
-                int y = 0;
-                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
-                {
-                    y++;
-                }
-                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
-            }*/
+                if(RAND.Next(2) == 1)
+                    ActorManager.Instance.Add(new Worm(new Vector2(GameWindow.Width + 89, RAND.Next(300, GameWindow.Height-15)), true));
+                else
+                    ActorManager.Instance.Add(new Worm(new Vector2(-89, RAND.Next(300, GameWindow.Height-15)), true));
+            }
 
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
@@ -344,8 +339,6 @@ namespace PuissANT
 
                 TerrainManager.DrawTerrain(spriteBatch);
 
-                foreach (Actor actor in ag)
-                    actor.Render(gameTime, spriteBatch);
 
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
