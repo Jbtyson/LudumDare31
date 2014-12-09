@@ -31,7 +31,7 @@ namespace PuissANT.Ui
 
         public void LoadContent()
         {
-            PherDimensions = new Vector2(150, 32);
+            PherDimensions = new Vector2(128, 32);
             DropdownDimensions = new Vector2(32, 32);
             Position = new Vector2(1000, 14);
 
