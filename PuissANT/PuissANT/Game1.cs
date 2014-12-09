@@ -281,13 +281,8 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
                     }
-                    /*for (int y = 0; y < 16; y++)
-                    {
-                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
-                        {
-                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
-                        }
-                    }*/
+
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                 }
             }
             
@@ -327,15 +322,14 @@ namespace PuissANT
             if (!queenPlaced)
             {
                 TerrainManager.DrawTerrain(spriteBatch);
+                ScreenManager.Instance.Draw(spriteBatch);
 
                 spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
 
                 foreach (Actor a in ActorManager.Instance.GetAllActors())
                     a.Render(gameTime, spriteBatch);
 
-                ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
-                //spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
             }
             else
             {
