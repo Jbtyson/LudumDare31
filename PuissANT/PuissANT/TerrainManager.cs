@@ -93,9 +93,13 @@ namespace PuissANT
             {
                 c = HARD_DIRT_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
             }
-            if (tile.IsTileType(TileInfo.GroundImp))
+            else if (tile.IsTileType(TileInfo.GroundImp))
             {
                 c = ROCK_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
+            }
+            else if (tile.IsTileType(TileInfo.GroundDug))
+            {
+                c = DEFAULT_COLOR;
             }
 
             UpdatePixel(x, y, c);
