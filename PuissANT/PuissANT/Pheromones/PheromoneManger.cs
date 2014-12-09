@@ -142,7 +142,7 @@ namespace PuissANT.Pheromones
         public bool CanSetPheromone(TileInfo type)
         {
             //Evalute if ther are enough resources to set the given type.
-            if (ScreenManager.Instance.UiManager._box.Expanded)
+            if (ScreenManager.Instance.UiManager.IsMouseOnUi())
             {
                 return false;
             }
