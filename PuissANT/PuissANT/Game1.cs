@@ -49,7 +49,8 @@ namespace PuissANT
         private const int SPAWN_TIME = 30000;
         private const int MAX_BEETLE_COUNT = 3;
         private static readonly Random RAND = new Random();
-        private int _spawnTimer = SPAWN_TIME;
+        private int _spawnBeetleTimer = 0;
+        private int _spawnWormTimer = 0;
 
 
         public Game1()
@@ -213,8 +214,8 @@ namespace PuissANT
             //Enemy spawner
             if (queenPlaced)
             {
-                _spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
-                if (_spawnTimer > SPAWN_TIME)
+                _spawnBeetleTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (_spawnBeetleTimer > SPAWN_TIME)
                 {
                     if (Beatle.BEETLE_COUNT < MAX_BEETLE_COUNT)
                     {
@@ -224,7 +225,22 @@ namespace PuissANT
                         int y = ScreenManager.Instance.GameWindow.Height / 5;
                         ActorManager.Instance.Add(new Beatle(new Point(x, y)));
                     }
-                    _spawnTimer -= SPAWN_TIME;
+                   _spawnBeetleTimer -= SPAWN_TIME;
+                }
+
+                _spawnWormTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (_spawnWormTimer > SPAWN_TIME * 2.5)
+                {
+                    if (Worm.COUNT < MAX_BEETLE_COUNT)
+                    {
+                        int x = -98;
+                        if (RAND.Next(0, 100) % 2 == 0)
+                            x += ScreenManager.Instance.GameWindow.Width + 98;
+                        int y = RAND.Next(ScreenManager.Instance.GameWindow.Height / 5 + 25, ScreenManager.Instance.GameWindow.Height - 70);
+                        ActorManager.Instance.Add(new Worm(new Vector2(x, y), x != -98));
+                        Worm.COUNT ++;
+                    }
+                    _spawnWormTimer -= (int)(SPAWN_TIME * 2.5);
                 }
             }
 
@@ -325,7 +341,7 @@ namespace PuissANT
 
                         }
 
-                        PheromoneManger.Instance.MousePheromoneType = TileInfo.Worker;
+                        PheromoneManger.Instance.MousePheromoneType = TileInfo.Attack;
                     }
                 }
             }

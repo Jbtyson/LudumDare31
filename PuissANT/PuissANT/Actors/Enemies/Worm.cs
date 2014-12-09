@@ -16,10 +16,12 @@ namespace PuissANT.Actors.Enemies
         private const int DAMAGE = 5;
         private const int HEALTH = 100;
 
+        public static int COUNT = 0;
+
         private float pathTimer;
         private float aniTimer;
         private int frame;
-        private bool faceForward=false;
+        private bool faceForward=true;
         private List<Vector2> buffer;
         private Random rand;
 
@@ -28,13 +30,14 @@ namespace PuissANT.Actors.Enemies
             get { return DAMAGE; }
         }
 
-        public Worm(Vector2 position)
+        public Worm(Vector2 position, bool goLeft)
             : base(position, 98, 15, Game1.Instance.Content.Load<Texture2D>("sprites/enemies/worm"))
         {
             buffer = new List<Vector2>(8);
             rand = new Random();
             _drawingWindow.Height = 15;
             _drawingWindow.Y = 15;
+            faceForward = goLeft;
         }
 
         public override void Update(GameTime time)
@@ -94,7 +97,7 @@ namespace PuissANT.Actors.Enemies
                     {
                         if(_position.X > -45)
                             World.Instance.Set(Position.X - 45, Position.Y - 5 + i, TileInfo.GroundDug);
-                        if (_position.X > 45)
+                        if (_position.X > -90)
                         {
                             World.Instance.Set(Position.X + 45, Position.Y - 5 + i, TileInfo.GroundSoft);
                             TerrainManager.UpdatePixel(Position.X + 45, Position.Y - 5 + i, (rand.Next(10) == 0) ? new Color(63, 28, 5) : new Color(112, 88, 26));
@@ -116,7 +119,7 @@ namespace PuissANT.Actors.Enemies
                     {
                         if(_position.X < World.Instance.Width - 45)
                             World.Instance.Set(Position.X + 45, Position.Y - 7 + i, TileInfo.GroundDug);
-                        if (_position.X < World.Instance.Width - 45)
+                        if (_position.X < World.Instance.Width - 90)
                         {
                             World.Instance.Set(Position.X - 45, Position.Y - 7 + i, TileInfo.GroundSoft);
                             TerrainManager.UpdatePixel(Position.X - 45, Position.Y - 5 + i, (rand.Next(10) == 0) ? new Color(63, 28, 5) : new Color(112, 88, 26));
