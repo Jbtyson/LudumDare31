@@ -40,6 +40,7 @@ namespace PuissANT
         Texture2D splashScreen;
         Texture2D backgroundTop;
         Texture2D antTexture;
+        private Texture2D gameOverTex;
         
         bool queenPlaced = false;
         int titleOffsetX;
@@ -100,6 +101,7 @@ namespace PuissANT
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
+            gameOverTex = Content.Load<Texture2D>("ui/gameover");
 
             // Load Background textures
             splashScreen = Content.Load<Texture2D>("ui/splashScreen");
@@ -199,6 +201,9 @@ namespace PuissANT
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            if (isGameOver())
+                return;
             
             Point mouse = Mouse.GetState().Position;
             Window.Title = "X: " + mouse.X + " Y: " + mouse.Y;
@@ -415,6 +420,9 @@ namespace PuissANT
                     nursery.Draw(spriteBatch, GameWindow);
                 }
 
+                if(isGameOver())
+                    spriteBatch.Draw(gameOverTex, new Vector2(0, 200));
+
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 
@@ -427,7 +435,7 @@ namespace PuissANT
 
         private bool isGameOver()
         {
-            return queenPlaced && ActorManager.Instance.GetActorsByType<QueenAnt>().FirstOrDefault() != null;
+            return queenPlaced && ActorManager.Instance.GetActorsByType<QueenAnt>().FirstOrDefault() == null;
         }
 
         private void ReticulateDirtLayers()
