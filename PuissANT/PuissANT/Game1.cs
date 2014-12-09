@@ -15,6 +15,7 @@ using PuissANT.Pheromones;
 using PuissANT.ui;
 using PuissANT.Util;
 using PuissANT.Buildings.Nurseries;
+using PuissANT.Buildings;
 
 #endregion
 
@@ -76,8 +77,6 @@ namespace PuissANT
 
             base.Initialize();
         }
-
-        WorkerNursery nursery;
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -173,13 +172,6 @@ namespace PuissANT
                 //ant.SetTarget(new Vector2(r.Next(0, GameWindow.Width-1), r.Next(GameWindow.Height/5, GameWindow.Height-1)).ToPoint());
                 ActorManager.Instance.Add(ant);
             }*/
-
-            Point screenMiddle = ScreenManager.Instance.ScreenSize.ToPoint();
-            screenMiddle.X /= 2;
-            screenMiddle.Y /= 2;
-
-            nursery = WorkerNursery.Debug_Spawn(screenMiddle, new Texture2D(GraphicsDevice, 50, 50));
-            nursery.Debug_InitializeTest();
 
             PheromoneManger.Instance.MousePheromoneType = TileInfo.Nest;
         }
@@ -309,14 +301,7 @@ namespace PuissANT
 
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
-
-//DEBUG Code
-            nursery.Update(gameTime);
-
-            nursery.Debug_DamageBuilding();
-
-            Window.Title = "Health = " + (nursery.PercentOfHealth * 100).ToString() + "%";
-
+            
             if (isGameOver())
             {
                 //handleGameOver
@@ -355,6 +340,8 @@ namespace PuissANT
                 IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
                 IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
 
+                IEnumerable<BaseNursery> nurseries = NurseryManager.Instance.GetAllActors();
+
                 spriteBatch.Draw(backgroundTop, Vector2.Zero, Color.White);
 
                 foreach (Actor actor in ug)
@@ -365,7 +352,11 @@ namespace PuissANT
                 foreach (Actor actor in ag)
                     actor.Render(gameTime, spriteBatch);
 
-                nursery.Draw(spriteBatch, GameWindow);
+                foreach(BaseNursery nursery in nurseries)
+                {
+                    nursery.Draw(spriteBatch, GameWindow);
+                }
+
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 
