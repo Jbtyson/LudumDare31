@@ -280,6 +280,8 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
+
+                        PheromoneManger.Instance.MousePheromoneType = TileInfo.WorkerSpawn;
                     }
 
                     PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
@@ -359,8 +361,7 @@ namespace PuissANT
 
         private bool isGameOver()
         {
-            //return ActorManager.Instance.GetActorsByType<QueenAnt>().First().Health <= 0;
-            return false;
+            return queenPlaced && ActorManager.Instance.GetActorsByType<QueenAnt>().FirstOrDefault() != null;
         }
 
         private void ReticulateDirtLayers()
