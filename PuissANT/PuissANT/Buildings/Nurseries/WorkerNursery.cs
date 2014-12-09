@@ -86,6 +86,9 @@ namespace PuissANT.Buildings.Nurseries
             tempBuf = new Color[_texture.Width * _texture.Height];
             shadeTexture = new Texture2D(_texture.GraphicsDevice, _texture.Width, _texture.Height);
             _currentBuilders = 1;
+
+            _buildingPosition.X -= _texture.Width / 2;
+            _buildingPosition.Y -= _texture.Height / 2;
         }
 
         #region Debug Methods
