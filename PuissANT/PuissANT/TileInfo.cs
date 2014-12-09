@@ -26,8 +26,8 @@ namespace PuissANT
         Nest = 0x2 << 8,
         Attack = 0x3 << 8,
         Gather = 0x4 << 8,
-        WorkerSpawn = 0x5 << 8,
-        SoilderSpawn = 0x6 << 8,
+        Worker = 0x5 << 8,
+        Soldier = 0x6 << 8,
 
         //Clearing types
         CLEAR_TILE = 0xFF << 8,
@@ -39,11 +39,9 @@ namespace PuissANT
     {
         public static TileInfo[] PheromoneTypes = new TileInfo[]
         {
-            TileInfo.Nest, 
-            TileInfo.Attack, 
-            TileInfo.Gather,
-            TileInfo.WorkerSpawn,
-            TileInfo.SoilderSpawn
+            TileInfo.Attack,
+            TileInfo.Worker,
+            TileInfo.Soldier
         };
     }
 

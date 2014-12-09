@@ -61,7 +61,7 @@ namespace PuissANT.Pheromones
                             Game1.Instance.Content.Load<Texture2D>("ui/AntCursor"))
                     };
                     break;
-                case TileInfo.WorkerSpawn:
+                case TileInfo.Worker:
                     p = new WorkerSpawnPheromone()
                     {
                         Position = position,
@@ -72,7 +72,7 @@ namespace PuissANT.Pheromones
                             Game1.Instance.Content.Load<Texture2D>("phermones/WorkerPhermone.png"))
                     };
                     break;
-                case TileInfo.SoilderSpawn:
+                case TileInfo.Soldier:
                     p = new SoilderSpawnPheromone()
                     {
                         Position = position,

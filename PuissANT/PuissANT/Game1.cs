@@ -325,14 +325,12 @@ namespace PuissANT
 
                         }
 
-                        PheromoneManger.Instance.MousePheromoneType = TileInfo.WorkerSpawn;
+                        PheromoneManger.Instance.MousePheromoneType = TileInfo.Worker;
                     }
-
-                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                 }
             }
             
-            if(queenPlaced)
+            /*if(queenPlaced)
             {
                 scrollOffset += MouseManager.Instance.ScrollOffset();
                 if (scrollOffset > CHANGE_OFFSET)
@@ -341,7 +339,7 @@ namespace PuissANT
                     PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
                     Console.Out.WriteLine(PheromoneManger.Instance.MousePheromoneType.ToString());
                 }
-            }
+            }*/
 
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
