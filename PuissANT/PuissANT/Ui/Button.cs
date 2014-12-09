@@ -37,7 +37,7 @@ namespace PuissANT.Ui
         /// A Click event. When the button is clicked (called on release),
         ///  it calls this event.
         /// </summary>
-        public delegate void ButtonEvent(object sender);
+        public delegate void ButtonEvent(Button sender);
 
         public ButtonEvent ButtonClicked;
 
@@ -157,7 +157,7 @@ namespace PuissANT.Ui
                             _buttonState = ButtonState.Over;
                         else
                             _buttonState = ButtonState.Neutral;
-                        ButtonClicked(_value);
+                        ButtonClicked(this);
                     }
                     else if (!isMouseOver)
                     {
@@ -212,6 +212,22 @@ namespace PuissANT.Ui
                 texture = _buttonImages[0];
 
             return texture;
+        }
+
+        public Button Clone()
+        {
+            Button b = new Button();
+            b.Location = this.Location;
+            // Create the text
+            b.Font = this._spriteFont;
+            b.ButtonText = this._buttonText;
+            // Set the image textures...this is retarded, fix later
+            b.SetTexture(this._buttonImages[0], Button.ButtonState.Neutral);
+            b.SetTexture(this._buttonImages[1], Button.ButtonState.Over);
+            b.SetTexture(this._buttonImages[2], Button.ButtonState.Pressed);
+            b.ButtonClicked = this.ButtonClicked;
+            b.Value = this.Value;
+            return b;
         }
     }
 }

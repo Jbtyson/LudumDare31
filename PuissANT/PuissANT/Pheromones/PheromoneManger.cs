@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Ui;
 
 namespace PuissANT.Pheromones
 {
@@ -141,6 +142,10 @@ namespace PuissANT.Pheromones
         public bool CanSetPheromone(TileInfo type)
         {
             //Evalute if ther are enough resources to set the given type.
+            if (ScreenManager.Instance.UiManager.IsMouseOnUi())
+            {
+                return false;
+            }
             return true;
         }
 
