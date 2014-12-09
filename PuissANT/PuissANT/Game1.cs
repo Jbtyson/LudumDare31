@@ -207,6 +207,7 @@ namespace PuissANT
             ResourceManager.Instance.Update(gameTime);
             PheromoneManger.Instance.Update(gameTime);
             ActorManager.Instance.Update(gameTime);
+            NurseryManager.Instance.Update(gameTime);
 
             //Enemy spawner
             /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;

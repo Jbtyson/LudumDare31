@@ -63,6 +63,11 @@ namespace PuissANT.Buildings.Nurseries
             foreach (BaseNursery a in _tempRemove)
                 _nursery.Remove(a);
             _tempRemove.Clear();
+
+            foreach (BaseNursery a in _nursery)
+            {
+                a.Update(game);
+            }
         }
     }
 }
