@@ -15,6 +15,7 @@ namespace PuissANT
         private static Color[] MEDIUM_DIRT_COLOR;
         private static Color[] HARD_DIRT_COLOR;
         private static Color[] ROCK_COLOR;
+        private static int COLOR_RANDOMIZER_OFFSET = 4;
 
         private static Rectangle _screenSize;
         private static Texture2D _texture;
@@ -29,10 +30,16 @@ namespace PuissANT
         private static void InitGroundColors()
         {
             _randomColorChooser = new Random();
-            SOFT_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(112, 88, 26), new Color(112, 88, 26), new Color(157, 154, 68) };
-            MEDIUM_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(63, 22, 29), new Color(63, 22, 29), new Color(63, 22, 29) };
-            HARD_DIRT_COLOR = new Color[] { new Color(63, 28, 5), new Color(67, 24, 53), new Color(67, 24, 53), new Color(67, 24, 53) };
-            ROCK_COLOR = new Color[] { new Color(219, 228, 237), new Color(219, 228, 237), new Color(219, 228, 237), new Color(157, 154, 68) };
+
+            //SOFT_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(112, 88, 26), new Color(112, 88, 26), new Color(157, 154, 68) };
+            //MEDIUM_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(63, 22, 29), new Color(63, 22, 29), new Color(63, 22, 29) };
+            //HARD_DIRT_COLOR = new Color[] { new Color(63, 28, 5), new Color(67, 24, 53), new Color(67, 24, 53), new Color(67, 24, 53) };
+            //ROCK_COLOR = new Color[] { new Color(219, 228, 237), new Color(219, 228, 237), new Color(219, 228, 237), new Color(157, 154, 68) };
+
+            SOFT_DIRT_COLOR = new Color[] { new Color(112, 88, 26), new Color(157, 154, 68) };
+            MEDIUM_DIRT_COLOR = new Color[] { new Color(63, 22, 29), new Color(112, 88, 26) };
+            HARD_DIRT_COLOR = new Color[] { new Color(67, 24, 53), new Color(63, 28, 5) };
+            ROCK_COLOR = new Color[] { new Color(219, 228, 237), new Color(157, 154, 68) };
         }
 
         public static void Initialize(GraphicsDevice graphicsDevice, Rectangle windowsize)
@@ -76,19 +83,19 @@ namespace PuissANT
             TileInfo tile = (TileInfo)info;
             if (tile.IsTileType(TileInfo.GroundSoft))
             {
-                c = SOFT_DIRT_COLOR[_randomColorChooser.Next(SOFT_DIRT_COLOR.Length)];
+                c = SOFT_DIRT_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
             }
             else if (tile.IsTileType(TileInfo.GroundMed))
             {
-                c = MEDIUM_DIRT_COLOR[_randomColorChooser.Next(MEDIUM_DIRT_COLOR.Length)];
+                c = MEDIUM_DIRT_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
             }
             else if (tile.IsTileType(TileInfo.GroundHard))
             {
-                c = HARD_DIRT_COLOR[_randomColorChooser.Next(HARD_DIRT_COLOR.Length)];
+                c = HARD_DIRT_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
             }
             if (tile.IsTileType(TileInfo.GroundImp))
             {
-                c = ROCK_COLOR[_randomColorChooser.Next(ROCK_COLOR.Length)];
+                c = ROCK_COLOR[_randomColorChooser.Next(COLOR_RANDOMIZER_OFFSET + 1) == COLOR_RANDOMIZER_OFFSET ? 1 : 0];
             }
 
             UpdatePixel(x, y, c);
