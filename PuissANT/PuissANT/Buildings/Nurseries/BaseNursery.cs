@@ -13,6 +13,7 @@ namespace PuissANT.Buildings
         protected Ant _unit;
         protected int _productionTime; //milliseconds to produce 1 ant
         protected int _currentProductionTime;
+        protected int _unitCap;
 
         /// <summary>
         /// The production rate of the nursery's units 
@@ -28,11 +29,12 @@ namespace PuissANT.Buildings
         public BaseNursery(
             Point position, Texture2D texture, long buildTime, double repairRate, 
             int baseProductionTime, int totalHealth, short maxBuilders, 
-            int currentNurseryCount, double builderProductionFactor = 1.0)
+            int currentNurseryCount, int unitCap, double builderProductionFactor = 1.0)
         :base(position, texture, buildTime, repairRate, totalHealth, maxBuilders, builderProductionFactor)
         {
             _productionTime = _currentProductionTime = baseProductionTime;
             _previousNurseryCount = currentNurseryCount;
+            _unitCap = unitCap;
 
             _productionRate = 1;
         }

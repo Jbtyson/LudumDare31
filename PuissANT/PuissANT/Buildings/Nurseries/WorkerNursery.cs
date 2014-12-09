@@ -27,6 +27,7 @@ namespace PuissANT.Buildings.Nurseries
         private const int d_totalHealth = 3000;
         private const short d_maxBuilders = 3;
         private const double d_builderProductionFactor = 1.0;
+        private const int d_unitCap = 50;
 
         private Color[] tempBuf;
         private Texture2D shadeTexture;
@@ -34,7 +35,39 @@ namespace PuissANT.Buildings.Nurseries
         public WorkerNursery( 
             Point position, Texture2D texture)
         :base(position, texture, d_buildTime, d_repairRate, d_baseProductionTime, 
-            d_totalHealth, d_maxBuilders, ++_currentWorkerNurseryCount, d_builderProductionFactor)
+            d_totalHealth, d_maxBuilders, ++_currentWorkerNurseryCount, d_unitCap, d_builderProductionFactor)
+        {
+            Initialize();
+        }
+
+        public WorkerNursery(
+            Point position)
+            : base(position, null, d_buildTime, d_repairRate, d_baseProductionTime,
+                d_totalHealth, d_maxBuilders, ++_currentWorkerNurseryCount, d_unitCap, d_builderProductionFactor)
+        {
+            int width = 50;
+            int height = 50;
+
+            Color[] colorBuf = new Color[width * height];
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (x < (width * .35) || x > (width * .65))
+                        colorBuf[(y * width) + x] = new Color(0, 0, 0, 0);
+                    else
+                        colorBuf[(y * width) + x] = Color.Black;
+                }
+            }
+
+            _texture = new Texture2D(ScreenManager.Instance.GraphicsDevice, width, height);
+            _texture.SetData<Color>(colorBuf);
+
+            Initialize();
+        }
+
+        private void Initialize()
         {
             percentPerLine = 100 / (double)_texture.Height;
             previousDrawnPercent = 0.0d;
@@ -86,8 +119,7 @@ namespace PuissANT.Buildings.Nurseries
 
         public void Debug_DamageBuilding()
         {
-            if (_buildingState == BuildingState.COMPLETE)
-                this.Attack(7);
+
         }
 
         #endregion
@@ -253,9 +285,12 @@ namespace PuissANT.Buildings.Nurseries
 
         protected override void SpawnAnt()
         {
-            //ActorManager.Instance.Add(new WorkerAnt(new Point(xpoint,ypoint));
-            return;
-            throw new NotImplementedException();
+            if (ActorManager.Instance.GetActorsByType<WorkerAnt>().ToArray().Count() > _unitCap) return;
+
+            Random r = new Random();
+            Point randomOffset = new Point(r.Next(_texture.Width), r.Next(_texture.Height));
+
+            ActorManager.Instance.Add(new WorkerAnt(_buildingPosition + randomOffset));
         }
 
         protected override void KillBuilders()

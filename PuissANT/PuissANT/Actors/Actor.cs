@@ -27,15 +27,9 @@ namespace PuissANT.Actors
             get { return _position; }
             set 
             {
-                _position = value; 
-                
-                //Update hitbox position.
-                _hitbox.X = _position.X - _hitbox.Width / 2;
-                _hitbox.Y = _position.Y - _hitbox.Height / 2;
+                _position = value;
 
-                //Update texture position
-                _texturePoint.X = _position.X - _texture.Width / 2;
-                _texturePoint.Y = _position.Y - _texture.Height / 2;
+                updatePosition();
             }
         }
 

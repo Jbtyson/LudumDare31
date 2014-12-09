@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Buildings\BaseBuilding.cs" />
     <Compile Include="Buildings\Nurseries\BaseNursery.cs" />
+    <Compile Include="Buildings\Nurseries\NurseryManager.cs" />
     <Compile Include="Buildings\Nurseries\WorkerNursery.cs" />
     <Compile Include="Actors\PheromoneActor.cs" />
     <Compile Include="PhermoneCursor.cs" />
