@@ -341,8 +341,6 @@ namespace PuissANT
             spriteBatch.Begin(
                 SpriteSortMode.Immediate, 
                 BlendState.NonPremultiplied);
-            
-            nursery.Draw(spriteBatch, GameWindow);
 
             if (!queenPlaced)
             {
@@ -373,6 +371,7 @@ namespace PuissANT
                 foreach (Actor actor in ag)
                     actor.Render(gameTime, spriteBatch);
 
+                nursery.Draw(spriteBatch, GameWindow);
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
 
