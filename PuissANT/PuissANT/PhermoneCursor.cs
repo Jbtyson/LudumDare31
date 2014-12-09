@@ -33,7 +33,6 @@ namespace PuissANT.ui
             // Load Cursor Icons
             cursors[TileInfo.Nest] = Content.Load<Texture2D>("ui/antCursor");
             cursors[TileInfo.Attack] = Content.Load<Texture2D>("phermones/AttackPheromone");
-            cursors[TileInfo.Gather] = Content.Load<Texture2D>("phermones/GatherPheromone");
             cursors[TileInfo.Worker] = Content.Load<Texture2D>("phermones/WorkerPhermone");
             cursors[TileInfo.Soldier] = Content.Load<Texture2D>("phermones/SoldierPhermone");
         }

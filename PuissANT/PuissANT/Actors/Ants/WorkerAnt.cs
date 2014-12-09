@@ -147,6 +147,11 @@ namespace PuissANT.Actors.Ants
                 }
             }
 
+            if (_openQueue.IsEmpty())
+            {
+                return INVALID_POINT;
+            }
+
             Point v = _openQueue.Dequeue();
             if (_closedList.Count == MEMORY)
                 _closedList.RemoveAt(0);
