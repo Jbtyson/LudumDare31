@@ -1,13 +1,16 @@
 ﻿#region Using Statements
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using PuissANT.Actors;
 using PuissANT.Actors.Ants;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.ui;
 using PuissANT.Util;
@@ -24,16 +27,28 @@ namespace PuissANT
     {
         public static Game1 Instance;
 
+        /// <summary>
+        /// The amount to scroll before changing pheromones.
+        /// </summary>
+        private const int CHANGE_OFFSET = 500;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         Rectangle GameWindow;
-
+        Texture2D splashScreen;
+        Texture2D backgroundTop;
         Texture2D antTexture;
-
+        
         bool queenPlaced = false;
         int titleOffsetX;
         int titleOffsetY;
+        private int scrollOffset;
+
+        private const int SPAWN_TIME = 30000;
+        private static readonly Random RAND = new Random();
+        private int _spawnTimer = SPAWN_TIME;
+
 
         public Game1()
             : base()
@@ -82,7 +97,26 @@ namespace PuissANT
 
             // Load Cursor Icons
             Texture2D soldierPhermone = Content.Load<Texture2D>("phermones/SoldierPhermone");
+
+            // Load Background textures
+            splashScreen = Content.Load<Texture2D>("ui/splashScreen");
+            backgroundTop = Content.Load<Texture2D>("ui/BackgroundTop");
+            antTexture = Content.Load<Texture2D>("ui/antCursor");
             
+            // Load And Play Music.
+            try
+            {
+                SongCollection playlist = new SongCollection();
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - the shovel"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - HS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - WS"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - DT3"));
+                playlist.Add(Content.Load<Song>("music/Robert del Naja - BC"));
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(playlist);
+            }
+            catch (Exception e) { }
+
             int gameWindowVerticalOffset = (int)ScreenManager.Instance.UiManager.PanelList[0].Dimensions.Y;
             //int gameWindowHorizontalOffset = (int)ScreenManager.Instance.UiManager.PanelList[1].Dimensions.X;
 
@@ -92,15 +126,15 @@ namespace PuissANT
             ScreenManager.Instance.GameWindow = GameWindow;
 
             TerrainManager.Initialize(GraphicsDevice, GameWindow);
-            World.Init((short)GameWindow.Width, (short)GameWindow.Height, TileInfo.GroundSoft);
-            
+            World.Init((short) GameWindow.Width, (short) GameWindow.Height, TileInfo.GroundSoft);
+
+            titleOffsetX = GameWindow.Width / 2 - 200;
+            titleOffsetY = GameWindow.Height / 5;
             // Load the title into the world
             Int32[] buffer = new Int32[28160];
             Image img = new Image();
             img.LoadContent("title/Title_0", String.Empty);
             img.Texture.GetData<Int32>(buffer, 0, 28160);
-            titleOffsetX = GameWindow.Width / 2 - 200;
-            titleOffsetY = GameWindow.Height / 5;
             for (int y = 0; y < 80; y++)
             {
                 for (int x = 0; x < 352; x++)
@@ -172,68 +206,109 @@ namespace PuissANT
             PheromoneManger.Instance.Update(gameTime);
             ActorManager.Instance.Update(gameTime);
 
+            //Enemy spawner
+            /*_spawnTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (_spawnTimer > SPAWN_TIME)
+            {
+                int x = ScreenManager.Instance.GameWindow.X;
+                if (RAND.Next(0, 100)%2 == 0)
+                    x += ScreenManager.Instance.GameWindow.Width;
+                int y = 0;
+                while (((TileInfo) World.Instance[x, y]).ClearTileObject() == TileInfo.Sky)
+                {
+                    y++;
+                }
+                ActorManager.Instance.Add(new Beatle(new Vector2(x, y)));
+            }*/
+
             //Update user input.
             PhermoneCursor.Instance.Update(gameTime);
             if (MouseManager.Instance.WasJustClicked
                 && ScreenManager.Instance.isPointWithinGameWindow(MouseManager.Instance.MousePosition)
                 && PheromoneManger.Instance.CanSetPheromone(PheromoneManger.Instance.MousePheromoneType))
             {
-                PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition));
-                
-                // If this is the first click in the game, we switch the title image
-                if (!queenPlaced)
-                {
-                    queenPlaced = true;
+                Point p = ScreenManager.Instance.getPointWithinGameWindow(MouseManager.Instance.MousePosition);
 
-                    // Switch update screen
-                    Int32[] buffer = new Int32[28160];
-                    Image img = new Image();
-                    img.LoadContent("title/Title_1", String.Empty);
-                    img.Texture.GetData<Int32>(buffer, 0, 28160);
-                    for (int y = 0; y < GameWindow.Height / 5; y++)
+                //Just make sure that you can't place the nest higher than the horizon
+                if ((queenPlaced || (p.Y > GameWindow.Height / 5 && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.Sky)))
+                    && !((TileInfo)World.Instance[p]).IsTileType(TileInfo.GroundImp))
+                {
+                    placePheromone(p);
+
+                    // If this is the first click in the game, we switch the title image
+                    if (!queenPlaced)
                     {
-                        for (int x = 0; x < GameWindow.Width; x++)
+                        queenPlaced = true;
+
+                        // Switch update screen
+                        Int32[] buffer = new Int32[28160];
+                        Image img = new Image();
+                        img.LoadContent("title/Title_1", String.Empty);
+                        img.Texture.GetData<Int32>(buffer, 0, 28160);
+                        for (int y = 0; y < GameWindow.Height / 5; y++)
                         {
-                            World.Instance[x, y] = (short)TileInfo.Sky;
+                            for (int x = 0; x < GameWindow.Width; x++)
+                            {
+                                World.Instance[x, y] = (short)TileInfo.Sky;
+                            }
                         }
-                    }
-                    for (int y = 0; y < 80; y++)
-                    {
-                        for (int x = 0; x < 352; x++)
+                        for (int y = 0; y < 80; y++)
                         {
-                            if (buffer[x + y * 352] == -16777216)
-                                World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
-                            else
-                                if(y > 28)
-                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                            for (int x = 0; x < 352; x++)
+                            {
+                                if (buffer[x + y * 352] == -16777216)
+                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundSoft;
                                 else
-                                    World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    if (y > 28)
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.GroundDug;
+                                    else
+                                        World.Instance[x + titleOffsetX, y + GameWindow.Height / 5 - 28] = (short)TileInfo.Sky;
+                            }
+                        }
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
+                            World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
                     }
-                    for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                    /*for (int y = 0; y < 16; y++)
                     {
-                        World.Instance[x, titleOffsetY] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 1] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 2] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 3] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 4] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 5] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 6] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 7] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 12] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 13] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
-                        World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
-                    }
+                        for (int x = 0; x < GameWindow.Width / 2 - 140; x++)
+                        {
+                            World.Instance[x, titleOffsetY + y] = (short)TileInfo.Sky;
+                        }
+                    }*/
+                }
+            }
+            
+            if(queenPlaced)
+            {
+                scrollOffset += MouseManager.Instance.ScrollOffset();
+                if (scrollOffset > CHANGE_OFFSET)
+                {
+                    scrollOffset = 0;
+                    PheromoneManger.Instance.MousePheromoneType = PheromoneManger.Instance.GetNextTileInfo();
+                    Console.Out.WriteLine(PheromoneManger.Instance.MousePheromoneType.ToString());
                 }
             }
 
             foreach (Actor a in ActorManager.Instance.GetAllActors())
                 a.Update(gameTime);
 
-            if(isGameOver())
+            if (isGameOver())
+            {
                 //handleGameOver
-
+            }
             base.Update(gameTime);
         }
 
@@ -248,24 +323,41 @@ namespace PuissANT
             spriteBatch.Begin(
                 SpriteSortMode.Immediate, 
                 BlendState.NonPremultiplied);
-
-            IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
-            foreach(Actor actor in actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue))
-                actor.Render(gameTime, spriteBatch);
-
-            TerrainManager.DrawTerrain(spriteBatch);
-
-            foreach(Actor actor in actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue))
-                actor.Render(gameTime, spriteBatch);
             
-            foreach (Actor a in ActorManager.Instance.GetAllActors())
-                a.Render(gameTime, spriteBatch);
+            if (!queenPlaced)
+            {
+                TerrainManager.DrawTerrain(spriteBatch);
 
-            
+                spriteBatch.Draw(splashScreen, Vector2.Zero, Color.White);
 
-            ScreenManager.Instance.Draw(spriteBatch);
-            PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                foreach (Actor a in ActorManager.Instance.GetAllActors())
+                    a.Render(gameTime, spriteBatch);
 
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+                //spriteBatch.Draw(antTexture, MouseManager.Instance.MousePosition.ToVector2(), Color.White);
+            }
+            else
+            {
+                IEnumerable<Actor> actors = ActorManager.Instance.GetAllActors();
+                IEnumerable<Actor> ug = actors.Where(a => a.ZValue < 128).OrderBy(a => a.ZValue);
+                IEnumerable<Actor> ag = actors.Where(a => a.ZValue >= 128).OrderBy(a => a.ZValue);
+
+                spriteBatch.Draw(backgroundTop, Vector2.Zero, Color.White);
+
+                foreach (Actor actor in ug)
+                    actor.Render(gameTime, spriteBatch);
+
+                TerrainManager.DrawTerrain(spriteBatch);
+
+                foreach (Actor actor in ag)
+                    actor.Render(gameTime, spriteBatch);
+
+                ScreenManager.Instance.Draw(spriteBatch);
+                PhermoneCursor.Instance.Render(gameTime, spriteBatch);
+
+            }
+                
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -698,6 +790,16 @@ namespace PuissANT
                 //Add it
                 possibleStones.Add(new KeyValuePair<Point, int>(newStone, 1));
             }
+        }
+
+        private void placePheromone(Point p)
+        {
+            while (((TileInfo) World.Instance[p.X, p.Y + 1]).IsTileType(TileInfo.Sky))
+            {
+                p = new Point(p.X, p.Y + 1);
+            }
+
+            PheromoneManger.Instance.Add(PheromoneManger.Instance.MousePheromoneType, p);
         }
     }
 }

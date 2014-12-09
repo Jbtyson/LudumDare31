@@ -50,12 +50,11 @@ namespace PuissANT.Actors.Ants
             pathTimer = 0;
             if (Target != INVALID_POINT)
             {
-                if (MoveTowardsTarget())
+                if(MoveTowardsTarget())
                 {
                     _nestFound = true;
                     NestPheromone p = PheromoneManger.Instance.GetPheromoneAt(Position) as NestPheromone;
                     p.Reached();
-                    PheromoneManger.Instance.Remove(p);
                 }
             }
             else

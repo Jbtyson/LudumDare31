@@ -12,8 +12,9 @@ namespace PuissANT.Ui
     public class UiManager
     {
         private List<IPanel> _panels;
-        private DropDownBox _box;
         public List<Rectangle> HitBoxes;
+        public StatsPanel Stats;
+        public DropDownBox _box;
 
         public List<IPanel> PanelList
         {
@@ -23,7 +24,8 @@ namespace PuissANT.Ui
         public UiManager()
         {
             _panels = new List<IPanel>();
-            _panels.Add(new StatsPanel());
+            Stats = new StatsPanel();
+            _panels.Add(Stats);
             _box = new DropDownBox();
             HitBoxes = new List<Rectangle>();
         }
@@ -33,6 +35,12 @@ namespace PuissANT.Ui
             foreach (IPanel p in _panels)
                 p.LoadContent();
             _box.LoadContent();
+
+            // Add hitboxes of all buttons and displays
+            foreach (ResourceDisplay r in Stats.Resources)
+                HitBoxes.Add(r.Hitbox);
+            HitBoxes.Add(_box.Hitbox);
+
         }
 
         public void UnloadContent()
@@ -56,9 +64,18 @@ namespace PuissANT.Ui
             _box.Draw(spriteBatch);
         }
 
-        public bool IsMouseInHitbox()
+        public bool IsMouseOnUi()
         {
-
+            Point m = MouseManager.Instance.MousePosition;
+            foreach (Rectangle r in HitBoxes)
+            {
+                if (r.Contains(m))
+                    return true;
+            }
+            if (_box.Expanded)
+                if (_box.ListHitbox.Contains(m))
+                    return true;
+            return false;
         }
     }
 }

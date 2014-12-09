@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PuissANT.Actors.Enemies;
 using PuissANT.Pheromones;
 using PuissANT.Util;
 
@@ -13,6 +14,11 @@ namespace PuissANT.Actors.Ants
     {
         public double Health;
         protected Point Target;
+
+        public virtual int Damage
+        {
+            get { return 1; }
+        }
 
         protected Ant(Point position,int width, int heigth, Texture2D tex)
             : base(position, width, heigth, tex)
@@ -46,8 +52,8 @@ namespace PuissANT.Actors.Ants
                 minDistance = Vector2.DistanceSquared(Position.ToVector2(), bestPoint.Position.ToVector2());
                 foreach (Pheromone p in points)
                 {
-                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2());
-                    if (d2 < minDistance || RAND.Next(0, 4) == 0)
+                    double d2 = Vector2.DistanceSquared(Position.ToVector2(), p.Position.ToVector2()) / RAND.Next(1, (int)p.Intensity);
+                    if (d2 < minDistance)
                     {
                         bestPoint = p;
                         minDistance = d2;
@@ -61,20 +67,28 @@ namespace PuissANT.Actors.Ants
             }
         }
 
-        protected virtual bool MoveTowardsTarget()
+        protected virtual bool MoveTowardsTarget(bool clear = true)
         {
             Position = getNextPosition();
-            for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
+            if (clear)
             {
-                for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
+                for (int x = 0; x < _hitbox.Width && _hitbox.X + x < ScreenManager.Instance.GameWindow.Width; x++)
                 {
-                    TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
-                    World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
-                        (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                    for (int y = 0; y < _hitbox.Height && _hitbox.Y + y < ScreenManager.Instance.GameWindow.Height; y++)
+                    {
+                        TileInfo tile = (TileInfo)World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y];
+                        if(!tile.IsTileType(TileInfo.Sky) && !tile.IsTileType(TileInfo.GroundImp))
+                            World.Instance[(int)_hitbox.X + x, (int)_hitbox.Y + y] =
+                                (short)tile.OverwriteTileValue(TileInfo.GroundDug);
+                    }
                 }
             }
-
             return Position == Target;
+        }
+
+        public virtual void Attacked(Enemy e)
+        {
+            Health -= e.Damage;
         }
 
         protected abstract Point getNextPosition();

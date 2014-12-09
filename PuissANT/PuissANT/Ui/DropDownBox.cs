@@ -15,7 +15,7 @@ namespace PuissANT.Ui
         public Button Top, Dropdown;
         public List<Button> Children;
         public Vector2 Position, PherDimensions, DropdownDimensions;
-        public Rectangle Hitbox;
+        public Rectangle Hitbox, ListHitbox;
         public string Text;
         public bool Expanded, ButtonClickedLast, ButtonClickedCurrent;
 
@@ -34,7 +34,14 @@ namespace PuissANT.Ui
             PherDimensions = new Vector2(150, 32);
             DropdownDimensions = new Vector2(32, 32);
             Position = new Vector2(1000, 14);
-            foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+
+            TileInfo[] pt = new TileInfo[]
+            {
+                TileInfo.Nest,
+                TileInfo.Attack
+            };
+            //foreach (TileInfo t in TileInfoSets.PheromoneTypes)
+            foreach (TileInfo t in pt)
             {
                 string neutralPath = "ui/" + t.ToString().Trim().ToLower() + "NeutralButton";
                 string overPath = "ui/" + t.ToString().Trim().ToLower() + "OverButton";
@@ -70,6 +77,9 @@ namespace PuissANT.Ui
             Dropdown.SetTexture(Game1.Instance.Content.Load<Texture2D>("ui/dropdownDOWN"), Button.ButtonState.Over);
             Dropdown.SetTexture(Game1.Instance.Content.Load<Texture2D>("ui/dropdownDOWN"), Button.ButtonState.Pressed);
             Dropdown.ButtonClicked = HandleDropDownButtonClick;
+
+            Hitbox = new Rectangle((int)Position.X, (int)Position.Y, (int)(PherDimensions.X + DropdownDimensions.X), (int)(PherDimensions.Y));
+            ListHitbox = new Rectangle((int)Position.X, (int)(Position.Y + PherDimensions.Y), (int)PherDimensions.X, (int)(PherDimensions.Y) * Children.Count);
         }
 
         public void UnloadContent()
