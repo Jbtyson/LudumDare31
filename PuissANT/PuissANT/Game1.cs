@@ -235,9 +235,9 @@ namespace PuissANT
                     {
                         int x = -98;
                         if (RAND.Next(0, 100) % 2 == 0)
-                            x += ScreenManager.Instance.GameWindow.Width + 98;
+                            x += ScreenManager.Instance.GameWindow.Width + 89;
                         int y = RAND.Next(ScreenManager.Instance.GameWindow.Height / 5 + 25, ScreenManager.Instance.GameWindow.Height - 70);
-                        ActorManager.Instance.Add(new Worm(new Vector2(x, y), x != -98));
+                        ActorManager.Instance.Add(new Worm(new Vector2(x, y), x != -89));
                         Worm.COUNT ++;
                     }
                     _spawnWormTimer -= (int)(SPAWN_TIME * 2.5);
