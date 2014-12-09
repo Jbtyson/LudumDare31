@@ -280,6 +280,9 @@ namespace PuissANT
                             World.Instance[x, titleOffsetY + 14] = (short)TileInfo.Sky;
                             World.Instance[x, titleOffsetY + 15] = (short)TileInfo.Sky;
                         }
+
+
+                        ActorManager.Instance.Add(new Worm(new Vector2(1000, 500)));
                     }
                     /*for (int y = 0; y < 16; y++)
                     {
@@ -349,8 +352,6 @@ namespace PuissANT
 
                 TerrainManager.DrawTerrain(spriteBatch);
 
-                foreach (Actor actor in ag)
-                    actor.Render(gameTime, spriteBatch);
 
                 ScreenManager.Instance.Draw(spriteBatch);
                 PhermoneCursor.Instance.Render(gameTime, spriteBatch);
